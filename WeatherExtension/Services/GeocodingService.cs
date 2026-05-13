@@ -89,34 +89,51 @@ public sealed partial class GeocodingService : IDisposable
 	private async Task<List<GeocodingResult>> SearchWithProgressiveFallbackAsync(string query, CancellationToken ct)
 	{
 		var currentQuery = query;
-		var attempts = 0;
+		// MaxFallbackAttempts caps the total number of outbound HTTP calls across
+		// both Nominatim and Photon combined, not per-provider. Each provider call
+		// consumes one slot from this budget.
+		var remainingCalls = MaxFallbackAttempts;
+		var nominatimAlive = true;
 
-		while (!string.IsNullOrWhiteSpace(currentQuery) && attempts < MaxFallbackAttempts)
+		while (!string.IsNullOrWhiteSpace(currentQuery) && remainingCalls > 0)
 		{
 			ct.ThrowIfCancellationRequested();
 
-			List<GeocodingResult> results;
-			try
+			if (nominatimAlive)
 			{
-				results = await SearchNominatimAsync(currentQuery, ct).ConfigureAwait(false);
-			}
-			catch (Exception ex)
-			{
-				WeatherLogger.LogToHost(
-					MessageState.Info,
-					$"Nominatim search failed, trying Photon: {ex.Message}");
-				results = [];
+				List<GeocodingResult> results;
+				try
+				{
+					results = await SearchNominatimAsync(currentQuery, ct).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					WeatherLogger.LogToHost(
+						MessageState.Info,
+						$"Nominatim search failed, switching to Photon: {ex.Message}");
+					results = [];
+					// Don't waste further budget on a provider that just threw — likely blocked.
+					nominatimAlive = false;
+				}
+
+				remainingCalls--;
+
+				if (results.Count > 0)
+				{
+					return results;
+				}
+
+				if (remainingCalls <= 0)
+				{
+					break;
+				}
 			}
 
-			attempts++;
+			ct.ThrowIfCancellationRequested();
 
-			if (results.Count > 0)
-			{
-				return results;
-			}
-
-			// Nominatim returned empty or failed — try Photon for the same query before stripping.
 			var photonResults = await SearchPhotonAsync(currentQuery, placesOnly: true, ct).ConfigureAwait(false);
+			remainingCalls--;
+
 			if (photonResults.Count > 0)
 			{
 				return photonResults;
