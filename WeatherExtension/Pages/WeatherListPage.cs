@@ -88,6 +88,9 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	{
 		try
 		{
+			// Clear any prior empty-state hint immediately — regardless of whether load succeeds.
+			EmptyContent = null;
+
 			var weatherData = await _weatherService.GetCurrentWeatherAsync(
 				location.Latitude,
 				location.Longitude,
@@ -106,7 +109,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 				return;
 			}
 
-			EmptyContent = null;
 			var items = new List<IListItem>
 			{
 				CreateWeatherItem(location, weatherData),
@@ -214,7 +216,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			ResetSearchToken();
 			_lastSearchQuery = newSearch;
-			EmptyContent = new ListItem(new NoOpCommand())
+			EmptyContent = new ListItem(new EmptySearchHintPage())
 			{
 				Title = Resources.search_min_chars,
 				Icon = Icons.WeatherIcon,
@@ -292,7 +294,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			if (locations.Count == 0)
 			{
-				EmptyContent = new ListItem(new NoOpCommand())
+				EmptyContent = new ListItem(new EmptySearchHintPage())
 				{
 					Title = Resources.no_locations_found,
 					Subtitle = Resources.search_format_hint,
