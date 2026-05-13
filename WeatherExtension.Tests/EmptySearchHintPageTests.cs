@@ -77,7 +77,7 @@ public class EmptySearchHintPageTests
 
         var content = page.GetContent();
 
-        Assert.IsInstanceOfType(content[0], typeof(MarkdownContent),
+        Assert.IsInstanceOfType<MarkdownContent>(content[0],
             "Content item must be MarkdownContent");
     }
 
