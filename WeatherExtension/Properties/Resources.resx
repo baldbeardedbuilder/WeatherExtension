@@ -204,15 +204,6 @@ If you continue to have issues, please [file a bug](https://github.com/michaeljo
   <data name="location_not_found" xml:space="preserve">
     <value>Location not found</value>
   </data>
-  <data name="default_location_title" xml:space="preserve">
-    <value>Default Location</value>
-  </data>
-  <data name="default_location_description" xml:space="preserve">
-    <value>Postal code or city, state, country for the default weather location</value>
-  </data>
-  <data name="default_location_placeholder" xml:space="preserve">
-    <value>city, state, country (e.g. Nashville, TN, US)</value>
-  </data>
   <data name="temperature_unit_title" xml:space="preserve">
     <value>Temperature Unit</value>
   </data>
@@ -260,5 +251,17 @@ If you continue to have issues, please [file a bug](https://github.com/michaeljo
   </data>
   <data name="twelve_hours" xml:space="preserve">
     <value>12 hours</value>
+  </data>
+  <data name="favorites_section_title" xml:space="preserve">
+    <value>Favorites</value>
+  </data>
+  <data name="favorite_command_name" xml:space="preserve">
+    <value>Add to Favorites</value>
+  </data>
+  <data name="unfavorite_command_name" xml:space="preserve">
+    <value>Remove from Favorites</value>
+  </data>
+  <data name="no_favorites_hint" xml:space="preserve">
+    <value>Search for a location and add it to your favorites</value>
   </data>
 </root>

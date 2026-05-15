@@ -4,6 +4,7 @@
 
 using BaldBeardedBuilder.WeatherExtension;
 using Microsoft.CmdPal.Ext.Weather.Pages;
+using Microsoft.CmdPal.Ext.Weather.Models;
 using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
@@ -16,6 +17,7 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 	private readonly OpenMeteoService _weatherService;
 	private readonly GeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settings;
+	private readonly FavoritesManager _favoritesManager;
 	private readonly WeatherBandCard _contentPage;
 	private readonly Timer _updateTimer;
 	private bool _isDisposed;
@@ -27,12 +29,14 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 		OpenMeteoService weatherService,
 		GeocodingService geocodingService,
 		WeatherSettingsManager settings,
-		WeatherBandCard contentPage)
+		WeatherBandCard contentPage,
+		FavoritesManager favoritesManager)
 	{
 		_weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
 		_geocodingService = geocodingService ?? throw new ArgumentNullException(nameof(geocodingService));
 		_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 		_contentPage = contentPage ?? throw new ArgumentNullException(nameof(contentPage));
+		_favoritesManager = favoritesManager ?? throw new ArgumentNullException(nameof(favoritesManager));
 
 		Command = _contentPage;
 		Icon = Icons.WeatherIcon;
@@ -46,6 +50,7 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 		_updateTimer.Start();
 
 		_settings.Settings.SettingsChanged += OnSettingsChanged;
+		_favoritesManager.FavoritesChanged += OnFavoritesChanged;
 
 		// Fetch weather immediately on startup
 		_ = UpdateWeatherAsync();
@@ -60,17 +65,16 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 
 		try
 		{
-			// Get coordinates for default location
-			var locations = await _geocodingService.SearchLocationAsync(_settings.DefaultLocation);
-
-			if (locations.Count == 0)
+			// Get first favorite location
+			var favorites = _favoritesManager.GetFavorites();
+			if (favorites.Count == 0)
 			{
 				Title = "--";
-				Subtitle = Resources.location_not_found;
+				Subtitle = Resources.no_favorites_hint;
 			}
 			else
 			{
-				var location = locations[0];
+				var location = favorites[0].ToGeocodingResult();
 				var weather = await _weatherService.GetCurrentWeatherAsync(
 					location.Latitude,
 					location.Longitude,
@@ -104,7 +108,7 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 					}
 					else
 					{
-						Subtitle = location.Name ?? _settings.DefaultLocation;
+						Subtitle = location.DisplayName;
 					}
 				}
 				else
@@ -151,6 +155,11 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 		}
 	}
 
+	private async void OnFavoritesChanged(object? sender, EventArgs e)
+	{
+		await UpdateWeatherAsync();
+	}
+
 	private async void OnSettingsChanged(object sender, Settings args)
 	{
 		await UpdateWeatherAsync();
@@ -162,6 +171,7 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 		{
 			_isDisposed = true;
 			_settings.Settings.SettingsChanged -= OnSettingsChanged;
+			_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
 			_updateTimer?.Stop();
 			_updateTimer?.Dispose();
 		}

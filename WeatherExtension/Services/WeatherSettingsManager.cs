@@ -14,15 +14,6 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
 
     private static string Namespaced(string propertyName) => $"{Namespace}.{propertyName}";
 
-    private readonly TextSetting _defaultLocation = new(
-        Namespaced(nameof(DefaultLocation)),
-        Resources.default_location_title,
-        Resources.default_location_description,
-        "98101")
-    {
-        Placeholder = Resources.default_location_placeholder,
-    };
-
     private readonly ChoiceSetSetting _temperatureUnit = new(
         Namespaced(nameof(TemperatureUnit)),
         Resources.temperature_unit_title,
@@ -60,8 +51,6 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
 
     private static readonly HashSet<string> _validIntervals = ["60", "180", "360", "720"];
 
-    public string DefaultLocation => _defaultLocation.Value ?? "98101";
-
     public string TemperatureUnit => _temperatureUnit.Value ?? "celsius";
 
     public string WindSpeedUnit => _windSpeedUnit.Value ?? "kmh";
@@ -74,7 +63,6 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
     {
         FilePath = SettingsJsonPath();
 
-        Settings.Add(_defaultLocation);
         Settings.Add(_temperatureUnit);
         Settings.Add(_windSpeedUnit);
         Settings.Add(_showForecast);
@@ -90,7 +78,6 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
     {
         FilePath = filePath;
 
-        Settings.Add(_defaultLocation);
         Settings.Add(_temperatureUnit);
         Settings.Add(_windSpeedUnit);
         Settings.Add(_showForecast);

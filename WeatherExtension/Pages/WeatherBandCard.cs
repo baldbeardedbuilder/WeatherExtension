@@ -16,6 +16,7 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 	private readonly OpenMeteoService _weatherService;
 	private readonly GeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settings;
+	private readonly FavoritesManager? _favoritesManager;
 	private readonly FormContent _weatherForm = new();
 	private readonly CancellationTokenSource _cts = new();
 	private readonly GeocodingResult? _fixedLocation;
@@ -24,11 +25,13 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		OpenMeteoService weatherService,
 		GeocodingService geocodingService,
 		WeatherSettingsManager settings,
+		FavoritesManager? favoritesManager = null,
 		GeocodingResult? fixedLocation = null)
 	{
 		_weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
 		_geocodingService = geocodingService ?? throw new ArgumentNullException(nameof(geocodingService));
 		_settings = settings ?? throw new ArgumentNullException(nameof(settings));
+		_favoritesManager = favoritesManager;
 		_fixedLocation = fixedLocation;
 
 		Id = "com.baldbeardedbuilder.cmdpal.weather.card";
@@ -40,6 +43,10 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		_weatherForm.DataJson = GetLoadingData();
 
 		_settings.Settings.SettingsChanged += OnSettingsChanged;
+		if (_favoritesManager != null)
+		{
+			_favoritesManager.FavoritesChanged += OnFavoritesChanged;
+		}
 
 		_ = LoadWeatherDataAsync();
 	}
@@ -56,20 +63,25 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 			{
 				location = _fixedLocation;
 			}
-			else
+			else if (_favoritesManager != null)
 			{
-				var locations = await _geocodingService.SearchLocationAsync(
-					_settings.DefaultLocation, _cts.Token);
-
-				if (locations.Count == 0)
+				var favorites = _favoritesManager.GetFavorites();
+				if (favorites.Count == 0)
 				{
 					_weatherForm.DataJson = GetErrorData(
-						Resources.location_not_found);
+						Resources.no_favorites_hint);
 					RaiseItemsChanged();
 					return;
 				}
 
-				location = locations[0];
+				location = favorites[0].ToGeocodingResult();
+			}
+			else
+			{
+				_weatherForm.DataJson = GetErrorData(
+					Resources.location_not_found);
+				RaiseItemsChanged();
+				return;
 			}
 			var weather = await _weatherService.GetCurrentWeatherAsync(
 				location.Latitude,
@@ -605,6 +617,14 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
         """;
 	}
 
+	private async void OnFavoritesChanged(object? sender, EventArgs e)
+	{
+		if (_fixedLocation == null)
+		{
+			await LoadWeatherDataAsync();
+		}
+	}
+
 	private async void OnSettingsChanged(object sender, Settings args)
 	{
 		await LoadWeatherDataAsync();
@@ -613,6 +633,10 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 	public void Dispose()
 	{
 		_settings.Settings.SettingsChanged -= OnSettingsChanged;
+		if (_favoritesManager != null)
+		{
+			_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
+		}
 		_cts?.Cancel();
 		_cts?.Dispose();
 	}
