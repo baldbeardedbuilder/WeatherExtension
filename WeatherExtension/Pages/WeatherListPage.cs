@@ -8,20 +8,18 @@ using Microsoft.CmdPal.Ext.Weather.Models;
 using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using System.Globalization;
-using System.Text;
 
 namespace Microsoft.CmdPal.Ext.Weather.Pages;
 
 internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 {
-	private static readonly CompositeFormat NoResultsFormat = CompositeFormat.Parse(Resources.no_results_for);
 	private const int MinSearchLength = 3;
 
 	private readonly IWeatherService _weatherService;
 	private readonly GeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settingsManager;
 	private readonly PinnedLocationsManager _pinnedLocationsManager;
+	private readonly FavoritesManager _favoritesManager;
 	private readonly Lock _sync = new();
 	private readonly CancellationTokenSource _cts = new();
 
@@ -34,17 +32,20 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		IWeatherService weatherService,
 		GeocodingService geocodingService,
 		WeatherSettingsManager settingsManager,
-		PinnedLocationsManager pinnedLocationsManager)
+		PinnedLocationsManager pinnedLocationsManager,
+		FavoritesManager favoritesManager)
 	{
 		ArgumentNullException.ThrowIfNull(weatherService);
 		ArgumentNullException.ThrowIfNull(geocodingService);
 		ArgumentNullException.ThrowIfNull(settingsManager);
 		ArgumentNullException.ThrowIfNull(pinnedLocationsManager);
+		ArgumentNullException.ThrowIfNull(favoritesManager);
 
 		_weatherService = weatherService;
 		_geocodingService = geocodingService;
 		_settingsManager = settingsManager;
 		_pinnedLocationsManager = pinnedLocationsManager;
+		_favoritesManager = favoritesManager;
 
 		Name = "Weather";
 		Title = "Weather";
@@ -53,27 +54,72 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		PlaceholderText = Resources.search_placeholder;
 		ShowDetails = true;
 
-		LoadDefaultLocationWeather();
+		LoadFavoriteLocations();
 
 		_settingsManager.Settings.SettingsChanged += OnSettingsChanged;
+		_favoritesManager.FavoritesChanged += OnFavoritesChanged;
 	}
 
-	private async void LoadDefaultLocationWeather(CancellationToken searchCt = default)
+	private async void LoadFavoriteLocations(CancellationToken searchCt = default)
 	{
 		try
 		{
-			var defaultLocation = _settingsManager.DefaultLocation;
-			if (string.IsNullOrWhiteSpace(defaultLocation))
+			var favorites = _favoritesManager.GetFavorites();
+			if (favorites.Count == 0)
 			{
+				lock (_sync)
+				{
+					_items = [];
+					_isLoading = false;
+				}
+
+				EmptyContent = new ListItem(new NoOpCommand())
+				{
+					Title = Resources.no_favorites_hint,
+					Icon = Icons.WeatherIcon,
+				};
+
+				RaiseItemsChanged();
 				return;
 			}
 
+			EmptyContent = null;
+
 			using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(searchCt, _cts.Token);
-			var locations = await _geocodingService.SearchLocationAsync(defaultLocation, linkedCts.Token).ConfigureAwait(false);
-			if (locations.Count > 0)
+			var items = new List<IListItem>();
+
+			foreach (var pinned in favorites)
 			{
-				await LoadWeatherForLocation(locations[0], linkedCts.Token).ConfigureAwait(false);
+				var location = pinned.ToGeocodingResult();
+				try
+				{
+					var weatherData = await _weatherService.GetCurrentWeatherAsync(
+						location.Latitude,
+						location.Longitude,
+						_settingsManager.TemperatureUnit,
+						_settingsManager.WindSpeedUnit,
+						linkedCts.Token).ConfigureAwait(false);
+
+					if (weatherData != null)
+					{
+						items.Add(CreateWeatherItem(location, weatherData));
+					}
+				}
+				catch (Exception ex) when (ex is not OperationCanceledException)
+				{
+					WeatherLogger.LogToHost(
+						MessageState.Error,
+						$"Failed to load weather for favorite {location.DisplayName}: {ex.Message}");
+				}
 			}
+
+			lock (_sync)
+			{
+				_items = items.ToArray();
+				_isLoading = false;
+			}
+
+			RaiseItemsChanged();
 		}
 		catch (OperationCanceledException)
 		{
@@ -83,7 +129,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			WeatherLogger.LogToHost(
 				MessageState.Error,
-				$"Failed to load default location weather: {ex.Message}");
+				$"Failed to load favorite locations: {ex.Message}");
 		}
 	}
 
@@ -91,6 +137,9 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	{
 		try
 		{
+			// Clear any prior empty-state hint immediately — regardless of whether load succeeds.
+			EmptyContent = null;
+
 			var weatherData = await _weatherService.GetCurrentWeatherAsync(
 				location.Latitude,
 				location.Longitude,
@@ -150,7 +199,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		}
 
 		var current = weatherData.Current;
-		var tempUnit = _settingsManager.TemperatureUnit == "celsius" ? "°C" : "°F";
+		var tempUnit = _settingsManager.TemperatureUnit == "celsius" ? "\u00B0C" : "\u00B0F";
 		var windUnit = _settingsManager.WindSpeedUnit == "mph" ? "mph" : "km/h";
 		var condition = Icons.GetWeatherDescription(current.WeatherCode);
 
@@ -173,15 +222,24 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 			moreCommands.Add(new CommandContextItem(new PinToDockCommand(location, _pinnedLocationsManager)));
 		}
 
+		if (_favoritesManager.IsFavorite(location))
+		{
+			moreCommands.Add(new CommandContextItem(new UnfavoriteLocationCommand(location, _favoritesManager)));
+		}
+		else
+		{
+			moreCommands.Add(new CommandContextItem(new FavoriteLocationCommand(location, _favoritesManager)));
+		}
+
 		var item = new ListItem(detailPage)
 		{
 			Title = location.DisplayName,
-			Subtitle = $"{condition} — {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
+			Subtitle = $"{condition} \u2014 {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
 			Icon = Icons.GetIconForWeatherCode(current.WeatherCode),
 			Details = new Details
 			{
 				Title = location.DisplayName,
-				Body = $"{condition} — {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
+				Body = $"{condition} \u2014 {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
 				Metadata =
 				[
 					new DetailsElement { Key = "Humidity", Data = new DetailsLink($"{current.RelativeHumidity}%") },
@@ -208,7 +266,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			var ct = ResetSearchToken();
 			_lastSearchQuery = string.Empty;
-			LoadDefaultLocationWeather(ct);
+			LoadFavoriteLocations(ct);
 			return;
 		}
 
@@ -216,14 +274,14 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			ResetSearchToken();
 			_lastSearchQuery = newSearch;
-			var minCharsItem = new ListItem(new NoOpCommand())
+			EmptyContent = new ListItem(new EmptySearchHintPage())
 			{
 				Title = Resources.search_min_chars,
 				Icon = Icons.WeatherIcon,
 			};
 			lock (_sync)
 			{
-				_items = [minCharsItem];
+				_items = [];
 				_isLoading = false;
 			}
 
@@ -245,10 +303,8 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	{
 		var oldCts = _searchCts;
 		_searchCts = new CancellationTokenSource();
-		// Cancel but do not dispose immediately: the fire-and-forget debounced task may still be
-		// executing callbacks on oldCts.Token, and disposing it while those callbacks are in flight
-		// would throw ObjectDisposedException.  The GC will reclaim it once no references remain.
 		oldCts.Cancel();
+		oldCts.Dispose();
 		return _searchCts.Token;
 	}
 
@@ -262,7 +318,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		}
 		catch (OperationCanceledException)
 		{
-			// Expected when the debounce is cancelled by a newer search or page is disposed
 		}
 	}
 
@@ -279,8 +334,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			var locations = await _geocodingService.SearchLocationAsync(query, ct).ConfigureAwait(false);
 
-			// Re-check cancellation after the async call returns so that stale results
-			// from an earlier query are never shown when the user has already typed more.
 			if (ct.IsCancellationRequested)
 			{
 				lock (_sync)
@@ -294,16 +347,16 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			if (locations.Count == 0)
 			{
-				var noResultsItem = new ListItem(new NoOpCommand())
+				EmptyContent = new ListItem(new EmptySearchHintPage())
 				{
 					Title = Resources.no_locations_found,
-					Subtitle = string.Format(CultureInfo.CurrentCulture, NoResultsFormat, query),
+					Subtitle = Resources.search_format_hint,
 					Icon = Icons.WeatherIcon,
 				};
 
 				lock (_sync)
 				{
-					_items = [noResultsItem];
+					_items = [];
 					_isLoading = false;
 				}
 
@@ -333,7 +386,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 				}
 			}
 
-			// Final cancellation check before committing results to the UI.
 			if (ct.IsCancellationRequested)
 			{
 				lock (_sync)
@@ -345,6 +397,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 				return;
 			}
 
+			EmptyContent = null;
 			lock (_sync)
 			{
 				_items = items.ToArray();
@@ -355,7 +408,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		}
 		catch (OperationCanceledException)
 		{
-			// Expected when the search is cancelled by a newer query or page is disposed
 			lock (_sync)
 			{
 				_isLoading = false;
@@ -401,6 +453,15 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		RefreshWeather();
 	}
 
+	private void OnFavoritesChanged(object? sender, EventArgs e)
+	{
+		if (string.IsNullOrWhiteSpace(_lastSearchQuery))
+		{
+			var ct = ResetSearchToken();
+			LoadFavoriteLocations(ct);
+		}
+	}
+
 	public void RefreshWeather()
 	{
 		var ct = ResetSearchToken();
@@ -410,7 +471,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		}
 		else
 		{
-			LoadDefaultLocationWeather(ct);
+			LoadFavoriteLocations(ct);
 		}
 	}
 
@@ -437,10 +498,10 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	public void Dispose()
 	{
 		_settingsManager.Settings.SettingsChanged -= OnSettingsChanged;
+		_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
 		_searchCts?.Cancel();
 		_searchCts?.Dispose();
 		_cts?.Cancel();
 		_cts?.Dispose();
-		GC.SuppressFinalize(this);
 	}
 }

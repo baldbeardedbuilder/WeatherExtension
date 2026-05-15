@@ -124,33 +124,6 @@ namespace Microsoft.CmdPal.Ext.Weather {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Postal code or city, state, country for the default weather location.
-        /// </summary>
-        public static string default_location_description {
-            get {
-                return ResourceManager.GetString("default_location_description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to city, state, country (e.g. Nashville, TN, US).
-        /// </summary>
-        public static string default_location_placeholder {
-            get {
-                return ResourceManager.GetString("default_location_placeholder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Default Location.
-        /// </summary>
-        public static string default_location_title {
-            get {
-                return ResourceManager.GetString("default_location_title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Weather.
         /// </summary>
         public static string dockband_title {
@@ -349,6 +322,15 @@ namespace Microsoft.CmdPal.Ext.Weather {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Try: City, State · City, Country · Postal code.
+        /// </summary>
+        public static string search_format_hint {
+            get {
+                return ResourceManager.GetString("search_format_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a postal code or city name....
         /// </summary>
         public static string search_placeholder {
@@ -518,5 +500,42 @@ namespace Microsoft.CmdPal.Ext.Weather {
                 return ResourceManager.GetString("wind_speed_unit_title", resourceCulture);
             }
         }
+    
+        /// <summary>
+        ///   Looks up a localized string similar to Favorites.
+        /// </summary>
+        public static string favorites_section_title {
+            get {
+                return ResourceManager.GetString("favorites_section_title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add to Favorites.
+        /// </summary>
+        public static string favorite_command_name {
+            get {
+                return ResourceManager.GetString("favorite_command_name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from Favorites.
+        /// </summary>
+        public static string unfavorite_command_name {
+            get {
+                return ResourceManager.GetString("unfavorite_command_name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Search for a location and add it to your favorites.
+        /// </summary>
+        public static string no_favorites_hint {
+            get {
+                return ResourceManager.GetString("no_favorites_hint", resourceCulture);
+            }
+        }
+
     }
 }

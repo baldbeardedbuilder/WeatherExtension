@@ -30,14 +30,6 @@ public class WeatherSettingsManagerTests
     }
 
     [TestMethod]
-    public void DefaultLocation_WithNoSettings_ReturnsDefault()
-    {
-        var manager = new WeatherSettingsManager(_tempFilePath);
-
-        Assert.AreEqual("98101", manager.DefaultLocation);
-    }
-
-    [TestMethod]
     public void TemperatureUnit_WithNoSettings_ReturnsDefaultCelsius()
     {
         var manager = new WeatherSettingsManager(_tempFilePath);
@@ -103,15 +95,6 @@ public class WeatherSettingsManagerTests
 
         // Valid value "180" (3 hours) should be preserved
         Assert.AreEqual(180, manager.UpdateIntervalMinutes);
-    }
-
-    [TestMethod]
-    public void DefaultLocation_PropertyReturnsNonNull()
-    {
-        var manager = new WeatherSettingsManager(_tempFilePath);
-
-        Assert.IsNotNull(manager.DefaultLocation);
-        Assert.IsFalse(string.IsNullOrEmpty(manager.DefaultLocation));
     }
 
     [TestMethod]

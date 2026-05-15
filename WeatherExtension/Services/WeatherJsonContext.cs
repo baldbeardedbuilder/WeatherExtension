@@ -13,6 +13,9 @@ namespace Microsoft.CmdPal.Ext.Weather.Services;
 [JsonSerializable(typeof(List<NominatimResult>))]
 [JsonSerializable(typeof(NominatimAddress))]
 [JsonSerializable(typeof(List<PinnedLocation>))]
+[JsonSerializable(typeof(PhotonResult))]
+[JsonSerializable(typeof(PhotonFeature))]
+[JsonSerializable(typeof(List<PhotonFeature>))]
 [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
 internal partial class WeatherJsonContext : JsonSerializerContext
 {
