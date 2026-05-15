@@ -5,7 +5,6 @@
 using BaldBeardedBuilder.WeatherExtension;
 using Microsoft.CmdPal.Ext.Weather.Pages;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.CmdPal.Ext.Weather.UnitTests;
 

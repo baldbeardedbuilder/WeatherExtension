@@ -4,8 +4,6 @@
 
 using Microsoft.CmdPal.Ext.Weather.Models;
 using Microsoft.CmdPal.Ext.Weather.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace Microsoft.CmdPal.Ext.Weather.UnitTests;
 
