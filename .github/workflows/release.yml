@@ -1,8 +1,9 @@
 name: Release to Microsoft Store
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -31,7 +32,7 @@ jobs:
         id: version
         shell: pwsh
         run: |
-          $tag = "${{ github.event.release.tag_name }}"
+          $tag = "${{ github.ref_name }}"
           $version = $tag -replace '^v', ''
           
           # Ensure 4-part version (X.Y.Z.0)
@@ -208,6 +209,11 @@ jobs:
           path: WeatherExtension/**/*.msix
           retention-days: 7
 
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "${{ github.ref_name }}" --generate-notes --title "${{ github.ref_name }}"
+
       - name: Upload MSIX packages to GitHub Release
         shell: pwsh
         env:
@@ -217,7 +223,7 @@ jobs:
           
           foreach ($file in $msixFiles) {
             Write-Host "Uploading $($file.Name) to release..."
-            gh release upload "${{ github.event.release.tag_name }}" "$($file.FullName)" --clobber
+            gh release upload "${{ github.ref_name }}" "$($file.FullName)" --clobber
           }
 
       # --- Build Store-specific packages with the MS Store publisher identity ---
