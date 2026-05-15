@@ -47,7 +47,6 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		];
 
 		_pinnedLocationsManager.PinnedLocationsChanged += OnPinnedLocationsChanged;
-		_favoritesManager.FavoritesChanged += OnFavoritesChanged;
 	}
 
 	public override ICommandItem[] TopLevelCommands() => _topLevelItems;
@@ -88,11 +87,6 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		return dockItems.ToArray();
 	}
 
-	private void OnFavoritesChanged(object? sender, EventArgs e)
-	{
-		// Favorites change is handled by WeatherListPage directly
-	}
-
 	private void OnPinnedLocationsChanged(object? sender, EventArgs e)
 	{
 		foreach (var band in _pinnedBands)
@@ -106,7 +100,6 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 	public override void Dispose()
 	{
 		_pinnedLocationsManager.PinnedLocationsChanged -= OnPinnedLocationsChanged;
-		_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
 		foreach (var band in _pinnedBands)
 		{
 			band.Dispose();
