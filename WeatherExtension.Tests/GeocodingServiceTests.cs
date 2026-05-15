@@ -219,6 +219,158 @@ public class GeocodingServiceTests
 			$"Expected at most {GeocodingService.MaxFallbackAttempts} API calls, but got {callCount}.");
 	}
 
+
+	// ── Nominatim→Photon fallback integration tests ─────────────────────────
+
+	private const string ValidPhotonBirminghamJson = """
+		{
+			"type": "FeatureCollection",
+			"features": [
+				{
+					"type": "Feature",
+					"geometry": {
+						"type": "Point",
+						"coordinates": [-86.8025, 33.5207]
+					},
+					"properties": {
+						"name": "Birmingham",
+						"state": "Alabama",
+						"country": "United States",
+						"osm_key": "place",
+						"osm_value": "city"
+					}
+				}
+			]
+		}
+		""";
+
+	private const string ValidPhotonTokyoJson = """
+		{
+			"type": "FeatureCollection",
+			"features": [
+				{
+					"type": "Feature",
+					"geometry": {
+						"type": "Point",
+						"coordinates": [139.6917, 35.6895]
+					},
+					"properties": {
+						"name": "Tokyo",
+						"country": "Japan",
+						"osm_key": "place",
+						"osm_value": "city"
+					}
+				}
+			]
+		}
+		""";
+
+	[TestMethod]
+	public async Task SearchLocationAsync_NominatimFails_FallsBackToPhoton()
+	{
+		var callCount = 0;
+		var handler = new CountingHttpHandler(request =>
+		{
+			callCount++;
+			if (request.RequestUri!.Host.Contains("nominatim.openstreetmap.org", StringComparison.OrdinalIgnoreCase))
+			{
+				return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+			}
+
+			// Photon
+			return new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new StringContent(ValidPhotonBirminghamJson),
+			};
+		});
+
+		using var service = new GeocodingService(handler);
+		var results = await service.SearchLocationAsync("Birmingham, Alabama", CancellationToken.None);
+
+		Assert.IsTrue(results.Count > 0, "Expected non-empty results from Photon fallback");
+		Assert.AreEqual(2, callCount, "Expected 1 failed Nominatim call + 1 successful Photon call");
+
+		// Photon coordinates are [lon, lat] — ConvertPhotonResults swaps them
+		Assert.AreEqual(33.5207, results[0].Latitude, 0.001, "Latitude should match Photon payload");
+		Assert.AreEqual(-86.8025, results[0].Longitude, 0.001, "Longitude should match Photon payload");
+	}
+
+	[TestMethod]
+	public async Task SearchLocationAsync_NominatimThrows_FallsBackToPhoton()
+	{
+		var callCount = 0;
+		var handler = new CountingHttpHandler(request =>
+		{
+			callCount++;
+			if (request.RequestUri!.Host.Contains("nominatim.openstreetmap.org", StringComparison.OrdinalIgnoreCase))
+			{
+				throw new HttpRequestException("Connection refused");
+			}
+
+			// Photon
+			return new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new StringContent(ValidPhotonTokyoJson),
+			};
+		});
+
+		using var service = new GeocodingService(handler);
+		var results = await service.SearchLocationAsync("Tokyo, Japan", CancellationToken.None);
+
+		Assert.IsTrue(results.Count > 0, "Expected non-empty results from Photon fallback after Nominatim throws");
+		Assert.AreEqual(2, callCount, "Expected 1 thrown Nominatim call + 1 successful Photon call");
+
+		// Photon coordinates are [lon, lat]
+		Assert.AreEqual(35.6895, results[0].Latitude, 0.001, "Latitude should match Photon payload");
+		Assert.AreEqual(139.6917, results[0].Longitude, 0.001, "Longitude should match Photon payload");
+	}
+
+	[TestMethod]
+	public async Task SearchLocationAsync_PostalCode_NominatimFails_FallsBackToPhoton()
+	{
+		var callCount = 0;
+		var handler = new CountingHttpHandler(request =>
+		{
+			callCount++;
+			if (request.RequestUri!.Host.Contains("nominatim.openstreetmap.org", StringComparison.OrdinalIgnoreCase))
+			{
+				return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+			}
+
+			// Photon
+			return new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new StringContent(ValidPhotonBirminghamJson),
+			};
+		});
+
+		using var service = new GeocodingService(handler);
+		// US zip triggers SearchPostalCodeAsync path
+		var results = await service.SearchLocationAsync("90210", CancellationToken.None);
+
+		Assert.IsTrue(results.Count > 0, "Expected non-empty results from Photon fallback for postal code");
+		Assert.AreEqual(2, callCount, "Expected 1 failed Nominatim postal-code call + 1 successful Photon call");
+	}
+
+	[TestMethod]
+	public async Task SearchLocationAsync_BothProvidersFail_ReturnsEmpty()
+	{
+		var callCount = 0;
+		var handler = new CountingHttpHandler(request =>
+		{
+			callCount++;
+			return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+		});
+
+		using var service = new GeocodingService(handler);
+		var results = await service.SearchLocationAsync("Birmingham, Alabama", CancellationToken.None);
+
+		Assert.AreEqual(0, results.Count, "Expected empty results when both providers fail");
+		Assert.IsTrue(
+			callCount <= GeocodingService.MaxFallbackAttempts,
+			$"Expected at most {GeocodingService.MaxFallbackAttempts} HTTP calls, got {callCount}");
+	}
+
 }
 
 /// <summary>
