@@ -371,7 +371,6 @@ public class GeocodingServiceTests
 			$"Expected at most {GeocodingService.MaxFallbackAttempts} HTTP calls, got {callCount}");
 	}
 
-
 }
 
 /// <summary>
