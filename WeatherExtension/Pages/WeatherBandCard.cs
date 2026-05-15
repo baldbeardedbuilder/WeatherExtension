@@ -43,6 +43,10 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		_weatherForm.DataJson = GetLoadingData();
 
 		_settings.Settings.SettingsChanged += OnSettingsChanged;
+		if (_favoritesManager != null)
+		{
+			_favoritesManager.FavoritesChanged += OnFavoritesChanged;
+		}
 
 		_ = LoadWeatherDataAsync();
 	}
@@ -613,6 +617,14 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
         """;
 	}
 
+	private async void OnFavoritesChanged(object? sender, EventArgs e)
+	{
+		if (_fixedLocation == null)
+		{
+			await LoadWeatherDataAsync();
+		}
+	}
+
 	private async void OnSettingsChanged(object sender, Settings args)
 	{
 		await LoadWeatherDataAsync();
@@ -621,6 +633,10 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 	public void Dispose()
 	{
 		_settings.Settings.SettingsChanged -= OnSettingsChanged;
+		if (_favoritesManager != null)
+		{
+			_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
+		}
 		_cts?.Cancel();
 		_cts?.Dispose();
 	}

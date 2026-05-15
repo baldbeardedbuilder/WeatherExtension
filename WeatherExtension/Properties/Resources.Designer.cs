@@ -450,7 +450,7 @@ namespace Microsoft.CmdPal.Ext.Weather {
         /// <summary>
         ///   Looks up a localized string similar to Favorites.
         /// </summary>
-        internal static string favorites_section_title {
+        public static string favorites_section_title {
             get {
                 return ResourceManager.GetString("favorites_section_title", resourceCulture);
             }
@@ -459,7 +459,7 @@ namespace Microsoft.CmdPal.Ext.Weather {
         /// <summary>
         ///   Looks up a localized string similar to Add to Favorites.
         /// </summary>
-        internal static string favorite_command_name {
+        public static string favorite_command_name {
             get {
                 return ResourceManager.GetString("favorite_command_name", resourceCulture);
             }
@@ -468,7 +468,7 @@ namespace Microsoft.CmdPal.Ext.Weather {
         /// <summary>
         ///   Looks up a localized string similar to Remove from Favorites.
         /// </summary>
-        internal static string unfavorite_command_name {
+        public static string unfavorite_command_name {
             get {
                 return ResourceManager.GetString("unfavorite_command_name", resourceCulture);
             }
@@ -477,7 +477,7 @@ namespace Microsoft.CmdPal.Ext.Weather {
         /// <summary>
         ///   Looks up a localized string similar to Search for a location and add it to your favorites.
         /// </summary>
-        internal static string no_favorites_hint {
+        public static string no_favorites_hint {
             get {
                 return ResourceManager.GetString("no_favorites_hint", resourceCulture);
             }
