@@ -61,6 +61,51 @@ namespace Microsoft.CmdPal.Ext.Weather {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Weather API unreachable — may be blocked in your region.
+        /// </summary>
+        public static string connectivity_api_blocked {
+            get {
+                return ResourceManager.GetString("connectivity_api_blocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to current weather.
+        /// </summary>
+        public static string connectivity_endpoint_current_weather {
+            get {
+                return ResourceManager.GetString("connectivity_endpoint_current_weather", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to forecast.
+        /// </summary>
+        public static string connectivity_endpoint_forecast {
+            get {
+                return ResourceManager.GetString("connectivity_endpoint_forecast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hourly forecast.
+        /// </summary>
+        public static string connectivity_endpoint_hourly_forecast {
+            get {
+                return ResourceManager.GetString("connectivity_endpoint_hourly_forecast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No internet connection.
+        /// </summary>
+        public static string connectivity_no_internet {
+            get {
+                return ResourceManager.GetString("connectivity_no_internet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Celsius.
         /// </summary>
         public static string celsius {

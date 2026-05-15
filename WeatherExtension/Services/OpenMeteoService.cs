@@ -13,6 +13,7 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 {
 	private readonly HttpClient _httpClient;
 	private const string BaseUrl = "https://api.open-meteo.com/v1/forecast";
+	private const string ConnectivityProbeUrl = "https://connectivitycheck.gstatic.com/generate_204";
 	private const int CacheExpirationMinutes = 15;
 
 	private WeatherData? _cachedWeather;
@@ -30,6 +31,15 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 	public OpenMeteoService()
 	{
 		_httpClient = new HttpClient
+		{
+			Timeout = TimeSpan.FromSeconds(10),
+		};
+		_httpClient.DefaultRequestHeaders.Add("User-Agent", "PowerToys-CmdPal-Weather/1.0");
+	}
+
+	internal OpenMeteoService(HttpMessageHandler handler)
+	{
+		_httpClient = new HttpClient(handler)
 		{
 			Timeout = TimeSpan.FromSeconds(10),
 		};
@@ -64,6 +74,7 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 				WeatherLogger.LogToHost(
 					MessageState.Error,
 					$"Weather API returned status {response.StatusCode}");
+				await ProbeConnectivityAsync(Resources.connectivity_endpoint_current_weather, ct).ConfigureAwait(false);
 				return null;
 			}
 
@@ -86,11 +97,16 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 
 			return weatherData;
 		}
+		catch (OperationCanceledException)
+		{
+			throw;
+		}
 		catch (Exception ex)
 		{
 			WeatherLogger.LogToHost(
 				MessageState.Error,
 				$"Weather fetch error: {ex.Message}");
+			await ProbeConnectivityAsync(Resources.connectivity_endpoint_current_weather, ct).ConfigureAwait(false);
 			return null;
 		}
 	}
@@ -122,6 +138,7 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 				WeatherLogger.LogToHost(
 					MessageState.Error,
 					$"Forecast API returned status {response.StatusCode}");
+				await ProbeConnectivityAsync(Resources.connectivity_endpoint_forecast, ct).ConfigureAwait(false);
 				return null;
 			}
 
@@ -144,11 +161,16 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 
 			return forecastData;
 		}
+		catch (OperationCanceledException)
+		{
+			throw;
+		}
 		catch (Exception ex)
 		{
 			WeatherLogger.LogToHost(
 				MessageState.Error,
 				$"Forecast fetch error: {ex.Message}");
+			await ProbeConnectivityAsync(Resources.connectivity_endpoint_forecast, ct).ConfigureAwait(false);
 			return null;
 		}
 	}
@@ -181,6 +203,7 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 				WeatherLogger.LogToHost(
 					MessageState.Error,
 					$"Hourly forecast API returned status {response.StatusCode}");
+				await ProbeConnectivityAsync(Resources.connectivity_endpoint_hourly_forecast, ct).ConfigureAwait(false);
 				return null;
 			}
 
@@ -203,12 +226,58 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 
 			return hourlyData;
 		}
+		catch (OperationCanceledException)
+		{
+			throw;
+		}
 		catch (Exception ex)
 		{
 			WeatherLogger.LogToHost(
 				MessageState.Error,
 				$"Hourly forecast fetch error: {ex.Message}");
+			await ProbeConnectivityAsync(Resources.connectivity_endpoint_hourly_forecast, ct).ConfigureAwait(false);
 			return null;
+		}
+	}
+
+	private async Task ProbeConnectivityAsync(string failedEndpoint, CancellationToken ct)
+	{
+		try
+		{
+			using var probeRequest = new HttpRequestMessage(HttpMethod.Head, ConnectivityProbeUrl);
+			probeRequest.Headers.Add("User-Agent", "PowerToys-CmdPal-Weather/1.0");
+
+			using var probeCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+			probeCts.CancelAfter(TimeSpan.FromSeconds(2));
+
+			var probeResponse = await _httpClient.SendAsync(probeRequest, probeCts.Token).ConfigureAwait(false);
+
+			if (probeResponse.StatusCode == System.Net.HttpStatusCode.NoContent)
+			{
+				// Got expected 204 — we have internet, weather API is specifically unreachable
+				WeatherLogger.LogToHost(
+					MessageState.Error,
+					$"{Resources.connectivity_api_blocked} ({failedEndpoint})");
+			}
+			else
+			{
+				// Non-204 response (e.g., captive portal redirect) — treat as no internet
+				WeatherLogger.LogToHost(
+					MessageState.Warning,
+					Resources.connectivity_no_internet);
+			}
+		}
+		catch (OperationCanceledException) when (ct.IsCancellationRequested)
+		{
+			// Caller cancelled — don't log, just return
+			return;
+		}
+		catch
+		{
+			// Probe failed (timeout or network error) — no internet connection
+			WeatherLogger.LogToHost(
+				MessageState.Warning,
+				Resources.connectivity_no_internet);
 		}
 	}
 
