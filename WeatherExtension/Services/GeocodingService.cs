@@ -14,6 +14,7 @@ public sealed partial class GeocodingService : IDisposable
 {
 	private readonly HttpClient _httpClient;
 	private const string NominatimUrl = "https://nominatim.openstreetmap.org/search";
+	private const string PhotonUrl = "https://photon.komoot.io/api/";
 	private const int MinSearchLength = 3;
 	internal const int MaxFallbackAttempts = 3;
 
@@ -88,18 +89,54 @@ public sealed partial class GeocodingService : IDisposable
 	private async Task<List<GeocodingResult>> SearchWithProgressiveFallbackAsync(string query, CancellationToken ct)
 	{
 		var currentQuery = query;
-		var attempts = 0;
+		// MaxFallbackAttempts caps the total number of outbound HTTP calls across
+		// both Nominatim and Photon combined, not per-provider. Each provider call
+		// consumes one slot from this budget.
+		var remainingCalls = MaxFallbackAttempts;
+		var nominatimAlive = true;
 
-		while (!string.IsNullOrWhiteSpace(currentQuery) && attempts < MaxFallbackAttempts)
+		while (!string.IsNullOrWhiteSpace(currentQuery) && remainingCalls > 0)
 		{
 			ct.ThrowIfCancellationRequested();
 
-			var results = await SearchNominatimAsync(currentQuery, ct).ConfigureAwait(false);
-			attempts++;
-
-			if (results.Count > 0)
+			if (nominatimAlive)
 			{
-				return results;
+				List<GeocodingResult> results;
+				try
+				{
+					results = await SearchNominatimAsync(currentQuery, ct).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					WeatherLogger.LogToHost(
+						MessageState.Info,
+						$"Nominatim search failed, switching to Photon: {ex.Message}");
+					results = [];
+					// Don't waste further budget on a provider that just threw — likely blocked.
+					nominatimAlive = false;
+				}
+
+				remainingCalls--;
+
+				if (results.Count > 0)
+				{
+					return results;
+				}
+
+				if (remainingCalls <= 0)
+				{
+					break;
+				}
+			}
+
+			ct.ThrowIfCancellationRequested();
+
+			var photonResults = await SearchPhotonAsync(currentQuery, placesOnly: true, ct).ConfigureAwait(false);
+			remainingCalls--;
+
+			if (photonResults.Count > 0)
+			{
+				return photonResults;
 			}
 
 			// Strip the last comma-separated segment and retry
@@ -132,7 +169,7 @@ public sealed partial class GeocodingService : IDisposable
 
 			if (!response.IsSuccessStatusCode)
 			{
-				return [];
+				return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
 			}
 
 			var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
@@ -143,12 +180,12 @@ public sealed partial class GeocodingService : IDisposable
 				WeatherLogger.LogToHost(
 					MessageState.Info,
 					$"Nominatim deserialization returned null. Status: {response.StatusCode}, Content length: {content.Length}");
-				return [];
+				return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
 			}
 
 			if (nominatimResults.Count == 0)
 			{
-				return [];
+				return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
 			}
 
 			return ConvertNominatimResults(nominatimResults);
@@ -158,7 +195,7 @@ public sealed partial class GeocodingService : IDisposable
 			WeatherLogger.LogToHost(
 				MessageState.Error,
 				$"Nominatim postal code lookup error: {ex.Message}");
-			return [];
+			return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
 		}
 	}
 
@@ -187,6 +224,89 @@ public sealed partial class GeocodingService : IDisposable
 		}
 
 		return ConvertNominatimResults(nominatimResults);
+	}
+
+	private async Task<List<GeocodingResult>> SearchPhotonAsync(string query, bool placesOnly, CancellationToken ct)
+	{
+		try
+		{
+			var url = $"{PhotonUrl}?q={Uri.EscapeDataString(query)}&limit=10";
+			if (placesOnly)
+			{
+				url += "&osm_tag=place";
+			}
+
+			var response = await _httpClient.GetAsync(url, ct).ConfigureAwait(false);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				WeatherLogger.LogToHost(
+					MessageState.Info,
+					$"Photon API returned status {response.StatusCode}");
+				return [];
+			}
+
+			var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+			var result = JsonSerializer.Deserialize<PhotonResult>(content, WeatherJsonContext.Default.PhotonResult);
+
+			if (result == null)
+			{
+				WeatherLogger.LogToHost(
+					MessageState.Info,
+					$"Photon deserialization returned null. Content length: {content.Length}");
+				return [];
+			}
+
+			return ConvertPhotonResults(result.Features ?? []);
+		}
+		catch (Exception ex)
+		{
+			WeatherLogger.LogToHost(
+				MessageState.Error,
+				$"Photon geocoding error: {ex.Message}");
+			return [];
+		}
+	}
+
+	internal static List<GeocodingResult> ConvertPhotonResults(List<PhotonFeature> features)
+	{
+		var results = new List<GeocodingResult>();
+
+		foreach (var feature in features)
+		{
+			var coords = feature.Geometry?.Coordinates;
+			if (coords == null || coords.Length < 2)
+			{
+				continue;
+			}
+
+			var name = feature.Properties?.Name
+				?? feature.Properties?.City;
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				// Skip entries that don't have a usable place name to avoid blank items and unstable ranking.
+				continue;
+			}
+
+			// GeoJSON uses [longitude, latitude] order — swapped from what most people expect.
+			var longitude = coords[0];
+			var latitude = coords[1];
+
+			results.Add(new GeocodingResult
+			{
+				Id = feature.Properties?.OsmId ?? 0,
+				Latitude = latitude,
+				Longitude = longitude,
+				Name = name,
+				Admin1 = feature.Properties?.State,
+				Admin2 = feature.Properties?.County,
+				Country = feature.Properties?.Country,
+				CountryCode = feature.Properties?.CountryCode?.ToUpperInvariant(),
+			});
+		}
+
+		return results;
 	}
 
 	internal static List<GeocodingResult> ConvertNominatimResults(List<NominatimResult> nominatimResults)
