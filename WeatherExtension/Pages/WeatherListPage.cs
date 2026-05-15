@@ -8,14 +8,11 @@ using Microsoft.CmdPal.Ext.Weather.Models;
 using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using System.Globalization;
-using System.Text;
 
 namespace Microsoft.CmdPal.Ext.Weather.Pages;
 
 internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 {
-	private static readonly CompositeFormat NoResultsFormat = CompositeFormat.Parse(Resources.no_results_for);
 	private const int MinSearchLength = 3;
 
 	private readonly IWeatherService _weatherService;
@@ -91,6 +88,9 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	{
 		try
 		{
+			// Clear any prior empty-state hint immediately — regardless of whether load succeeds.
+			EmptyContent = null;
+
 			var weatherData = await _weatherService.GetCurrentWeatherAsync(
 				location.Latitude,
 				location.Longitude,
@@ -216,14 +216,14 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			ResetSearchToken();
 			_lastSearchQuery = newSearch;
-			var minCharsItem = new ListItem(new NoOpCommand())
+			EmptyContent = new ListItem(new EmptySearchHintPage())
 			{
 				Title = Resources.search_min_chars,
 				Icon = Icons.WeatherIcon,
 			};
 			lock (_sync)
 			{
-				_items = [minCharsItem];
+				_items = [];
 				_isLoading = false;
 			}
 
@@ -294,16 +294,16 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			if (locations.Count == 0)
 			{
-				var noResultsItem = new ListItem(new NoOpCommand())
+				EmptyContent = new ListItem(new EmptySearchHintPage())
 				{
 					Title = Resources.no_locations_found,
-					Subtitle = string.Format(CultureInfo.CurrentCulture, NoResultsFormat, query),
+					Subtitle = Resources.search_format_hint,
 					Icon = Icons.WeatherIcon,
 				};
 
 				lock (_sync)
 				{
-					_items = [noResultsItem];
+					_items = [];
 					_isLoading = false;
 				}
 
@@ -345,6 +345,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 				return;
 			}
 
+			EmptyContent = null;
 			lock (_sync)
 			{
 				_items = items.ToArray();

@@ -304,6 +304,15 @@ namespace Microsoft.CmdPal.Ext.Weather {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Try: City, State · City, Country · Postal code.
+        /// </summary>
+        public static string search_format_hint {
+            get {
+                return ResourceManager.GetString("search_format_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a postal code or city name....
         /// </summary>
         public static string search_placeholder {
