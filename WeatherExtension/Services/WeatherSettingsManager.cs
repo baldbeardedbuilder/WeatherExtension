@@ -4,6 +4,9 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Weather.Services;
@@ -99,12 +102,60 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         }
     }
 
-    private static string SettingsJsonPath()
+    internal static string SettingsJsonPath()
     {
         // Standalone implementation - use LocalApplicationData for settings
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var directory = Path.Combine(localAppData, "Microsoft.CmdPal");
         Directory.CreateDirectory(directory);
         return Path.Combine(directory, "settings.json");
+    }
+
+    /// <summary>
+    /// Reads the settings file and returns the old DefaultLocation value if it was
+    /// set by the user (i.e. differs from the default "98101"). Also removes the key
+    /// from the file so the migration only runs once. Returns null when no migration
+    /// is needed or the file cannot be read.
+    /// </summary>
+    internal static async Task<string?> MigrateDefaultLocationAsync(string settingsFilePath)
+    {
+        const string key = "weather.DefaultLocation";
+        const string defaultValue = "98101";
+
+        try
+        {
+            if (!File.Exists(settingsFilePath))
+            {
+                return null;
+            }
+
+            var json = await File.ReadAllTextAsync(settingsFilePath).ConfigureAwait(false);
+            var node = JsonNode.Parse(json);
+            if (node is not JsonObject obj || !obj.ContainsKey(key))
+            {
+                return null;
+            }
+
+            var value = obj[key]?.GetValue<string>();
+            if (string.IsNullOrWhiteSpace(value) || value == defaultValue)
+            {
+                return null;
+            }
+
+            // Remove the key so migration only runs once
+            obj.Remove(key);
+
+            var updated = obj.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(settingsFilePath, updated).ConfigureAwait(false);
+
+            return value;
+        }
+        catch (Exception ex)
+        {
+            WeatherLogger.LogToHost(
+                Microsoft.CommandPalette.Extensions.MessageState.Error,
+                $"DefaultLocation migration error: {ex.Message}");
+            return null;
+        }
     }
 }

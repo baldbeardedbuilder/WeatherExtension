@@ -7,6 +7,8 @@ using Microsoft.CmdPal.Ext.Weather.Pages;
 using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.CmdPal.Ext.Weather;
 
@@ -22,6 +24,7 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 	private readonly WeatherListPage _weatherPage;
 	private readonly ICommandItem[] _topLevelItems;
 	private List<PinnedWeatherBand> _pinnedBands = [];
+	private bool _migrationCompleted;
 
 	public WeatherCommandsProvider()
 	{
@@ -47,6 +50,9 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		];
 
 		_pinnedLocationsManager.PinnedLocationsChanged += OnPinnedLocationsChanged;
+
+		// Fire-and-forget migration: runs once to move old DefaultLocation into favorites
+		_ = Task.Run(() => RunDefaultLocationMigrationAsync());
 	}
 
 	public override ICommandItem[] TopLevelCommands() => _topLevelItems;
@@ -96,6 +102,52 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		_pinnedBands.Clear();
 	}
 
+
+	private async Task RunDefaultLocationMigrationAsync()
+	{
+		if (_migrationCompleted)
+		{
+			return;
+		}
+
+		_migrationCompleted = true;
+
+		try
+		{
+			var settingsPath = WeatherSettingsManager.SettingsJsonPath();
+			var oldLocation = await WeatherSettingsManager.MigrateDefaultLocationAsync(settingsPath).ConfigureAwait(false);
+
+			if (oldLocation == null)
+			{
+				return;
+			}
+
+			WeatherLogger.LogToHost(
+				Microsoft.CommandPalette.Extensions.MessageState.Info,
+				$"Migrating DefaultLocation to favorites: {oldLocation}");
+
+			var results = await _geocodingService.SearchLocationAsync(oldLocation, CancellationToken.None).ConfigureAwait(false);
+			if (results.Count == 0)
+			{
+				WeatherLogger.LogToHost(
+					Microsoft.CommandPalette.Extensions.MessageState.Warning,
+					$"DefaultLocation migration: geocoding returned no results for "{oldLocation}"");
+				return;
+			}
+
+			_favoritesManager.Favorite(results[0]);
+
+			WeatherLogger.LogToHost(
+				Microsoft.CommandPalette.Extensions.MessageState.Info,
+				$"DefaultLocation migration complete: "{oldLocation}" added to favorites as "{results[0].DisplayName}"");
+		}
+		catch (Exception ex)
+		{
+			WeatherLogger.LogToHost(
+				Microsoft.CommandPalette.Extensions.MessageState.Error,
+				$"DefaultLocation migration failed: {ex.Message}");
+		}
+	}
 
 	public override void Dispose()
 	{
