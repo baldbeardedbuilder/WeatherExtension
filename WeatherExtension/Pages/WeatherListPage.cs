@@ -16,7 +16,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	private const int MinSearchLength = 3;
 
 	private readonly IWeatherService _weatherService;
-	private readonly GeocodingService _geocodingService;
+	private readonly IGeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settingsManager;
 	private readonly PinnedLocationsManager _pinnedLocationsManager;
 	private readonly FavoritesManager _favoritesManager;
@@ -30,7 +30,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 	public WeatherListPage(
 		IWeatherService weatherService,
-		GeocodingService geocodingService,
+		IGeocodingService geocodingService,
 		WeatherSettingsManager settingsManager,
 		PinnedLocationsManager pinnedLocationsManager,
 		FavoritesManager favoritesManager)

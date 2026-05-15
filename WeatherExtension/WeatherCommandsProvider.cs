@@ -14,7 +14,7 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 {
 	private readonly WeatherSettingsManager _settingsManager = new();
 	private readonly OpenMeteoService _weatherService = new();
-	private readonly GeocodingService _geocodingService = new();
+	private readonly IGeocodingService _geocodingService = new GeocodingService();
 	private readonly PinnedLocationsManager _pinnedLocationsManager = new();
 	private readonly FavoritesManager _favoritesManager = new();
 	private readonly WeatherBandCard _weatherContentPage;

@@ -15,7 +15,7 @@ namespace Microsoft.CmdPal.Ext.Weather.DockBands;
 internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 {
 	private readonly OpenMeteoService _weatherService;
-	private readonly GeocodingService _geocodingService;
+	private readonly IGeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settings;
 	private readonly FavoritesManager _favoritesManager;
 	private readonly WeatherBandCard _contentPage;
@@ -27,7 +27,7 @@ internal sealed partial class CurrentWeatherBand : ListItem, IDisposable
 
 	public CurrentWeatherBand(
 		OpenMeteoService weatherService,
-		GeocodingService geocodingService,
+		IGeocodingService geocodingService,
 		WeatherSettingsManager settings,
 		WeatherBandCard contentPage,
 		FavoritesManager favoritesManager)

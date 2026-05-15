@@ -14,7 +14,7 @@ namespace Microsoft.CmdPal.Ext.Weather.Pages;
 internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 {
 	private readonly OpenMeteoService _weatherService;
-	private readonly GeocodingService _geocodingService;
+	private readonly IGeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settings;
 	private readonly FavoritesManager? _favoritesManager;
 	private readonly FormContent _weatherForm = new();
@@ -23,7 +23,7 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 
 	public WeatherBandCard(
 		OpenMeteoService weatherService,
-		GeocodingService geocodingService,
+		IGeocodingService geocodingService,
 		WeatherSettingsManager settings,
 		FavoritesManager? favoritesManager = null,
 		GeocodingResult? fixedLocation = null)

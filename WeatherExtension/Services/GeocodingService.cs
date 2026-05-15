@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace Microsoft.CmdPal.Ext.Weather.Services;
 
-public sealed partial class GeocodingService : IDisposable
+public sealed partial class GeocodingService : IGeocodingService
 {
 	private readonly HttpClient _httpClient;
 	private const string NominatimUrl = "https://nominatim.openstreetmap.org/search";
