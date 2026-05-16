@@ -189,9 +189,6 @@ If you continue to have issues, please [file a bug](https://github.com/michaeljo
   <data name="loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
-  <data name="dockband_title" xml:space="preserve">
-    <value>Weather</value>
-  </data>
   <data name="unavailable" xml:space="preserve">
     <value>Weather unavailable</value>
   </data>

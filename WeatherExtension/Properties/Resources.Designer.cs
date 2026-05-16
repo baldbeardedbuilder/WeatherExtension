@@ -124,15 +124,6 @@ namespace Microsoft.CmdPal.Ext.Weather {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Weather.
-        /// </summary>
-        public static string dockband_title {
-            get {
-                return ResourceManager.GetString("dockband_title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Get current weather and forecast information.
         /// </summary>
         public static string extension_description {
