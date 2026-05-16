@@ -103,4 +103,12 @@ public class WeatherSettingsManagerTests
         Assert.IsNotNull(manager.TemperatureUnit);
         Assert.IsFalse(string.IsNullOrEmpty(manager.TemperatureUnit));
     }
+
+    [TestMethod]
+    public void DockBandSubtitle_DefaultsToHighLow()
+    {
+        var manager = new WeatherSettingsManager(_tempFilePath);
+
+        Assert.AreEqual("highlow", manager.DockBandSubtitle);
+    }
 }

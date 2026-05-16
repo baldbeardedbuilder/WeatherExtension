@@ -54,8 +54,8 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         Resources.dock_band_subtitle_title,
         Resources.dock_band_subtitle_description,
         [
-            new ChoiceSetSetting.Choice(Resources.dock_band_subtitle_location, "location"),
             new ChoiceSetSetting.Choice(Resources.dock_band_subtitle_highlow, "highlow"),
+            new ChoiceSetSetting.Choice(Resources.dock_band_subtitle_location, "location"),
         ]);
 
     private static readonly HashSet<string> _validIntervals = ["60", "180", "360", "720"];
