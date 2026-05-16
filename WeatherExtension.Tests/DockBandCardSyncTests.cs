@@ -12,6 +12,7 @@ namespace Microsoft.CmdPal.Ext.Weather.UnitTests;
 /// <summary>
 /// Regression tests for issue #15: dock band timer updates must refresh the
 /// expanded content page by calling WeatherBandCard.LoadWeatherDataAsync().
+/// Covers PinnedWeatherBand (CurrentWeatherBand was removed in issue #80).
 /// </summary>
 [TestClass]
 public class DockBandCardSyncTests
@@ -25,18 +26,6 @@ public class DockBandCardSyncTests
     // ---------------------------------------------------------------
     // Structural: _contentPage field exists and is the right type
     // ---------------------------------------------------------------
-
-    [TestMethod]
-    public void CurrentWeatherBand_HasContentPageFieldOfTypeWeatherBandCard()
-    {
-        var field = typeof(CurrentWeatherBand)
-            .GetField("_contentPage", PrivateInstance);
-
-        Assert.IsNotNull(field,
-            "CurrentWeatherBand must have a _contentPage field");
-        Assert.AreEqual(typeof(WeatherBandCard), field!.FieldType,
-            "_contentPage must be of type WeatherBandCard");
-    }
 
     [TestMethod]
     public void PinnedWeatherBand_HasContentPageFieldOfTypeWeatherBandCard()
@@ -82,17 +71,6 @@ public class DockBandCardSyncTests
     // ---------------------------------------------------------------
 
     [TestMethod]
-    public void CurrentWeatherBand_HasUpdateWeatherAsyncMethod()
-    {
-        var method = typeof(CurrentWeatherBand)
-            .GetMethod("UpdateWeatherAsync", PrivateInstance);
-
-        Assert.IsNotNull(method,
-            "CurrentWeatherBand must have UpdateWeatherAsync");
-        Assert.AreEqual(typeof(Task), method!.ReturnType);
-    }
-
-    [TestMethod]
     public void PinnedWeatherBand_HasUpdateWeatherAsyncMethod()
     {
         var method = typeof(PinnedWeatherBand)
@@ -108,17 +86,6 @@ public class DockBandCardSyncTests
     // ---------------------------------------------------------------
 
     [TestMethod]
-    public void CurrentWeatherBand_HasTimerFieldForPeriodicUpdates()
-    {
-        var field = typeof(CurrentWeatherBand)
-            .GetField("_updateTimer", PrivateInstance);
-
-        Assert.IsNotNull(field,
-            "CurrentWeatherBand must have _updateTimer for periodic refresh");
-        Assert.AreEqual(typeof(System.Timers.Timer), field!.FieldType);
-    }
-
-    [TestMethod]
     public void PinnedWeatherBand_HasTimerFieldForPeriodicUpdates()
     {
         var field = typeof(PinnedWeatherBand)
@@ -132,18 +99,6 @@ public class DockBandCardSyncTests
     // ---------------------------------------------------------------
     // Re-entrancy guard: both bands have _isUpdating field
     // ---------------------------------------------------------------
-
-    [TestMethod]
-    public void CurrentWeatherBand_HasReentrancyGuard()
-    {
-        var field = typeof(CurrentWeatherBand)
-            .GetField("_isUpdating", PrivateInstance);
-
-        Assert.IsNotNull(field,
-            "CurrentWeatherBand must have _isUpdating re-entrancy guard");
-        Assert.AreEqual(typeof(int), field!.FieldType,
-            "_isUpdating should be int for Interlocked operations");
-    }
 
     [TestMethod]
     public void PinnedWeatherBand_HasReentrancyGuard()
@@ -163,16 +118,6 @@ public class DockBandCardSyncTests
     // ---------------------------------------------------------------
 
     [TestMethod]
-    public void CurrentWeatherBand_UpdateWeatherAsync_CallsLoadWeatherDataAsync()
-    {
-        AssertAsyncMethodCallsTarget(
-            typeof(CurrentWeatherBand),
-            "UpdateWeatherAsync",
-            typeof(WeatherBandCard),
-            "LoadWeatherDataAsync");
-    }
-
-    [TestMethod]
     public void PinnedWeatherBand_UpdateWeatherAsync_CallsLoadWeatherDataAsync()
     {
         AssertAsyncMethodCallsTarget(
@@ -186,17 +131,6 @@ public class DockBandCardSyncTests
     // Contract: LoadWeatherDataAsync is callable by both band types
     // (the _contentPage field is readonly and assigned in the ctor)
     // ---------------------------------------------------------------
-
-    [TestMethod]
-    public void CurrentWeatherBand_ContentPageField_IsReadonly()
-    {
-        var field = typeof(CurrentWeatherBand)
-            .GetField("_contentPage", PrivateInstance);
-
-        Assert.IsNotNull(field);
-        Assert.IsTrue(field!.IsInitOnly,
-            "_contentPage should be readonly to guarantee the reference is stable across timer ticks");
-    }
 
     [TestMethod]
     public void PinnedWeatherBand_ContentPageField_IsReadonly()

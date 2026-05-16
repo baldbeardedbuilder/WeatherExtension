@@ -17,8 +17,6 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 	private readonly GeocodingService _geocodingService = new();
 	private readonly PinnedLocationsManager _pinnedLocationsManager = new();
 	private readonly FavoritesManager _favoritesManager = new();
-	private readonly WeatherBandCard _weatherContentPage;
-	private readonly CurrentWeatherBand _currentWeatherBand;
 	private readonly WeatherListPage _weatherPage;
 	private readonly ICommandItem[] _topLevelItems;
 	private List<PinnedWeatherBand> _pinnedBands = [];
@@ -29,9 +27,6 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		DisplayName = Resources.plugin_name;
 		Icon = Icons.WeatherIcon;
 		Settings = _settingsManager.Settings;
-
-		_weatherContentPage = new WeatherBandCard(_weatherService, _geocodingService, _settingsManager, _favoritesManager);
-		_currentWeatherBand = new CurrentWeatherBand(_weatherService, _geocodingService, _settingsManager, _weatherContentPage, _favoritesManager);
 
 		// Create main weather page
 		_weatherPage = new WeatherListPage(_weatherService, _geocodingService, _settingsManager, _pinnedLocationsManager, _favoritesManager);
@@ -54,16 +49,6 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 	public override ICommandItem[] GetDockBands()
 	{
 		var dockItems = new List<ICommandItem>();
-
-		var wrappedBand = new WrappedDockItem(
-			[_currentWeatherBand],
-			"com.baldbeardedbuilder.cmdpal.weather.dockBand",
-			"Weather");
-
-		wrappedBand.Icon = Icons.WeatherIcon;
-		_currentWeatherBand.DockItem = wrappedBand;
-
-		dockItems.Add(wrappedBand);
 
 		var pinnedLocations= _pinnedLocationsManager.GetPinnedLocations();
 		foreach (var pinnedLocation in pinnedLocations)
@@ -106,8 +91,6 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		}
 		_pinnedBands.Clear();
 		_weatherPage?.Dispose();
-		_weatherContentPage?.Dispose();
-		_currentWeatherBand?.Dispose();
 		_weatherService?.Dispose();
 		_geocodingService?.Dispose();
 		base.Dispose();
