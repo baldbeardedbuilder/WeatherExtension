@@ -7,7 +7,7 @@ A weather extension for [Microsoft Command Palette](https://github.com/microsoft
 (PowerToys) that provides current conditions, hourly forecasts, and multi-day
 forecasts right from your desktop.
 
-<img width="1027" height="627" alt="image" src="https://github.com/user-attachments/assets/f91171da-e491-46aa-b520-4c5112042d62" />
+<img width="1213" height="738" alt="image" src="https://github.com/user-attachments/assets/ad98a1b4-8c14-41c5-a397-4a8b3ff3c662" />
 
 ## Features
 
@@ -27,7 +27,7 @@ forecasts right from your desktop.
 
 ### Search & Current Conditions
 
-<img width="1023" height="624" alt="image" src="https://github.com/user-attachments/assets/4cbdfb54-a081-41b3-b4ee-1da1274f09da" />
+<img width="1209" height="739" alt="image" src="https://github.com/user-attachments/assets/4bc5ca9f-9aa3-47d0-91c5-24e4ef04f31e" />
 
 ### Dock Band Card
 
@@ -35,11 +35,11 @@ forecasts right from your desktop.
 
 ### Hourly Forecast
 
-<img width="1023" height="622" alt="image" src="https://github.com/user-attachments/assets/d87e8810-bc70-4ad4-b3ed-feea30b03e9f" />
+<img width="1206" height="743" alt="image" src="https://github.com/user-attachments/assets/3c6eaf9e-1761-4235-b240-8fd2830357cf" />
 
 ### Settings
 
-<img width="1027" height="673" alt="image" src="https://github.com/user-attachments/assets/01962a91-ccdf-42e3-aa28-19e3bcf493a3" />
+<img width="1205" height="738" alt="image" src="https://github.com/user-attachments/assets/02f4d072-38cc-425a-800d-5e0ad14aaf33" />
 
 ## Installation
 
@@ -59,18 +59,6 @@ You can install Weather for Command Palette via:
 - [PowerToys](https://github.com/microsoft/PowerToys) with Command Palette
   enabled
 - .NET 9.0 SDK (for building from source)
-
-### Configuration
-
-Open Command Palette and navigate to the Weather extension settings to
-configure:
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Default Location | Postal/ZIP code or city name | `98101` |
-| Temperature Unit | Fahrenheit or Celsius | Fahrenheit |
-| Wind Speed Unit | mph, km/h, m/s, or knots | mph |
-| Update Interval | How often weather refreshes | 10 minutes |
 
 ## Data Sources
 
