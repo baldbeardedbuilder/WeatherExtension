@@ -17,6 +17,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+      
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
 
       - name: Setup .NET 10 SDK
         uses: actions/setup-dotnet@v5
@@ -85,6 +90,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+      
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
 
       - name: Setup .NET 10 SDK
         uses: actions/setup-dotnet@v5
@@ -125,13 +135,16 @@ jobs:
           /p:AppxPackageSigningEnabled=false
           /p:Version=${{ needs.build-and-test.outputs.version }}
 
+      - name: Pre-install sign CLI
+        run: dotnet tool install sign --version 0.9.1-beta.26227.3 --global
+
       - name: Azure login
         uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDS }}
 
       - name: Sign MSIX packages
-        uses: azure/artifact-signing-action@v2
+        uses: azure/artifact-signing-action@v1
         with:
           endpoint: https://eus.codesigning.azure.net/
           signing-account-name: bbb-signing
