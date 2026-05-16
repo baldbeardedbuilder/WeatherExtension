@@ -49,6 +49,15 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
             new ChoiceSetSetting.Choice(Resources.twelve_hours, "720"),
         ]);
 
+    private readonly ChoiceSetSetting _dockBandSubtitle = new(
+        Namespaced(nameof(DockBandSubtitle)),
+        Resources.dock_band_subtitle_title,
+        Resources.dock_band_subtitle_description,
+        [
+            new ChoiceSetSetting.Choice(Resources.dock_band_subtitle_location, "location"),
+            new ChoiceSetSetting.Choice(Resources.dock_band_subtitle_highlow, "highlow"),
+        ]);
+
     private static readonly HashSet<string> _validIntervals = ["60", "180", "360", "720"];
 
     public string TemperatureUnit => _temperatureUnit.Value ?? "celsius";
@@ -59,6 +68,8 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
 
     public int UpdateIntervalMinutes => _updateInterval.Value is string v && _validIntervals.Contains(v) ? int.Parse(v, System.Globalization.CultureInfo.InvariantCulture) : 60;
 
+    public string DockBandSubtitle => _dockBandSubtitle.Value ?? "highlow";
+
     public WeatherSettingsManager()
     {
         FilePath = SettingsJsonPath();
@@ -67,6 +78,7 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         Settings.Add(_windSpeedUnit);
         Settings.Add(_showForecast);
         Settings.Add(_updateInterval);
+        Settings.Add(_dockBandSubtitle);
 
         LoadSettings();
         MigrateUpdateInterval();
@@ -82,6 +94,7 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         Settings.Add(_windSpeedUnit);
         Settings.Add(_showForecast);
         Settings.Add(_updateInterval);
+        Settings.Add(_dockBandSubtitle);
 
         LoadSettings();
         MigrateUpdateInterval();

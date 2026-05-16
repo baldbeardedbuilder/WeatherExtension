@@ -124,6 +124,42 @@ namespace Microsoft.CmdPal.Ext.Weather {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dock Band Subtitle.
+        /// </summary>
+        public static string dock_band_subtitle_title {
+            get {
+                return ResourceManager.GetString("dock_band_subtitle_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose what to display in the dock band subtitle.
+        /// </summary>
+        public static string dock_band_subtitle_description {
+            get {
+                return ResourceManager.GetString("dock_band_subtitle_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location Name.
+        /// </summary>
+        public static string dock_band_subtitle_location {
+            get {
+                return ResourceManager.GetString("dock_band_subtitle_location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High/Low Temperatures.
+        /// </summary>
+        public static string dock_band_subtitle_highlow {
+            get {
+                return ResourceManager.GetString("dock_band_subtitle_highlow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Get current weather and forecast information.
         /// </summary>
         public static string extension_description {

@@ -153,6 +153,18 @@ If you continue to have issues, please [file a bug](https://github.com/michaeljo
   <data name="current_weather" xml:space="preserve">
     <value>Current Weather</value>
   </data>
+  <data name="dock_band_subtitle_title" xml:space="preserve">
+    <value>Dock Band Subtitle</value>
+  </data>
+  <data name="dock_band_subtitle_description" xml:space="preserve">
+    <value>Choose what to display in the dock band subtitle</value>
+  </data>
+  <data name="dock_band_subtitle_location" xml:space="preserve">
+    <value>Location Name</value>
+  </data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve">
+    <value>High/Low Temperatures</value>
+  </data>
   <data name="loading_data" xml:space="preserve">
     <value>Loading weather data...</value>
   </data>

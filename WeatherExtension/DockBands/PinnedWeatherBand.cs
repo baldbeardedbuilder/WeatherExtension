@@ -77,17 +77,24 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 					dockCommandItem.Icon = Icon;
 				}
 
-				var forecast = await _weatherService.GetForecastAsync(
-					_location.Latitude,
-					_location.Longitude,
-					_settings.TemperatureUnit);
-
-				if (forecast?.Daily?.TemperatureMax?.Count > 0 &&
-					forecast.Daily.TemperatureMin?.Count > 0)
+				if (_settings.DockBandSubtitle == "highlow")
 				{
-					var high = forecast.Daily.TemperatureMax[0];
-					var low = forecast.Daily.TemperatureMin[0];
-					Subtitle = $"{_location.DisplayName} — H: {high:F0}{unit}  L: {low:F0}{unit}";
+					var forecast = await _weatherService.GetForecastAsync(
+						_location.Latitude,
+						_location.Longitude,
+						_settings.TemperatureUnit);
+
+					if (forecast?.Daily?.TemperatureMax?.Count > 0 &&
+						forecast.Daily.TemperatureMin?.Count > 0)
+					{
+						var high = forecast.Daily.TemperatureMax[0];
+						var low = forecast.Daily.TemperatureMin[0];
+						Subtitle = $"H: {high:F0}{unit}  L: {low:F0}{unit}";
+					}
+					else
+					{
+						Subtitle = _location.DisplayName;
+					}
 				}
 				else
 				{
