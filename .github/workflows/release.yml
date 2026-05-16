@@ -134,9 +134,13 @@ jobs:
           /p:PublishProfile=win-arm64
           /p:AppxPackageSigningEnabled=false
           /p:Version=${{ needs.build-and-test.outputs.version }}
-
-      - name: Pre-install sign CLI
-        run: dotnet tool install sign --version 0.9.1-beta.26227.3 --global
+      
+      - name: Disable package source mapping for signing
+        shell: pwsh
+        run: |
+          [xml]$config = Get-Content "${{ github.workspace }}/nuget.config"
+          $mapping = $config.configuration.SelectSingleNode("packageSourceMapping")
+          if ($mapping) { $config.configuration.RemoveChild($mapping); $config.Save("${{ github.workspace }}/nuget.config") }
 
       - name: Azure login
         uses: azure/login@v3
