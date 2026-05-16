@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Ext.Weather.Models;
+using System.Threading;
 
 namespace Microsoft.CmdPal.Ext.Weather.Services;
 
