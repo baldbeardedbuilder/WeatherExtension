@@ -337,7 +337,7 @@ jobs:
       - name: Submit to Microsoft Store
         shell: pwsh
         run: |
-          msstore publish WeatherExtension -i msix-packages -nc -id "${{ secrets.STORE_PRODUCT_ID }}"
+          msstore publish WeatherExtension -i msix-packages -id "${{ secrets.STORE_PRODUCT_ID }}"
 
   winget-publish:
     needs: [package, build-and-test]
