@@ -149,6 +149,12 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			if (weatherData?.Current == null)
 			{
+				EmptyContent = new ListItem(new NoOpCommand())
+				{
+					Title = Resources.weather_service_error,
+					Icon = Icons.WeatherIcon,
+				};
+
 				lock (_sync)
 				{
 					_isLoading = false;
