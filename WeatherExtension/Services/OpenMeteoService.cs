@@ -28,6 +28,8 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 	private DateTime _hourlyCacheTime;
 	private string _hourlyCacheKey = string.Empty;
 
+	private readonly Lock _cacheLock = new();
+
 	public OpenMeteoService()
 	{
 		_httpClient = new HttpClient
@@ -56,11 +58,14 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 		try
 		{
 			var cacheKey = $"{latitude},{longitude},{temperatureUnit},{windSpeedUnit}";
-			if (_cachedWeather != null &&
-				_weatherCacheKey == cacheKey &&
-				(DateTime.UtcNow - _weatherCacheTime).TotalMinutes < CacheExpirationMinutes)
+			lock (_cacheLock)
 			{
-				return _cachedWeather;
+				if (_cachedWeather != null &&
+					_weatherCacheKey == cacheKey &&
+					(DateTime.UtcNow - _weatherCacheTime).TotalMinutes < CacheExpirationMinutes)
+				{
+					return _cachedWeather;
+				}
 			}
 
 			var url = $"{BaseUrl}?latitude={latitude}&longitude={longitude}" +
@@ -90,9 +95,12 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 
 			if (weatherData != null)
 			{
-				_cachedWeather = weatherData;
-				_weatherCacheTime = DateTime.UtcNow;
-				_weatherCacheKey = cacheKey;
+				lock (_cacheLock)
+				{
+					_cachedWeather = weatherData;
+					_weatherCacheTime = DateTime.UtcNow;
+					_weatherCacheKey = cacheKey;
+				}
 			}
 
 			return weatherData;
@@ -120,11 +128,14 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 		try
 		{
 			var cacheKey = $"{latitude},{longitude},{temperatureUnit}";
-			if (_cachedForecast != null &&
-				_forecastCacheKey == cacheKey &&
-				(DateTime.UtcNow - _forecastCacheTime).TotalMinutes < CacheExpirationMinutes)
+			lock (_cacheLock)
 			{
-				return _cachedForecast;
+				if (_cachedForecast != null &&
+					_forecastCacheKey == cacheKey &&
+					(DateTime.UtcNow - _forecastCacheTime).TotalMinutes < CacheExpirationMinutes)
+				{
+					return _cachedForecast;
+				}
 			}
 
 			var url = $"{BaseUrl}?latitude={latitude}&longitude={longitude}" +
@@ -154,9 +165,12 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 
 			if (forecastData != null)
 			{
-				_cachedForecast = forecastData;
-				_forecastCacheTime = DateTime.UtcNow;
-				_forecastCacheKey = cacheKey;
+				lock (_cacheLock)
+				{
+					_cachedForecast = forecastData;
+					_forecastCacheTime = DateTime.UtcNow;
+					_forecastCacheKey = cacheKey;
+				}
 			}
 
 			return forecastData;
@@ -185,11 +199,14 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 		try
 		{
 			var cacheKey = $"{latitude},{longitude},{temperatureUnit},{windSpeedUnit}";
-			if (_cachedHourly != null &&
-				_hourlyCacheKey == cacheKey &&
-				(DateTime.UtcNow - _hourlyCacheTime).TotalMinutes < CacheExpirationMinutes)
+			lock (_cacheLock)
 			{
-				return _cachedHourly;
+				if (_cachedHourly != null &&
+					_hourlyCacheKey == cacheKey &&
+					(DateTime.UtcNow - _hourlyCacheTime).TotalMinutes < CacheExpirationMinutes)
+				{
+					return _cachedHourly;
+				}
 			}
 
 			var url = $"{BaseUrl}?latitude={latitude}&longitude={longitude}" +
@@ -219,9 +236,12 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 
 			if (hourlyData != null)
 			{
-				_cachedHourly = hourlyData;
-				_hourlyCacheTime = DateTime.UtcNow;
-				_hourlyCacheKey = cacheKey;
+				lock (_cacheLock)
+				{
+					_cachedHourly = hourlyData;
+					_hourlyCacheTime = DateTime.UtcNow;
+					_hourlyCacheKey = cacheKey;
+				}
 			}
 
 			return hourlyData;
