@@ -85,8 +85,12 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			EmptyContent = null;
 
+			lock (_sync)
+			{
+				_items = [];
+			}
+
 			using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(searchCt, _cts.Token);
-			var items = new List<IListItem>();
 
 			foreach (var pinned in favorites)
 			{
@@ -102,7 +106,12 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 					if (weatherData != null)
 					{
-						items.Add(CreateWeatherItem(location, weatherData));
+						lock (_sync)
+						{
+							_items = [.. _items, CreateWeatherItem(location, weatherData)];
+						}
+
+						RaiseItemsChanged();
 					}
 				}
 				catch (Exception ex) when (ex is not OperationCanceledException)
@@ -115,7 +124,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			lock (_sync)
 			{
-				_items = items.ToArray();
 				_isLoading = false;
 			}
 
