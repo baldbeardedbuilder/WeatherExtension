@@ -57,6 +57,16 @@
         "bug",
         "userTesting"
       ]
+    },
+    {
+      "login": "nyhtz",
+      "name": "nyhtz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69047113?v=4",
+      "profile": "https://github.com/nyhtz",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
     }
   ],
   "contributorsPerLine": 7,
