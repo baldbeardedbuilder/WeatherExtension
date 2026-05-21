@@ -72,6 +72,27 @@ internal class JsonFileStore<T> where T : class
 		}
 	}
 
+	/// <summary>
+	/// Replaces the entire stored list with the supplied items. Returns
+	/// true when the contents differ from what was stored, so callers can
+	/// decide whether to fire change notifications.
+	/// </summary>
+	public bool ReplaceAll(IEnumerable<T> items)
+	{
+		lock (_sync)
+		{
+			var newList = items.ToList();
+			if (newList.Count == _items.Count && _items.SequenceEqual(newList))
+			{
+				return false;
+			}
+
+			_items = newList;
+			SaveToFile();
+			return true;
+		}
+	}
+
 	private void LoadFromFile()
 	{
 		try

@@ -22,18 +22,20 @@ public class WeatherListPageTests
 
 	private string _settingsPath = string.Empty;
 	private string _favoritesPath = string.Empty;
+	private string _pinnedPath = string.Empty;
 
 	[TestInitialize]
 	public void Setup()
 	{
 		_settingsPath = Path.Combine(Path.GetTempPath(), $"weather-list-settings-{Guid.NewGuid()}.json");
 		_favoritesPath = Path.Combine(Path.GetTempPath(), $"weather-list-fav-{Guid.NewGuid()}.json");
+		_pinnedPath = Path.Combine(Path.GetTempPath(), $"weather-list-pinned-{Guid.NewGuid()}.json");
 	}
 
 	[TestCleanup]
 	public void Cleanup()
 	{
-		foreach (var path in new[] { _settingsPath, _favoritesPath })
+		foreach (var path in new[] { _settingsPath, _favoritesPath, _pinnedPath })
 		{
 			if (File.Exists(path))
 			{
@@ -162,6 +164,7 @@ public class WeatherListPageTests
 			new StubWeatherService(),
 			geocoding ?? new StubGeocodingService(),
 			new WeatherSettingsManager(_settingsPath),
+			new PinnedLocationsManager(_pinnedPath),
 			favorites ?? new FavoritesManager(_favoritesPath));
 	}
 }

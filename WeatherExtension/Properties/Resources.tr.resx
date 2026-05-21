@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="extension_name" xml:space="preserve">
+    <value>Hava Durumu</value>
+  </data>
+  <data name="extension_description" xml:space="preserve">
+    <value>Anlık hava durumu ve tahmin bilgilerini görüntüleyin</value>
+  </data>
+  <data name="plugin_name" xml:space="preserve">
+    <value>Hava Durumu</value>
+  </data>
+  <data name="plugin_description" xml:space="preserve">
+    <value>Anlık hava ve tahmin</value>
+  </data>
+  <data name="search_placeholder" xml:space="preserve">
+    <value>Posta kodu veya şehir adı girin...</value>
+  </data>
+  <data name="no_locations_found" xml:space="preserve">
+    <value>Konum bulunamadı</value>
+  </data>
+  <data name="search_min_chars" xml:space="preserve">
+    <value>Aramak için en az 3 karakter girin</value>
+  </data>
+  <data name="no_results_for" xml:space="preserve">
+    <value>'{0}' için sonuç yok</value>
+  </data>
+  <data name="search_format_hint" xml:space="preserve">
+    <value>Şunu deneyin: Şehir, İl/Eyalet, Ülke, Posta Kodu veya bunların herhangi bir kombinasyonu.
+
+Sorun yaşamaya devam ederseniz [hata bildirin](https://github.com/michaeljolley/weatherextension/issues/new).</value>
+  </data>
+  <data name="no_data_available" xml:space="preserve">
+    <value>Hava durumu verisi yok</value>
+  </data>
+  <data name="current_weather" xml:space="preserve">
+    <value>Şu Anki Hava</value>
+  </data>
+  <data name="dock_band_subtitle_title" xml:space="preserve">
+    <value>Dock Şeridi Alt Başlığı</value>
+  </data>
+  <data name="dock_band_subtitle_description" xml:space="preserve">
+    <value>Dock şeridi alt başlığında ne görüneceğini seçin</value>
+  </data>
+  <data name="dock_band_subtitle_location" xml:space="preserve">
+    <value>Konum Adı</value>
+  </data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve">
+    <value>En Yüksek/En Düşük Sıcaklık</value>
+  </data>
+  <data name="loading_data" xml:space="preserve">
+    <value>Hava durumu yükleniyor...</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Bugün</value>
+  </data>
+  <data name="tomorrow" xml:space="preserve">
+    <value>Yarın</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Sıcaklık</value>
+  </data>
+  <data name="feels_like" xml:space="preserve">
+    <value>Hissedilen</value>
+  </data>
+  <data name="humidity" xml:space="preserve">
+    <value>Nem</value>
+  </data>
+  <data name="wind_speed" xml:space="preserve">
+    <value>Rüzgâr Hızı</value>
+  </data>
+  <data name="wind_direction" xml:space="preserve">
+    <value>Rüzgâr Yönü</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>En Yüksek</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>En Düşük</value>
+  </data>
+  <data name="precipitation" xml:space="preserve">
+    <value>Yağış</value>
+  </data>
+  <data name="loading" xml:space="preserve">
+    <value>Yükleniyor...</value>
+  </data>
+  <data name="unavailable" xml:space="preserve">
+    <value>Hava durumu kullanılamıyor</value>
+  </data>
+  <data name="weather_service_error" xml:space="preserve">
+    <value>Hava durumu servisi kullanılamıyor</value>
+  </data>
+  <data name="network_error" xml:space="preserve">
+    <value>Bağlantı hatası</value>
+  </data>
+  <data name="location_not_found" xml:space="preserve">
+    <value>Konum bulunamadı</value>
+  </data>
+  <data name="temperature_unit_title" xml:space="preserve">
+    <value>Sıcaklık Birimi</value>
+  </data>
+  <data name="temperature_unit_description" xml:space="preserve">
+    <value>Sıcaklık birimini seçin</value>
+  </data>
+  <data name="celsius" xml:space="preserve">
+    <value>Celsius</value>
+  </data>
+  <data name="fahrenheit" xml:space="preserve">
+    <value>Fahrenheit</value>
+  </data>
+  <data name="wind_speed_unit_title" xml:space="preserve">
+    <value>Rüzgâr Hızı Birimi</value>
+  </data>
+  <data name="wind_speed_unit_description" xml:space="preserve">
+    <value>Rüzgâr hızı birimini seçin</value>
+  </data>
+  <data name="kmh" xml:space="preserve">
+    <value>km/sa</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="show_forecast_title" xml:space="preserve">
+    <value>Tahmini Göster</value>
+  </data>
+  <data name="show_forecast_description" xml:space="preserve">
+    <value>Çok günlü hava tahminini göster</value>
+  </data>
+  <data name="update_interval_title" xml:space="preserve">
+    <value>Güncelleme Aralığı</value>
+  </data>
+  <data name="update_interval_description" xml:space="preserve">
+    <value>Hava durumunun ne sıklıkla yenileneceği</value>
+  </data>
+  <data name="one_hour" xml:space="preserve">
+    <value>1 saat</value>
+  </data>
+  <data name="three_hours" xml:space="preserve">
+    <value>3 saat</value>
+  </data>
+  <data name="six_hours" xml:space="preserve">
+    <value>6 saat</value>
+  </data>
+  <data name="twelve_hours" xml:space="preserve">
+    <value>12 saat</value>
+  </data>
+  <data name="connectivity_no_internet" xml:space="preserve">
+    <value>İnternet bağlantısı yok</value>
+  </data>
+  <data name="connectivity_api_blocked" xml:space="preserve">
+    <value>Hava durumu servisine ulaşılamıyor — bölgenizde engellenmiş olabilir</value>
+  </data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve">
+    <value>anlık hava</value>
+  </data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve">
+    <value>tahmin</value>
+  </data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve">
+    <value>saatlik tahmin</value>
+  </data>
+  <data name="favorites_section_title" xml:space="preserve">
+    <value>Favoriler</value>
+  </data>
+  <data name="favorite_command_name" xml:space="preserve">
+    <value>Favorilere Ekle</value>
+  </data>
+  <data name="unfavorite_command_name" xml:space="preserve">
+    <value>Favorilerden Kaldır</value>
+  </data>
+  <data name="no_favorites_hint" xml:space="preserve">
+    <value>Bir konum arayın ve favorilerinize ekleyin</value>
+  </data>
+  
+  <data name="favorite_tag" xml:space="preserve">
+    <value>Favori</value>
+  </data>
+  <data name="dock_band_loading" xml:space="preserve">
+    <value>Hava durumu yükleniyor…</value>
+  </data>
+  <data name="card_section_current" xml:space="preserve"><value>Şu An</value></data>
+  <data name="card_section_next_three_hours" xml:space="preserve"><value>Sonraki Üç Saat</value></data>
+  <data name="card_section_three_day_forecast" xml:space="preserve"><value>3 Günlük Tahmin</value></data>
+  <data name="card_label_high_low" xml:space="preserve"><value>En Yüksek / En Düşük</value></data>
+  <data name="card_condition_unknown" xml:space="preserve"><value>Bilinmiyor</value></data>
+  <data name="weather_clear" xml:space="preserve"><value>Açık</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>Genelde açık</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>Parçalı bulutlu</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>Kapalı</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>Sis</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>Çisenti</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>Yağmur</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>Kar</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>Sağanak</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>Kar sağanağı</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>Gök gürültülü</value></data>
+  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1} (hissedilen {2})</value></data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve"><value>Tahmin</value></data>
+  <data name="page_hourly_title" xml:space="preserve"><value>Saatlik Tahmin</value></data>
+  <data name="card_section_next_hours" xml:space="preserve"><value>Sonraki {0} Saat</value></data>
+  <data name="card_section_day_forecast" xml:space="preserve"><value>{0} Günlük Tahmin</value></data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="hour_format_title" xml:space="preserve"><value>Saat Biçimi</value></data>
+  <data name="hour_format_description" xml:space="preserve"><value>12 saatlik veya 24 saatlik gösterim arasından seçim yapın.</value></data>
+  <data name="hour_format_12" xml:space="preserve"><value>12 saat (ÖÖ/ÖS)</value></data>
+  <data name="hour_format_24" xml:space="preserve"><value>24 saat</value></data>
+  <data name="settings_save_button" xml:space="preserve"><value>Kaydet</value></data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>Örnekler:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>İstanbul
+Ankara, TR
+34122
+Berlin, Almanya</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Bir konumu favorilere ve dock'a eklemek için Ctrl+D'ye basın.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>Birden fazla favoriniz varsa genişletilmiş kart varsayılan olarak ilk favoriyi kullanır. İkinci ve sonraki konumları dock'a, Komut Paleti dock özelleştirmesinden isteğe bağlı ekleyebilirsiniz.</value></data></root>

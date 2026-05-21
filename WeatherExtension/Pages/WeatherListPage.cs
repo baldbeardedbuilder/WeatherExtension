@@ -73,11 +73,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 					_isLoading = false;
 				}
 
-				EmptyContent = new ListItem(new NoOpCommand())
-				{
-					Title = Resources.no_favorites_hint,
-					Icon = Icons.WeatherIcon,
-				};
+				EmptyContent = BuildSearchHintCard(Resources.no_favorites_hint);
 
 				RaiseItemsChanged();
 				return;
@@ -245,11 +241,18 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 			moreCommands.Add(new CommandContextItem(new FavoriteLocationCommand(location, _favoritesManager)));
 		}
 
+		var tags = new List<ITag>();
+		if (_favoritesManager.IsFavorite(location))
+		{
+			tags.Add(new Tag(Resources.favorite_tag) { Icon = new IconInfo("\u2B50") });
+		}
+
 		var item = new ListItem(detailPage)
 		{
 			Title = location.DisplayName,
 			Subtitle = $"{condition} \u2014 {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
 			Icon = Icons.GetIconForWeatherCode(current.WeatherCode),
+			Tags = tags.ToArray(),
 			Details = new Details
 			{
 				Title = location.DisplayName,
@@ -274,6 +277,21 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		return directions[index];
 	}
 
+	private static ListItem BuildSearchHintCard(string headline, bool includeSearchFormatHint = false)
+	{
+		return new ListItem(new SearchHintPage(headline, includeSearchFormatHint))
+		{
+			Title = headline,
+			Subtitle = SearchHints.BuildListHintEmptySubtitle(),
+			Icon = Icons.WeatherIcon,
+			Details = new Details
+			{
+				Title = headline,
+				Body = SearchHints.BuildListHintBody(),
+			},
+		};
+	}
+
 	public override void UpdateSearchText(string oldSearch, string newSearch)
 	{
 		if (string.IsNullOrWhiteSpace(newSearch))
@@ -288,11 +306,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			ResetSearchToken();
 			_lastSearchQuery = newSearch;
-			EmptyContent = new ListItem(new EmptySearchHintPage())
-			{
-				Title = Resources.search_min_chars,
-				Icon = Icons.WeatherIcon,
-			};
+			EmptyContent = BuildSearchHintCard(Resources.search_min_chars);
 			lock (_sync)
 			{
 				_items = [];
@@ -361,12 +375,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			if (locations.Count == 0)
 			{
-				EmptyContent = new ListItem(new EmptySearchHintPage())
-				{
-					Title = Resources.no_locations_found,
-					Subtitle = Resources.search_format_hint,
-					Icon = Icons.WeatherIcon,
-				};
+				EmptyContent = BuildSearchHintCard(Resources.no_locations_found, includeSearchFormatHint: true);
 
 				lock (_sync)
 				{
