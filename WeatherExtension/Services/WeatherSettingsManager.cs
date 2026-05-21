@@ -3,7 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using BaldBeardedBuilder.WeatherExtension;
+using Microsoft.CmdPal.Ext.Weather.Models;
+using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Weather.Services;
@@ -58,6 +63,15 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
             new ChoiceSetSetting.Choice(Resources.dock_band_subtitle_location, "location"),
         ]);
 
+    private readonly ChoiceSetSetting _hourFormat = new(
+        Namespaced(nameof(HourFormat)),
+        Resources.hour_format_title,
+        Resources.hour_format_description,
+        [
+            new ChoiceSetSetting.Choice(Resources.hour_format_12, "12"),
+            new ChoiceSetSetting.Choice(Resources.hour_format_24, "24"),
+        ]);
+
     private static readonly HashSet<string> _validIntervals = ["60", "180", "360", "720"];
 
     public string TemperatureUnit => _temperatureUnit.Value ?? "celsius";
@@ -66,19 +80,22 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
 
     public bool ShowForecast => _showForecast.Value;
 
-    public int UpdateIntervalMinutes => _updateInterval.Value is string v && _validIntervals.Contains(v) ? int.Parse(v, System.Globalization.CultureInfo.InvariantCulture) : 60;
+    public int UpdateIntervalMinutes => _updateInterval.Value is string v && _validIntervals.Contains(v) ? int.Parse(v, CultureInfo.InvariantCulture) : 60;
 
     public string DockBandSubtitle => _dockBandSubtitle.Value ?? "highlow";
+
+    /// <summary>
+    /// Returns the user-selected clock display: "12" or "24". Defaults to
+    /// "12" because that matches the previous hardcoded behavior.
+    /// </summary>
+    public string HourFormat => _hourFormat.Value ?? "12";
+
+    public bool Use24HourClock => HourFormat == "24";
 
     public WeatherSettingsManager()
     {
         FilePath = SettingsJsonPath();
-
-        Settings.Add(_temperatureUnit);
-        Settings.Add(_windSpeedUnit);
-        Settings.Add(_showForecast);
-        Settings.Add(_updateInterval);
-        Settings.Add(_dockBandSubtitle);
+        AddAll();
 
         LoadSettings();
         MigrateUpdateInterval();
@@ -89,17 +106,22 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
     internal WeatherSettingsManager(string filePath)
     {
         FilePath = filePath;
-
-        Settings.Add(_temperatureUnit);
-        Settings.Add(_windSpeedUnit);
-        Settings.Add(_showForecast);
-        Settings.Add(_updateInterval);
-        Settings.Add(_dockBandSubtitle);
+        AddAll();
 
         LoadSettings();
         MigrateUpdateInterval();
 
         Settings.SettingsChanged += (_, _) => SaveSettings();
+    }
+
+    private void AddAll()
+    {
+        Settings.Add(_temperatureUnit);
+        Settings.Add(_windSpeedUnit);
+        Settings.Add(_showForecast);
+        Settings.Add(_updateInterval);
+        Settings.Add(_dockBandSubtitle);
+        Settings.Add(_hourFormat);
     }
 
     private void MigrateUpdateInterval()
@@ -119,5 +141,69 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         var directory = Path.Combine(localAppData, "Microsoft.CmdPal");
         Directory.CreateDirectory(directory);
         return Path.Combine(directory, "settings.json");
+    }
+
+    /// <summary>
+    /// Returns the AdaptiveCard form template the host uses to render the
+    /// settings sheet. Internal in the toolkit, so we reach for it via
+    /// reflection — keeps us off the (private) <c>Settings.SettingsContentPage</c>
+    /// implementation which always responds to submit with
+    /// <c>CommandResult.GoHome()</c>.
+    /// </summary>
+    public string BuildSettingsFormJson()
+    {
+        var method = typeof(Settings).GetMethod(
+            "ToFormJson",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+        if (method is null)
+        {
+            WeatherLogger.LogToHost(
+                MessageState.Warning,
+                "Toolkit reflection failed: Settings.ToFormJson was not found. "
+                + "The settings form may render blank until the Command Palette SDK is updated.");
+            return "{}";
+        }
+
+        var raw = method.Invoke(Settings, null) as string ?? "{}";
+
+        // Toolkit hard-codes the Save button label as "Save" in the form
+        // template. Substitute the localized label we ship instead so the
+        // action button matches the surrounding UI language.
+        var saveLabel = Resources.settings_save_button ?? "Save";
+        if (!string.IsNullOrEmpty(saveLabel) && saveLabel != "Save")
+        {
+            raw = raw.Replace("\"title\": \"Save\"", $"\"title\": \"{EscapeJson(saveLabel)}\"", System.StringComparison.Ordinal);
+        }
+
+        return raw;
+    }
+
+    private static string EscapeJson(string input)
+        => input
+            .Replace("\\", "\\\\", System.StringComparison.Ordinal)
+            .Replace("\"", "\\\"", System.StringComparison.Ordinal);
+
+    /// <summary>
+    /// Forces the public <see cref="Settings.SettingsChanged"/> event to fire
+    /// — the toolkit's own raise method is internal. Used after
+    /// <see cref="Settings.Update(string)"/> in our custom settings page.
+    /// </summary>
+    public void RaiseSettingsChanged()
+    {
+        var method = typeof(Settings).GetMethod(
+            "RaiseSettingsChanged",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+        if (method is null)
+        {
+            WeatherLogger.LogToHost(
+                MessageState.Warning,
+                "Toolkit reflection failed: Settings.RaiseSettingsChanged was not found. "
+                + "Saved settings may not propagate to pages and dock bands until the Command Palette SDK is updated.");
+            return;
+        }
+
+        method.Invoke(Settings, null);
     }
 }
