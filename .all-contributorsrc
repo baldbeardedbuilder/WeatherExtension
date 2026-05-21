@@ -27,6 +27,16 @@
         "test",
         "design"
       ]
+    },
+    {
+      "login": "damianoschal-star",
+      "name": "damianoschal-star",
+      "avatar_url": "https://avatars.githubusercontent.com/u/275190590?v=4",
+      "profile": "https://github.com/damianoschal-star",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
     }
   ],
   "contributorsPerLine": 7,
