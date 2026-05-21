@@ -11,31 +11,16 @@ namespace Microsoft.CmdPal.Ext.Weather.UnitTests;
 public class WeatherDescriptionsTests
 {
 	[TestMethod]
-	public void GetLocalized_TurkishCulture_ReturnsTranslatedThunderstorm()
+	public void GetLocalized_InvariantCulture_ReturnsNeutralCategoryStrings()
 	{
 		var original = CultureInfo.CurrentUICulture;
 		try
 		{
-			CultureInfo.CurrentUICulture = new CultureInfo("tr-TR");
-			Assert.AreEqual("Gök gürültülü", WeatherDescriptions.GetLocalized(95));
-			Assert.AreEqual("Kapalı", WeatherDescriptions.GetLocalized(3));
-			Assert.AreEqual("Sağanak", WeatherDescriptions.GetLocalized(80));
-		}
-		finally
-		{
-			CultureInfo.CurrentUICulture = original;
-		}
-	}
-
-	[TestMethod]
-	public void GetLocalized_EnglishCulture_FallsBackToNeutral()
-	{
-		var original = CultureInfo.CurrentUICulture;
-		try
-		{
-			CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+			CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 			Assert.AreEqual("Thunderstorm", WeatherDescriptions.GetLocalized(95));
 			Assert.AreEqual("Overcast", WeatherDescriptions.GetLocalized(3));
+			Assert.AreEqual("Rain showers", WeatherDescriptions.GetLocalized(80));
+			Assert.AreEqual("Snow showers", WeatherDescriptions.GetLocalized(85));
 		}
 		finally
 		{
@@ -44,13 +29,13 @@ public class WeatherDescriptionsTests
 	}
 
 	[TestMethod]
-	public void GetLocalized_UnknownCode_ReturnsLocalizedUnknown()
+	public void GetLocalized_UnknownCode_ReturnsUnknown()
 	{
 		var original = CultureInfo.CurrentUICulture;
 		try
 		{
-			CultureInfo.CurrentUICulture = new CultureInfo("tr-TR");
-			Assert.AreEqual("Bilinmiyor", WeatherDescriptions.GetLocalized(12345));
+			CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
+			Assert.AreEqual("Unknown", WeatherDescriptions.GetLocalized(12345));
 		}
 		finally
 		{
