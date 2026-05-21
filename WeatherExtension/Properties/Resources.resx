@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -288,4 +288,87 @@ If you continue to have issues, please [file a bug](https://github.com/michaeljo
   <data name="no_favorites_hint" xml:space="preserve">
     <value>Search for a location and add it to your favorites</value>
   </data>
-</root>
+  
+  <data name="favorite_tag" xml:space="preserve">
+    <value>Favorite</value>
+    <comment>Tag shown on list items whose location is in favorites</comment>
+  </data>
+  <data name="dock_band_loading" xml:space="preserve">
+    <value>Loading weather…</value>
+    <comment>Initial title shown on a pinned dock band before its weather has loaded</comment>
+  </data>
+  <data name="card_section_current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="card_section_next_three_hours" xml:space="preserve">
+    <value>Next Three Hours</value>
+  </data>
+  <data name="card_section_three_day_forecast" xml:space="preserve">
+    <value>3-Day Forecast</value>
+  </data>
+  <data name="card_label_high_low" xml:space="preserve">
+    <value>High / Low</value>
+  </data>
+  <data name="card_condition_unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="weather_clear" xml:space="preserve"><value>Clear sky</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>Mainly clear</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>Partly cloudy</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>Overcast</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>Fog</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>Drizzle</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>Rain</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>Snow</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>Rain showers</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>Snow showers</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>Thunderstorm</value></data>
+  <data name="feels_like_template" xml:space="preserve">
+    <value>{0} — {1} (feels like {2})</value>
+    <comment>{0}=condition, {1}=temperature, {2}=apparent temperature. Used as the subtitle on weather list items.</comment>
+  </data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve">
+    <value>Forecast</value>
+  </data>
+  <data name="page_hourly_title" xml:space="preserve">
+    <value>Hourly Forecast</value>
+  </data>
+  <data name="card_section_next_hours" xml:space="preserve">
+    <value>Next {0} Hours</value>
+    <comment>Section header on the dock band card. {0} is the number of hours.</comment>
+  </data>
+  <data name="card_section_day_forecast" xml:space="preserve">
+    <value>{0}-Day Forecast</value>
+    <comment>Section header on the dock band card. {0} is the number of days.</comment>
+  </data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="hour_format_title" xml:space="preserve">
+    <value>Time Format</value>
+  </data>
+  <data name="hour_format_description" xml:space="preserve">
+    <value>Choose between 12-hour and 24-hour clock display.</value>
+  </data>
+  <data name="hour_format_12" xml:space="preserve">
+    <value>12-hour (AM/PM)</value>
+  </data>
+  <data name="hour_format_24" xml:space="preserve">
+    <value>24-hour</value>
+  </data>
+  <data name="settings_save_button" xml:space="preserve">
+    <value>Save</value>
+    <comment>Label on the Save button at the bottom of the settings sheet.</comment>
+  </data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>Examples:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>London
+Paris, FR
+90210
+Berlin, Germany</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Press Ctrl+D to add a location to your favorites and the dock.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>With multiple favorites, the expanded card uses your first favorite by default. Add a second (or more) location to the dock anytime from Command Palette dock customization.</value></data></root>
