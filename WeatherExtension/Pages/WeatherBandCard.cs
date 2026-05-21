@@ -8,11 +8,43 @@ using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using System.Globalization;
+using System.Text;
 
 namespace Microsoft.CmdPal.Ext.Weather.Pages;
 
 internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 {
+	// Tweak these to change how much we cram into the card. Changes here
+	// automatically resize the JSON payload, the AdaptiveCard template, and
+	// every loading/error state — they're the single source of truth.
+	private const int HourlyEntriesOnCard = 10;
+	private const int DailyEntriesOnCard = 6;
+
+	// Cached CompositeFormats for the localized "Next N hours" / "N-day forecast"
+	// strings. CA1863 wants these reused rather than re-parsed each render.
+	// Re-parsed when the UI culture changes so language switching at runtime
+	// still works.
+	private static System.Text.CompositeFormat? _nextHoursFormat;
+	private static System.Text.CompositeFormat? _dayForecastFormat;
+	private static string? _formatCulture;
+	private static readonly Lock _formatSync = new();
+
+	private static (System.Text.CompositeFormat NextHours, System.Text.CompositeFormat DayForecast) GetSectionFormats()
+	{
+		var current = CultureInfo.CurrentUICulture.Name;
+		lock (_formatSync)
+		{
+			if (_nextHoursFormat == null || _dayForecastFormat == null || _formatCulture != current)
+			{
+				_nextHoursFormat = System.Text.CompositeFormat.Parse(Resources.card_section_next_hours);
+				_dayForecastFormat = System.Text.CompositeFormat.Parse(Resources.card_section_day_forecast);
+				_formatCulture = current;
+			}
+
+			return (_nextHoursFormat, _dayForecastFormat);
+		}
+	}
+
 	private readonly OpenMeteoService _weatherService;
 	private readonly IGeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settings;
@@ -124,11 +156,11 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		ForecastData? forecast,
 		HourlyForecastData? hourly)
 	{
-		var tempUnit = _settings.TemperatureUnit == "celsius" ? "\u00B0C" : "\u00B0F";
-		var windUnit = _settings.WindSpeedUnit == "mph" ? "mph" : "km/h";
+		var tempUnitSetting = _settings.TemperatureUnit;
+		var windUnitSetting = _settings.WindSpeedUnit;
 
 		var currentTemp = "--";
-		var currentCondition = "Unknown";
+		var currentCondition = Resources.card_condition_unknown;
 		var currentIcon = "\uD83C\uDF24\uFE0F";
 		var feelsLike = "--";
 		var humidity = "--";
@@ -138,12 +170,12 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		if (weather?.Current != null)
 		{
 			var c = weather.Current;
-			currentTemp = $"{c.Temperature:F0}{tempUnit}";
+			currentTemp = WeatherFormatter.Temperature(c.Temperature, tempUnitSetting);
 			currentCondition = Icons.GetWeatherDescription(c.WeatherCode);
 			currentIcon = GetEmojiForWeatherCode(c.WeatherCode);
-			feelsLike = $"{c.ApparentTemperature:F0}{tempUnit}";
-			humidity = $"{c.RelativeHumidity}%";
-			wind = $"{c.WindSpeed:F1} {windUnit}";
+			feelsLike = WeatherFormatter.Temperature(c.ApparentTemperature, tempUnitSetting);
+			humidity = WeatherFormatter.Humidity(c.RelativeHumidity);
+			wind = WeatherFormatter.Wind(c.WindSpeed, windUnitSetting);
 		}
 
 		if (forecast?.Daily?.TemperatureMax?.Count > 0 &&
@@ -151,168 +183,130 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		{
 			var high = forecast.Daily.TemperatureMax[0];
 			var low = forecast.Daily.TemperatureMin[0];
-			todayHighLow = $"{high:F0}{tempUnit} / {low:F0}{tempUnit}";
+			todayHighLow = WeatherFormatter.HighLow(high, low, tempUnitSetting);
 		}
 
-		var hour1Time = "--";
-		var hour1Icon = currentIcon;
-		var hour1Temp = "--";
-		var hour1Precip = "--";
-		var hour2Time = "--";
-		var hour2Icon = currentIcon;
-		var hour2Temp = "--";
-		var hour2Precip = "--";
-		var hour3Time = "--";
-		var hour3Icon = currentIcon;
-		var hour3Temp = "--";
-		var hour3Precip = "--";
+		var hours = ExtractHourlySlots(hourly, currentIcon, tempUnitSetting, _settings.Use24HourClock);
+		var days = ExtractDailySlots(forecast, currentIcon, tempUnitSetting);
 
-		if (hourly?.Hourly != null)
+		var sb = new StringBuilder(2048);
+		sb.Append('{');
+		AppendJsonString(sb, "locationName", location.DisplayName);
+		AppendJsonString(sb, "currentIcon", currentIcon);
+		AppendJsonString(sb, "currentTemp", currentTemp);
+		AppendJsonString(sb, "currentCondition", currentCondition);
+		AppendJsonString(sb, "feelsLike", feelsLike);
+		AppendJsonString(sb, "todayHighLow", todayHighLow);
+		AppendJsonString(sb, "humidity", humidity);
+		AppendJsonString(sb, "wind", wind);
+
+		for (var i = 0; i < HourlyEntriesOnCard; i++)
 		{
-			var now = DateTime.Now;
-			var hoursAdded = 0;
-
-			for (var i = 0; i < (hourly.Hourly.Time?.Count ?? 0) && hoursAdded < 3; i++)
-			{
-				var timeStr = hourly.Hourly.Time?[i];
-				if (timeStr == null || !DateTime.TryParse(timeStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var hourTime))
-				{
-					continue;
-				}
-
-				if (hourTime <= now)
-				{
-					continue;
-				}
-
-				var time = hourTime.ToString("h tt", CultureInfo.CurrentCulture);
-				var weatherCode = hourly.Hourly.WeatherCode?[i] ?? 0;
-				var icon = GetEmojiForWeatherCode(weatherCode);
-				var temp = $"{hourly.Hourly.Temperature?[i]:F0}{tempUnit}";
-				var precip = $"{hourly.Hourly.PrecipitationProbability?[i] ?? 0}%";
-
-				if (hoursAdded == 0)
-				{
-					hour1Time = time;
-					hour1Icon = icon;
-					hour1Temp = temp;
-					hour1Precip = precip;
-				}
-				else if (hoursAdded == 1)
-				{
-					hour2Time = time;
-					hour2Icon = icon;
-					hour2Temp = temp;
-					hour2Precip = precip;
-				}
-				else if (hoursAdded == 2)
-				{
-					hour3Time = time;
-					hour3Icon = icon;
-					hour3Temp = temp;
-					hour3Precip = precip;
-				}
-
-				hoursAdded++;
-			}
+			var s = i < hours.Count ? hours[i] : HourSlot.Empty(currentIcon);
+			AppendJsonString(sb, $"hour{i + 1}Time", s.Time);
+			AppendJsonString(sb, $"hour{i + 1}Icon", s.Icon);
+			AppendJsonString(sb, $"hour{i + 1}Temp", s.Temp);
+			AppendJsonString(sb, $"hour{i + 1}Precip", s.Precip);
 		}
 
-		var day1Name = "--";
-		var day1Icon = currentIcon;
-		var day1Condition = "--";
-		var day1HighLow = "--";
-		var day2Name = "--";
-		var day2Icon = currentIcon;
-		var day2Condition = "--";
-		var day2HighLow = "--";
-		var day3Name = "--";
-		var day3Icon = currentIcon;
-		var day3Condition = "--";
-		var day3HighLow = "--";
-
-		if (forecast?.Daily != null && forecast.Daily.Time?.Count >= 4)
+		for (var i = 0; i < DailyEntriesOnCard; i++)
 		{
-			for (var i = 1; i <= 3; i++)
-			{
-				if (forecast.Daily.Time == null || i >= forecast.Daily.Time.Count)
-				{
-					break;
-				}
-
-				var dateStr = forecast.Daily.Time[i];
-				if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
-				{
-					var dayName = date.ToString("ddd", CultureInfo.CurrentCulture);
-					var weatherCode = forecast.Daily.WeatherCode?[i] ?? 0;
-					var icon = GetEmojiForWeatherCode(weatherCode);
-					var condition = Icons.GetWeatherDescription(weatherCode);
-					var high = forecast.Daily.TemperatureMax?[i] ?? 0;
-					var low = forecast.Daily.TemperatureMin?[i] ?? 0;
-					var highLow = $"{high:F0}{tempUnit} / {low:F0}{tempUnit}";
-
-					if (i == 1)
-					{
-						day1Name = dayName;
-						day1Icon = icon;
-						day1Condition = condition;
-						day1HighLow = highLow;
-					}
-					else if (i == 2)
-					{
-						day2Name = dayName;
-						day2Icon = icon;
-						day2Condition = condition;
-						day2HighLow = highLow;
-					}
-					else if (i == 3)
-					{
-						day3Name = dayName;
-						day3Icon = icon;
-						day3Condition = condition;
-						day3HighLow = highLow;
-					}
-				}
-			}
+			var s = i < days.Count ? days[i] : DaySlot.Empty(currentIcon);
+			AppendJsonString(sb, $"day{i + 1}Name", s.Name);
+			AppendJsonString(sb, $"day{i + 1}Icon", s.Icon);
+			AppendJsonString(sb, $"day{i + 1}Condition", s.Condition);
+			AppendJsonString(sb, $"day{i + 1}HighLow", s.HighLow);
 		}
 
-		var locationName = location.DisplayName;
+		// Trim trailing comma left by AppendJsonString and close the object.
+		if (sb[sb.Length - 1] == ',')
+		{
+			sb.Length--;
+		}
 
-		return $$"""
-        {
-            "locationName": "{{locationName}}",
-            "currentIcon": "{{currentIcon}}",
-            "currentTemp": "{{currentTemp}}",
-            "currentCondition": "{{currentCondition}}",
-            "feelsLike": "{{feelsLike}}",
-            "todayHighLow": "{{todayHighLow}}",
-            "humidity": "{{humidity}}",
-            "wind": "{{wind}}",
-            "hour1Time": "{{hour1Time}}",
-            "hour1Icon": "{{hour1Icon}}",
-            "hour1Temp": "{{hour1Temp}}",
-            "hour1Precip": "{{hour1Precip}}",
-            "hour2Time": "{{hour2Time}}",
-            "hour2Icon": "{{hour2Icon}}",
-            "hour2Temp": "{{hour2Temp}}",
-            "hour2Precip": "{{hour2Precip}}",
-            "hour3Time": "{{hour3Time}}",
-            "hour3Icon": "{{hour3Icon}}",
-            "hour3Temp": "{{hour3Temp}}",
-            "hour3Precip": "{{hour3Precip}}",
-            "day1Name": "{{day1Name}}",
-            "day1Icon": "{{day1Icon}}",
-            "day1Condition": "{{day1Condition}}",
-            "day1HighLow": "{{day1HighLow}}",
-            "day2Name": "{{day2Name}}",
-            "day2Icon": "{{day2Icon}}",
-            "day2Condition": "{{day2Condition}}",
-            "day2HighLow": "{{day2HighLow}}",
-            "day3Name": "{{day3Name}}",
-            "day3Icon": "{{day3Icon}}",
-            "day3Condition": "{{day3Condition}}",
-            "day3HighLow": "{{day3HighLow}}"
-        }
-        """;
+		sb.Append('}');
+		return sb.ToString();
+	}
+
+	private static List<HourSlot> ExtractHourlySlots(HourlyForecastData? hourly, string fallbackIcon, string tempUnit, bool use24Hour)
+	{
+		var result = new List<HourSlot>(HourlyEntriesOnCard);
+		if (hourly?.Hourly?.Time == null)
+		{
+			return result;
+		}
+
+		var now = DateTime.Now;
+		for (var i = 0; i < hourly.Hourly.Time.Count && result.Count < HourlyEntriesOnCard; i++)
+		{
+			var timeStr = hourly.Hourly.Time[i];
+			if (timeStr == null || !DateTime.TryParse(timeStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var hourTime))
+			{
+				continue;
+			}
+
+			if (hourTime <= now)
+			{
+				continue;
+			}
+
+			var weatherCode = hourly.Hourly.WeatherCode?[i] ?? 0;
+			result.Add(new HourSlot(
+				Time: WeatherFormatter.Hour(hourTime, use24Hour),
+				Icon: GetEmojiForWeatherCode(weatherCode),
+				Temp: WeatherFormatter.Temperature(hourly.Hourly.Temperature?[i] ?? 0, tempUnit),
+				Precip: WeatherFormatter.PrecipitationProbability(hourly.Hourly.PrecipitationProbability?[i])));
+		}
+
+		return result;
+	}
+
+	private static List<DaySlot> ExtractDailySlots(ForecastData? forecast, string fallbackIcon, string tempUnit)
+	{
+		var result = new List<DaySlot>(DailyEntriesOnCard);
+		var daily = forecast?.Daily;
+		if (daily?.Time == null)
+		{
+			return result;
+		}
+
+		// Skip i=0 because that's "today" — already shown as the current
+		// section's high/low. Card focuses on the days ahead.
+		for (var i = 1; i < daily.Time.Count && result.Count < DailyEntriesOnCard; i++)
+		{
+			var dateStr = daily.Time[i];
+			if (!DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+			{
+				continue;
+			}
+
+			var weatherCode = daily.WeatherCode?[i] ?? 0;
+			var high = daily.TemperatureMax?[i] ?? 0;
+			var low = daily.TemperatureMin?[i] ?? 0;
+
+			result.Add(new DaySlot(
+				Name: date.ToString("ddd", CultureInfo.CurrentCulture),
+				Icon: GetEmojiForWeatherCode(weatherCode),
+				Condition: Icons.GetWeatherDescription(weatherCode),
+				HighLow: WeatherFormatter.HighLow(high, low, tempUnit)));
+		}
+
+		return result;
+	}
+
+	private readonly record struct HourSlot(string Time, string Icon, string Temp, string Precip)
+	{
+		public static HourSlot Empty(string fallbackIcon) => new("--", fallbackIcon, "--", "--");
+	}
+
+	private readonly record struct DaySlot(string Name, string Icon, string Condition, string HighLow)
+	{
+		public static DaySlot Empty(string fallbackIcon) => new("--", fallbackIcon, "--", "--");
+	}
+
+	private static void AppendJsonString(StringBuilder sb, string key, string? value)
+	{
+		sb.Append('"').Append(key).Append("\":\"").Append(JsonEscape(value)).Append("\",");
 	}
 
 	private static string GetEmojiForWeatherCode(int weatherCode)
@@ -337,88 +331,80 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 	}
 
 	private static string GetLoadingData()
-	{
-		return """
-        {
-            "locationName": "Loading...",
-            "currentIcon": "🌤️",
-            "currentTemp": "--",
-            "currentCondition": "Loading weather data...",
-            "feelsLike": "--",
-            "todayHighLow": "--",
-            "humidity": "--",
-            "wind": "--",
-            "hour1Time": "--",
-            "hour1Icon": "🌤️",
-            "hour1Temp": "--",
-            "hour1Precip": "--",
-            "hour2Time": "--",
-            "hour2Icon": "🌤️",
-            "hour2Temp": "--",
-            "hour2Precip": "--",
-            "hour3Time": "--",
-            "hour3Icon": "🌤️",
-            "hour3Temp": "--",
-            "hour3Precip": "--",
-            "day1Name": "--",
-            "day1Icon": "🌤️",
-            "day1Condition": "--",
-            "day1HighLow": "--",
-            "day2Name": "--",
-            "day2Icon": "🌤️",
-            "day2Condition": "--",
-            "day2HighLow": "--",
-            "day3Name": "--",
-            "day3Icon": "🌤️",
-            "day3Condition": "--",
-            "day3HighLow": "--"
-        }
-        """;
-	}
+		=> BuildPlaceholderData(Resources.loading, Resources.loading_data, "🌤️");
 
 	private static string GetErrorData(string errorMessage)
+		=> BuildPlaceholderData(errorMessage, errorMessage, "⚠️");
+
+	// Reused for "still loading" and "we hit an error" payloads. Keeps every
+	// hour/day slot filled with placeholders so the AdaptiveCard data binding
+	// always finds a value, no matter how many slots the template defines.
+	private static string BuildPlaceholderData(string locationLabel, string statusLabel, string iconEmoji)
 	{
-		return $$"""
-        {
-            "locationName": "{{errorMessage}}",
-            "currentIcon": "⚠️",
-            "currentTemp": "--",
-            "currentCondition": "{{errorMessage}}",
-            "feelsLike": "--",
-            "todayHighLow": "--",
-            "humidity": "--",
-            "wind": "--",
-            "hour1Time": "--",
-            "hour1Icon": "🌤️",
-            "hour1Temp": "--",
-            "hour1Precip": "--",
-            "hour2Time": "--",
-            "hour2Icon": "🌤️",
-            "hour2Temp": "--",
-            "hour2Precip": "--",
-            "hour3Time": "--",
-            "hour3Icon": "🌤️",
-            "hour3Temp": "--",
-            "hour3Precip": "--",
-            "day1Name": "--",
-            "day1Icon": "🌤️",
-            "day1Condition": "--",
-            "day1HighLow": "--",
-            "day2Name": "--",
-            "day2Icon": "🌤️",
-            "day2Condition": "--",
-            "day2HighLow": "--",
-            "day3Name": "--",
-            "day3Icon": "🌤️",
-            "day3Condition": "--",
-            "day3HighLow": "--"
-        }
-        """;
+		var sb = new StringBuilder(1024);
+		sb.Append('{');
+		AppendJsonString(sb, "locationName", locationLabel);
+		AppendJsonString(sb, "currentIcon", iconEmoji);
+		AppendJsonString(sb, "currentTemp", "--");
+		AppendJsonString(sb, "currentCondition", statusLabel);
+		AppendJsonString(sb, "feelsLike", "--");
+		AppendJsonString(sb, "todayHighLow", "--");
+		AppendJsonString(sb, "humidity", "--");
+		AppendJsonString(sb, "wind", "--");
+
+		for (var i = 0; i < HourlyEntriesOnCard; i++)
+		{
+			AppendJsonString(sb, $"hour{i + 1}Time", "--");
+			AppendJsonString(sb, $"hour{i + 1}Icon", iconEmoji);
+			AppendJsonString(sb, $"hour{i + 1}Temp", "--");
+			AppendJsonString(sb, $"hour{i + 1}Precip", "--");
+		}
+
+		for (var i = 0; i < DailyEntriesOnCard; i++)
+		{
+			AppendJsonString(sb, $"day{i + 1}Name", "--");
+			AppendJsonString(sb, $"day{i + 1}Icon", iconEmoji);
+			AppendJsonString(sb, $"day{i + 1}Condition", "--");
+			AppendJsonString(sb, $"day{i + 1}HighLow", "--");
+		}
+
+		if (sb[sb.Length - 1] == ',')
+		{
+			sb.Length--;
+		}
+
+		sb.Append('}');
+		return sb.ToString();
 	}
 
 	private static string GetCardTemplate()
 	{
-		return """
+		// Section/label texts come from Resources so the card respects the
+		// system UI language (with English fallback).
+		var sectionCurrent = JsonEscape(Resources.card_section_current);
+		var (nextHoursFormat, dayForecastFormat) = GetSectionFormats();
+		var sectionNext = JsonEscape(string.Format(
+			CultureInfo.CurrentCulture,
+			nextHoursFormat,
+			HourlyEntriesOnCard));
+		var sectionForecast = JsonEscape(string.Format(
+			CultureInfo.CurrentCulture,
+			dayForecastFormat,
+			DailyEntriesOnCard));
+		var labelFeelsLike = JsonEscape(Resources.feels_like);
+		var labelHighLow = JsonEscape(Resources.card_label_high_low);
+		var labelHumidity = JsonEscape(Resources.humidity);
+		var labelWind = JsonEscape(Resources.wind_speed);
+
+		var hourColumns = BuildSlotColumns(HourlyEntriesOnCard, "hour", includeCondition: false);
+		var dayColumns = BuildSlotColumns(DailyEntriesOnCard, "day", includeCondition: true);
+
+		// Lay the card out in three vertical sections so the renderer doesn't
+		// have to balance one big ColumnSet that mixes wide and narrow columns.
+		// Older versions tried to do "Current (width=3) | Hour1 | Hour2 | Hour3"
+		// in a single row which collapsed the right-hand FactSet into a 1-char
+		// column on some hosts. Rows now stretch independently.
+		return $$"""
         {
             "type": "AdaptiveCard",
             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -428,142 +414,64 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
                     "type": "TextBlock",
                     "text": "${locationName}",
                     "size": "large",
-                    "weight": "bolder"
+                    "weight": "bolder",
+                    "wrap": true
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "{{sectionCurrent}}",
+                    "weight": "bolder",
+                    "size": "medium",
+                    "spacing": "medium"
                 },
                 {
                     "type": "ColumnSet",
-                    "spacing": "large",
+                    "style": "emphasis",
                     "columns": [
                         {
                             "type": "Column",
-                            "width": "3",
+                            "width": "auto",
+                            "verticalContentAlignment": "center",
                             "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Current",
-                                    "weight": "bolder",
-                                    "size": "medium"
-                                }
+                                { "type": "TextBlock", "text": "${currentIcon}", "size": "extraLarge", "horizontalAlignment": "center", "spacing": "none" },
+                                { "type": "TextBlock", "text": "${currentTemp}", "size": "extraLarge", "weight": "bolder", "horizontalAlignment": "center", "spacing": "none" },
+                                { "type": "TextBlock", "text": "${currentCondition}", "wrap": true, "horizontalAlignment": "center", "isSubtle": true, "spacing": "none" }
                             ]
                         },
                         {
                             "type": "Column",
-                            "width": "3",
-                            "spacing": "medium",
+                            "width": "stretch",
+                            "spacing": "large",
+                            "verticalContentAlignment": "center",
                             "items": [
                                 {
-                                    "type": "TextBlock",
-                                    "text": "Next Three Hours",
-                                    "weight": "bolder",
-                                    "size": "medium"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "ColumnSet",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": "3",
-                            "style": "emphasis",
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "1",
-                                            "verticalContentAlignment": "center",
-                                            "horizontalAlignment": "center",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "${currentIcon}",
-                                                    "size": "extraLarge",
-                                                    "horizontalAlignment": "center"
-                                                },
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "${currentTemp}",
-                                                    "size": "extraLarge",
-                                                    "weight": "bolder",
-                                                    "horizontalAlignment": "center",
-                                                    "spacing": "none"
-                                                },
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "${currentCondition}",
-                                                    "horizontalAlignment": "center",
-                                                    "wrap": true,
-                                                    "spacing": "none",
-                                                    "isSubtle": true
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "1",
-                                            "spacing": "large",
-                                            "verticalContentAlignment": "center",
-                                            "items": [
-                                                {
-                                                    "type": "FactSet",
-                                                    "facts": [
-                                                        { "title": "Feels like", "value": "${feelsLike}" },
-                                                        { "title": "High / Low", "value": "${todayHighLow}" },
-                                                        { "title": "Humidity", "value": "${humidity}" },
-                                                        { "title": "Wind", "value": "${wind}" }
-                                                    ]
-                                                }
-                                            ]
-                                        }
+                                    "type": "FactSet",
+                                    "facts": [
+                                        { "title": "{{labelFeelsLike}}", "value": "${feelsLike}" },
+                                        { "title": "{{labelHighLow}}", "value": "${todayHighLow}" },
+                                        { "title": "{{labelHumidity}}", "value": "${humidity}" },
+                                        { "title": "{{labelWind}}", "value": "${wind}" }
                                     ]
                                 }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "1",
-                            "spacing": "medium",
-                            "style": "emphasis",
-                            "verticalContentAlignment": "center",
-                            "items": [
-                                { "type": "TextBlock", "text": "${hour1Time}", "weight": "bolder", "horizontalAlignment": "center" },
-                                { "type": "TextBlock", "text": "${hour1Icon}", "horizontalAlignment": "center", "size": "large", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${hour1Temp} / ${hour1Precip}", "horizontalAlignment": "center", "spacing": "small" }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "1",
-                            "spacing": "small",
-                            "style": "emphasis",
-                            "verticalContentAlignment": "center",
-                            "items": [
-                                { "type": "TextBlock", "text": "${hour2Time}", "weight": "bolder", "horizontalAlignment": "center" },
-                                { "type": "TextBlock", "text": "${hour2Icon}", "horizontalAlignment": "center", "size": "large", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${hour2Temp} / ${hour2Precip}", "horizontalAlignment": "center", "spacing": "small" }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "1",
-                            "spacing": "small",
-                            "style": "emphasis",
-                            "verticalContentAlignment": "center",
-                            "items": [
-                                { "type": "TextBlock", "text": "${hour3Time}", "weight": "bolder", "horizontalAlignment": "center" },
-                                { "type": "TextBlock", "text": "${hour3Icon}", "horizontalAlignment": "center", "size": "large", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${hour3Temp} / ${hour3Precip}", "horizontalAlignment": "center", "spacing": "small" }
                             ]
                         }
                     ]
                 },
                 {
                     "type": "TextBlock",
-                    "text": "3-Day Forecast",
+                    "text": "{{sectionNext}}",
+                    "weight": "bolder",
+                    "size": "medium",
+                    "spacing": "large",
+                    "separator": true
+                },
+                {
+                    "type": "ColumnSet",
+                    "columns": [{{hourColumns}}]
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "{{sectionForecast}}",
                     "size": "medium",
                     "weight": "bolder",
                     "separator": true,
@@ -571,51 +479,68 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
                 },
                 {
                     "type": "ColumnSet",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "style": "emphasis",
-                            "verticalContentAlignment": "top",
-                            "items": [
-                                { "type": "TextBlock", "text": "${day1Name}", "weight": "bolder", "horizontalAlignment": "center" },
-                                { "type": "TextBlock", "text": "${day1Icon}", "horizontalAlignment": "center", "size": "large", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${day1Condition}", "horizontalAlignment": "center", "isSubtle": true, "wrap": true, "size": "small", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${day1HighLow}", "horizontalAlignment": "center", "spacing": "small" }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "style": "emphasis",
-                            "spacing": "medium",
-                            "verticalContentAlignment": "top",
-                            "items": [
-                                { "type": "TextBlock", "text": "${day2Name}", "weight": "bolder", "horizontalAlignment": "center" },
-                                { "type": "TextBlock", "text": "${day2Icon}", "horizontalAlignment": "center", "size": "large", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${day2Condition}", "horizontalAlignment": "center", "isSubtle": true, "wrap": true, "size": "small", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${day2HighLow}", "horizontalAlignment": "center", "spacing": "small" }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "style": "emphasis",
-                            "spacing": "medium",
-                            "verticalContentAlignment": "top",
-                            "items": [
-                                { "type": "TextBlock", "text": "${day3Name}", "weight": "bolder", "horizontalAlignment": "center" },
-                                { "type": "TextBlock", "text": "${day3Icon}", "horizontalAlignment": "center", "size": "large", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${day3Condition}", "horizontalAlignment": "center", "isSubtle": true, "wrap": true, "size": "small", "spacing": "small" },
-                                { "type": "TextBlock", "text": "${day3HighLow}", "horizontalAlignment": "center", "spacing": "small" }
-                            ]
-                        }
-                    ]
+                    "columns": [{{dayColumns}}]
                 }
             ]
         }
         """;
 	}
+
+	// Builds the JSON for a row of N stretch-width Columns. Hour rows show
+	// time/icon/temp/precip; day rows additionally display the localized
+	// condition. Splitting by a flag avoids two near-identical templates.
+	private static string BuildSlotColumns(int count, string slotPrefix, bool includeCondition)
+	{
+		var sb = new StringBuilder(512);
+		for (var i = 1; i <= count; i++)
+		{
+			if (i > 1)
+			{
+				sb.Append(',');
+			}
+
+			sb.Append("{\"type\":\"Column\",\"width\":\"stretch\",\"style\":\"emphasis\",\"spacing\":\"")
+			  .Append(i == 1 ? "default" : "small")
+			  .Append("\",\"verticalContentAlignment\":\"")
+			  .Append(includeCondition ? "top" : "center")
+			  .Append("\",\"items\":[")
+			  .Append("{\"type\":\"TextBlock\",\"text\":\"${")
+			  .Append(slotPrefix).Append(i).Append(includeCondition ? "Name" : "Time")
+			  .Append("}\",\"weight\":\"bolder\",\"horizontalAlignment\":\"center\",\"wrap\":true},")
+			  .Append("{\"type\":\"TextBlock\",\"text\":\"${")
+			  .Append(slotPrefix).Append(i).Append("Icon")
+			  .Append("}\",\"horizontalAlignment\":\"center\",\"size\":\"large\",\"spacing\":\"small\"},");
+
+			if (includeCondition)
+			{
+				sb.Append("{\"type\":\"TextBlock\",\"text\":\"${")
+				  .Append(slotPrefix).Append(i).Append("Condition")
+				  .Append("}\",\"horizontalAlignment\":\"center\",\"isSubtle\":true,\"wrap\":true,\"size\":\"small\",\"spacing\":\"small\"},")
+				  .Append("{\"type\":\"TextBlock\",\"text\":\"${")
+				  .Append(slotPrefix).Append(i).Append("HighLow")
+				  .Append("}\",\"horizontalAlignment\":\"center\",\"spacing\":\"small\"}");
+			}
+			else
+			{
+				sb.Append("{\"type\":\"TextBlock\",\"text\":\"${")
+				  .Append(slotPrefix).Append(i).Append("Temp")
+				  .Append("}\",\"horizontalAlignment\":\"center\",\"spacing\":\"small\"},")
+				  .Append("{\"type\":\"TextBlock\",\"text\":\"${")
+				  .Append(slotPrefix).Append(i).Append("Precip")
+				  .Append("}\",\"horizontalAlignment\":\"center\",\"isSubtle\":true,\"size\":\"small\",\"spacing\":\"none\"}");
+			}
+
+			sb.Append("]}");
+		}
+
+		return sb.ToString();
+	}
+
+	private static string JsonEscape(string? input)
+		=> string.IsNullOrEmpty(input)
+			? string.Empty
+			: input.Replace("\\", "\\\\", StringComparison.Ordinal)
+				   .Replace("\"", "\\\"", StringComparison.Ordinal);
 
 	private async void OnFavoritesChanged(object? sender, EventArgs e)
 	{

@@ -35,8 +35,8 @@ internal sealed partial class HourlyForecastPage : ListPage, IDisposable
 		_weatherService = weatherService;
 		_settingsManager = settingsManager;
 
-		Name = "Hourly Forecast";
-		Title = "Hourly Forecast";
+		Name = Resources.page_hourly_title;
+		Title = Resources.page_hourly_title;
 		Icon = Icons.WeatherIcon;
 		Id = $"com.baldbeardedbuilder.cmdpal.weather.hourly.{location.Id}";
 		ShowDetails = true;
@@ -137,12 +137,12 @@ internal sealed partial class HourlyForecastPage : ListPage, IDisposable
 
 			items.Add(new ListItem(new NoOpCommand())
 			{
-				Title = time.ToString("h:mm tt", CultureInfo.CurrentCulture),
+				Title = WeatherFormatter.Hour(time, _settingsManager.Use24HourClock),
 				Subtitle = $"{condition} — {temperature:F0}{tempUnit}",
 				Icon = Icons.GetIconForWeatherCode(weatherCode),
 				Details = new Details
 				{
-					Title = time.ToString("h:mm tt", CultureInfo.CurrentCulture),
+					Title = WeatherFormatter.Hour(time, _settingsManager.Use24HourClock),
 					Body = $"{condition} — {temperature:F0}{tempUnit} (feels like {feelsLike:F0}{tempUnit})",
 					Metadata =
 					[

@@ -35,8 +35,8 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 		_weatherService = weatherService;
 		_settingsManager = settingsManager;
 
-		Name = "Forecast";
-		Title = "Forecast";
+		Name = Resources.page_forecast_title;
+		Title = Resources.page_forecast_title;
 		Icon = Icons.WeatherIcon;
 		Id = $"com.baldbeardedbuilder.cmdpal.weather.detail.{location.Id}";
 		ShowDetails = true;
@@ -102,28 +102,27 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 	private ListItem CreateCurrentWeatherItem(WeatherData weatherData)
 	{
 		var current = weatherData.Current!;
-		var tempUnit = _settingsManager.TemperatureUnit == "celsius" ? "°C" : "°F";
-		var windUnit = _settingsManager.WindSpeedUnit == "mph" ? "mph" : "km/h";
-		var condition = Icons.GetWeatherDescription(current.WeatherCode);
+		var tempUnit = _settingsManager.TemperatureUnit;
+		var windUnit = _settingsManager.WindSpeedUnit;
 
 		var hourlyPage = new HourlyForecastPage(_location, _weatherService, _settingsManager);
 
 		return new ListItem(hourlyPage)
 		{
 			Title = Resources.current_weather,
-			Subtitle = $"{condition} — {current.Temperature:F0}{tempUnit}",
+			Subtitle = WeatherFormatter.ConditionWithTemperature(current.WeatherCode, current.Temperature, tempUnit),
 			Icon = Icons.GetIconForWeatherCode(current.WeatherCode),
 			Details = new Details
 			{
 				Title = Resources.current_weather,
-				Body = $"{condition} — {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
+				Body = WeatherFormatter.CurrentSubtitle(current, tempUnit),
 				Metadata =
 				[
-					new DetailsElement { Key = Resources.temperature, Data = new DetailsLink($"{current.Temperature:F1}{tempUnit}") },
-					new DetailsElement { Key = Resources.feels_like, Data = new DetailsLink($"{current.ApparentTemperature:F1}{tempUnit}") },
-					new DetailsElement { Key = Resources.humidity, Data = new DetailsLink($"{current.RelativeHumidity}%") },
-					new DetailsElement { Key = Resources.wind_speed, Data = new DetailsLink($"{current.WindSpeed:F1} {windUnit}") },
-					new DetailsElement { Key = Resources.wind_direction, Data = new DetailsLink(GetWindDirection(current.WindDirection)) },
+					new DetailsElement { Key = Resources.temperature, Data = new DetailsLink(WeatherFormatter.Temperature(current.Temperature, tempUnit, decimals: 1)) },
+					new DetailsElement { Key = Resources.feels_like, Data = new DetailsLink(WeatherFormatter.Temperature(current.ApparentTemperature, tempUnit, decimals: 1)) },
+					new DetailsElement { Key = Resources.humidity, Data = new DetailsLink(WeatherFormatter.Humidity(current.RelativeHumidity)) },
+					new DetailsElement { Key = Resources.wind_speed, Data = new DetailsLink(WeatherFormatter.Wind(current.WindSpeed, windUnit)) },
+					new DetailsElement { Key = Resources.wind_direction, Data = new DetailsLink(WeatherFormatter.CompassDirection(current.WindDirection)) },
 				],
 			},
 		};
@@ -133,7 +132,7 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 	{
 		var daily = forecastData.Daily!;
 		var items = new List<ListItem>();
-		var tempUnit = _settingsManager.TemperatureUnit == "celsius" ? "°C" : "°F";
+		var tempUnit = _settingsManager.TemperatureUnit;
 
 		var count = Math.Min(7, daily.Time?.Count ?? 0);
 		for (var i = 0; i < count; i++)
@@ -168,17 +167,24 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 			items.Add(new ListItem(new NoOpCommand())
 			{
 				Title = dayName,
-				Subtitle = $"{condition} — H: {tempMax:F0}{tempUnit} L: {tempMin:F0}{tempUnit}",
+				Subtitle = string.Format(
+					CultureInfo.CurrentCulture,
+					"{0} \u2014 {1} {2} {3} {4}",
+					condition,
+					Resources.high,
+					WeatherFormatter.Temperature(tempMax, tempUnit),
+					Resources.low,
+					WeatherFormatter.Temperature(tempMin, tempUnit)),
 				Icon = Icons.GetIconForWeatherCode(weatherCode),
 				Details = new Details
 				{
 					Title = date.ToString("D", CultureInfo.CurrentCulture),
-					Body = $"{condition}",
+					Body = condition,
 					Metadata =
 					[
-						new DetailsElement { Key = Resources.high, Data = new DetailsLink($"{tempMax:F0}{tempUnit}") },
-						new DetailsElement { Key = Resources.low, Data = new DetailsLink($"{tempMin:F0}{tempUnit}") },
-						new DetailsElement { Key = Resources.precipitation, Data = new DetailsLink($"{precipProb}%") },
+						new DetailsElement { Key = Resources.high, Data = new DetailsLink(WeatherFormatter.Temperature(tempMax, tempUnit)) },
+						new DetailsElement { Key = Resources.low, Data = new DetailsLink(WeatherFormatter.Temperature(tempMin, tempUnit)) },
+						new DetailsElement { Key = Resources.precipitation, Data = new DetailsLink(WeatherFormatter.PrecipitationProbability(precipProb)) },
 					],
 				},
 			});
@@ -187,12 +193,7 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 		return items;
 	}
 
-	private static string GetWindDirection(int degrees)
-	{
-		var directions = new[] { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
-		var index = (int)Math.Round(degrees / 45.0) % 8;
-		return directions[index];
-	}
+	private static string GetWindDirection(int degrees) => WeatherFormatter.CompassDirection(degrees);
 
 	public override IListItem[] GetItems()
 	{

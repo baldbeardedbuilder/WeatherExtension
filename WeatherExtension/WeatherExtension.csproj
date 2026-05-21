@@ -88,11 +88,28 @@
 		<!-- Suppress DynamicallyAccessedMemberTypes.PublicParameterlessConstructor in fallback code path of Windows SDK projection -->
 		<WarningsNotAsErrors>IL2081</WarningsNotAsErrors>
 
+		<!--
+			APPX1707 fires because the CmdPal extensions winmd has no
+			Implementation metadata. That's fine: we register the COM class
+			explicitly in Package.appxmanifest, so MSBuild's automatic
+			registration step has nothing to add. Demote the warning to a message
+			so it doesn't drown out real issues.
+		-->
+		<MSBuildWarningsAsMessages>APPX1707</MSBuildWarningsAsMessages>
+
 		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+		<!--
+			Symbol packages need mspdbcmf.exe. The MSIX targets probe the
+			MSBuild VS path, which fails when building from the standalone
+			dotnet CLI (MSBuildExtensionsPath there points at the .NET SDK,
+			not at a Visual Studio install). _LocateMspdbcmf below resolves
+			the real VS install via vswhere so the warning goes away and
+			symbol packages still get generated when VS is installed.
+		-->
 		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<AppxBundle>Never</AppxBundle>
@@ -118,7 +135,51 @@
 			<ExecutableName>$(AssemblyName).exe</ExecutableName>
 		</PropertyGroup>
 
-		<Exec Command="taskkill /F /IM $(ExecutableName)" ContinueOnError="true" IgnoreExitCode="true" />
+		<!--
+			Always swallow taskkill's output. When the process isn't running,
+			taskkill writes "ERROR: ..." to stderr which MSBuild will surface as
+			a warning. We don't care: the goal here is just "make sure the
+			previous instance isn't holding open the output dir".
+		-->
+		<Exec Command="taskkill /F /IM $(ExecutableName) &gt;nul 2&gt;&amp;1"
+			  ContinueOnError="true"
+			  IgnoreExitCode="true"
+			  IgnoreStandardErrorWarningFormat="true" />
+	</Target>
+
+	<!--
+		The MSIX SDK looks for mspdbcmf.exe under
+		$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\AppxPackage\.
+		That works inside Visual Studio, but when the build runs from the
+		standalone `dotnet` CLI MSBuildExtensionsPath points at the .NET SDK
+		instead of a VS install, so the path doesn't exist. Use vswhere to
+		find the latest installed VS and point the AppxMSBuildToolsPath at
+		its real AppxPackage tools folder. Falls back silently — if vswhere
+		or VS aren't available the SDK's own warning still kicks in.
+	-->
+	<Target Name="_LocateMspdbcmf" BeforeTargets="_EnsurePdbCmfExeFullPath">
+		<PropertyGroup>
+			<_VsWherePath>$(ProgramFiles)\Microsoft Visual Studio\Installer\vswhere.exe</_VsWherePath>
+			<_VsWherePath Condition="!Exists('$(_VsWherePath)')">$(MSBuildProgramFiles32)\Microsoft Visual Studio\Installer\vswhere.exe</_VsWherePath>
+		</PropertyGroup>
+
+		<Exec Command="&quot;$(_VsWherePath)&quot; -latest -prerelease -property installationPath"
+			  ConsoleToMSBuild="true"
+			  StandardOutputImportance="Low"
+			  ContinueOnError="WarnAndContinue"
+			  Condition="Exists('$(_VsWherePath)')">
+			<Output TaskParameter="ConsoleOutput" PropertyName="_VsInstallationPath" />
+		</Exec>
+
+		<PropertyGroup Condition="'$(_VsInstallationPath)' != ''">
+			<_VsAppxPackageDir>$(_VsInstallationPath)\MSBuild\Microsoft\VisualStudio\v$(VisualStudioVersion)\AppxPackage\</_VsAppxPackageDir>
+		</PropertyGroup>
+
+		<PropertyGroup Condition="'$(_VsAppxPackageDir)' != '' and Exists('$(_VsAppxPackageDir)x64\mspdbcmf.exe')">
+			<AppxMSBuildToolsPath>$(_VsAppxPackageDir)</AppxMSBuildToolsPath>
+			<PdbCmfx64ExeFullPath>$(_VsAppxPackageDir)x64\mspdbcmf.exe</PdbCmfx64ExeFullPath>
+			<PdbCmfx86ExeFullPath>$(_VsAppxPackageDir)x86\mspdbcmf.exe</PdbCmfx86ExeFullPath>
+		</PropertyGroup>
 	</Target>
 
 </Project>

@@ -15,10 +15,11 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 	private readonly WeatherSettingsManager _settingsManager = new();
 	private readonly OpenMeteoService _weatherService = new();
 	private readonly GeocodingService _geocodingService = new();
-	private readonly PinnedLocationsManager _pinnedLocationsManager = new();
 	private readonly FavoritesManager _favoritesManager = new();
 	private readonly WeatherListPage _weatherPage;
+	private readonly WeatherSettingsPage _settingsPage;
 	private readonly ICommandItem[] _topLevelItems;
+	private readonly Lock _bandsSync = new();
 	private List<PinnedWeatherBand> _pinnedBands = [];
 
 	public WeatherCommandsProvider()
@@ -26,10 +27,22 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		Id = "com.baldbeardedbuilder.cmdpal.weather";
 		DisplayName = Resources.plugin_name;
 		Icon = Icons.WeatherIcon;
+
+		// Favorites are the single source of truth for dock bands. When the
+		// user toggles a favorite — from the search list, the band card, or
+		// the right-click context menu — the dock should reflect that change
+		// immediately, so we re-emit ItemsChanged on every update.
+		_favoritesManager.FavoritesChanged += OnFavoritesChanged;
+
 		Settings = _settingsManager.Settings;
 
+		// Use our own settings page so saving keeps the user inside the
+		// settings sheet instead of bouncing to the root command palette.
+		// The toolkit's built-in SettingsPage hard-codes CommandResult.GoHome().
+		_settingsPage = new WeatherSettingsPage(_settingsManager);
+
 		// Create main weather page
-		_weatherPage = new WeatherListPage(_weatherService, _geocodingService, _settingsManager, _pinnedLocationsManager, _favoritesManager);
+		_weatherPage = new WeatherListPage(_weatherService, _geocodingService, _settingsManager, _favoritesManager);
 
 		_topLevelItems =
 		[
@@ -37,11 +50,9 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 			{
 				Icon = Icons.WeatherIcon,
 				Title = Resources.plugin_name,
-				MoreCommands = [new CommandContextItem(_settingsManager.Settings.SettingsPage)],
+				MoreCommands = [new CommandContextItem(_settingsPage)],
 			},
 		];
-
-		_pinnedLocationsManager.PinnedLocationsChanged += OnPinnedLocationsChanged;
 	}
 
 	public override ICommandItem[] TopLevelCommands() => _topLevelItems;
@@ -49,47 +60,79 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 	public override ICommandItem[] GetDockBands()
 	{
 		var dockItems = new List<ICommandItem>();
+		var newBands = new List<PinnedWeatherBand>();
 
-		var pinnedLocations= _pinnedLocationsManager.GetPinnedLocations();
-		foreach (var pinnedLocation in pinnedLocations)
+		// One band per favorite. Toggling a favorite is the only knob the
+		// user has to control what shows up here, which keeps the mental
+		// model simple: "the places I starred are the places I see in the
+		// dock."
+		foreach (var favorite in _favoritesManager.GetFavorites())
 		{
-			var location = pinnedLocation.ToGeocodingResult();
-			var bandCard = new WeatherBandCard(_weatherService, _geocodingService, _settingsManager, _favoritesManager, location);
-			var pinnedBand = new PinnedWeatherBand(location, _weatherService, _settingsManager, bandCard);
-			_pinnedBands.Add(pinnedBand);
+			AddBandFor(favorite.ToGeocodingResult(), dockItems, newBands);
+		}
 
-			var pinnedWrappedBand = new WrappedDockItem(
-				[pinnedBand],
-				$"com.baldbeardedbuilder.cmdpal.weather.pinnedBand.{pinnedLocation.Latitude}_{pinnedLocation.Longitude}",
-				$"Weather - {pinnedLocation.DisplayName}");
+		// Replace the tracked bands and dispose any prior generation. Done
+		// inside the lock so a concurrent OnFavoritesChanged can't
+		// double-dispose or leak the previous list.
+		List<PinnedWeatherBand> previous;
+		lock (_bandsSync)
+		{
+			previous = _pinnedBands;
+			_pinnedBands = newBands;
+		}
 
-			pinnedWrappedBand.Icon = Icons.WeatherIcon;
-			pinnedBand.DockItem = pinnedWrappedBand;
-
-			dockItems.Add(pinnedWrappedBand);
+		foreach (var band in previous)
+		{
+			band.Dispose();
 		}
 
 		return dockItems.ToArray();
 	}
 
-	private void OnPinnedLocationsChanged(object? sender, EventArgs e)
+	private void AddBandFor(
+		Microsoft.CmdPal.Ext.Weather.Models.GeocodingResult location,
+		List<ICommandItem> dockItems,
+		List<PinnedWeatherBand> bandTracker)
 	{
-		foreach (var band in _pinnedBands)
-		{
-			band.Dispose();
-		}
-		_pinnedBands.Clear();
+		var bandCard = new WeatherBandCard(_weatherService, _geocodingService, _settingsManager, _favoritesManager, location);
+		var pinnedBand = new PinnedWeatherBand(location, _weatherService, _settingsManager, bandCard);
+		bandTracker.Add(pinnedBand);
+
+		var pinnedWrappedBand = new WrappedDockItem(
+			[pinnedBand],
+			FormattableString.Invariant(
+				$"com.baldbeardedbuilder.cmdpal.weather.pinnedBand.{location.Latitude}_{location.Longitude}"),
+			$"Weather - {location.DisplayName}");
+
+		pinnedWrappedBand.Icon = Icons.WeatherIcon;
+		pinnedBand.DockItem = pinnedWrappedBand;
+
+		dockItems.Add(pinnedWrappedBand);
 	}
 
+	private void OnFavoritesChanged(object? sender, EventArgs e)
+	{
+		// Tell the host to re-query GetDockBands() so the band list reflects
+		// the user's latest favorite/unfavorite action without forcing a
+		// full extension reload.
+		RaiseItemsChanged(0);
+	}
 
 	public override void Dispose()
 	{
-		_pinnedLocationsManager.PinnedLocationsChanged -= OnPinnedLocationsChanged;
-		foreach (var band in _pinnedBands)
+		_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
+		List<PinnedWeatherBand> bandsToDispose;
+		lock (_bandsSync)
+		{
+			bandsToDispose = _pinnedBands;
+			_pinnedBands = [];
+		}
+
+		foreach (var band in bandsToDispose)
 		{
 			band.Dispose();
 		}
-		_pinnedBands.Clear();
+
 		_weatherPage?.Dispose();
 		_weatherService?.Dispose();
 		_geocodingService?.Dispose();
