@@ -111,4 +111,31 @@ public class WeatherSettingsManagerTests
 
         Assert.AreEqual("highlow", manager.DockBandSubtitle);
     }
+
+    [TestMethod]
+    public void HourFormat_DefaultsTo12()
+    {
+        var manager = new WeatherSettingsManager(_tempFilePath);
+
+        Assert.AreEqual("12", manager.HourFormat);
+        Assert.IsFalse(manager.Use24HourClock);
+    }
+
+    [TestMethod]
+    public void Use24HourClock_WhenHourFormatIs24_ReturnsTrue()
+    {
+        File.WriteAllText(_tempFilePath, """{"weather.HourFormat":"24"}""");
+
+        var manager = new WeatherSettingsManager(_tempFilePath);
+
+        Assert.IsTrue(manager.Use24HourClock);
+    }
+
+    [TestMethod]
+    public void RaiseSettingsChanged_DoesNotThrow()
+    {
+        var manager = new WeatherSettingsManager(_tempFilePath);
+
+        manager.RaiseSettingsChanged();
+    }
 }

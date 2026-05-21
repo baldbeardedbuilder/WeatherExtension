@@ -8,6 +8,7 @@ using Microsoft.CmdPal.Ext.Weather.Models;
 using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.System;
 
 namespace Microsoft.CmdPal.Ext.Weather.Pages;
 
@@ -18,13 +19,13 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	private readonly IWeatherService _weatherService;
 	private readonly IGeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settingsManager;
-	private readonly PinnedLocationsManager _pinnedLocationsManager;
 	private readonly FavoritesManager _favoritesManager;
 	private readonly Lock _sync = new();
 	private readonly CancellationTokenSource _cts = new();
 
 	private IListItem[] _items = [];
 	private bool _isLoading;
+	private int _favoritesLoadGeneration;
 	private string _lastSearchQuery = string.Empty;
 	private CancellationTokenSource _searchCts = new();
 
@@ -32,19 +33,16 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		IWeatherService weatherService,
 		IGeocodingService geocodingService,
 		WeatherSettingsManager settingsManager,
-		PinnedLocationsManager pinnedLocationsManager,
 		FavoritesManager favoritesManager)
 	{
 		ArgumentNullException.ThrowIfNull(weatherService);
 		ArgumentNullException.ThrowIfNull(geocodingService);
 		ArgumentNullException.ThrowIfNull(settingsManager);
-		ArgumentNullException.ThrowIfNull(pinnedLocationsManager);
 		ArgumentNullException.ThrowIfNull(favoritesManager);
 
 		_weatherService = weatherService;
 		_geocodingService = geocodingService;
 		_settingsManager = settingsManager;
-		_pinnedLocationsManager = pinnedLocationsManager;
 		_favoritesManager = favoritesManager;
 
 		Name = "Weather";
@@ -62,6 +60,8 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 	private async void LoadFavoriteLocations(CancellationToken searchCt = default)
 	{
+		var generation = Interlocked.Increment(ref _favoritesLoadGeneration);
+
 		try
 		{
 			var favorites = _favoritesManager.GetFavorites();
@@ -69,15 +69,16 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 			{
 				lock (_sync)
 				{
+					if (generation != _favoritesLoadGeneration)
+					{
+						return;
+					}
+
 					_items = [];
 					_isLoading = false;
 				}
 
-				EmptyContent = new ListItem(new NoOpCommand())
-				{
-					Title = Resources.no_favorites_hint,
-					Icon = Icons.WeatherIcon,
-				};
+				EmptyContent = BuildSearchHintCard(Resources.no_favorites_hint);
 
 				RaiseItemsChanged();
 				return;
@@ -87,13 +88,26 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			lock (_sync)
 			{
+				if (generation != _favoritesLoadGeneration)
+				{
+					return;
+				}
+
 				_items = [];
+				_isLoading = true;
 			}
+
+			RaiseItemsChanged();
 
 			using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(searchCt, _cts.Token);
 
 			foreach (var pinned in favorites)
 			{
+				if (generation != _favoritesLoadGeneration)
+				{
+					return;
+				}
+
 				var location = pinned.ToGeocodingResult();
 				try
 				{
@@ -104,10 +118,20 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 						_settingsManager.WindSpeedUnit,
 						linkedCts.Token).ConfigureAwait(false);
 
+					if (generation != _favoritesLoadGeneration)
+					{
+						return;
+					}
+
 					if (weatherData != null)
 					{
 						lock (_sync)
 						{
+							if (generation != _favoritesLoadGeneration)
+							{
+								return;
+							}
+
 							_items = [.. _items, CreateWeatherItem(location, weatherData)];
 						}
 
@@ -122,22 +146,34 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 				}
 			}
 
-			lock (_sync)
-			{
-				_isLoading = false;
-			}
-
-			RaiseItemsChanged();
 		}
 		catch (OperationCanceledException)
 		{
-			// Expected when cancelled by a newer search or page is disposed
+			// Expected when cancelled by a newer favorites reload or page dispose.
 		}
 		catch (Exception ex)
 		{
 			WeatherLogger.LogToHost(
 				MessageState.Error,
 				$"Failed to load favorite locations: {ex.Message}");
+		}
+		finally
+		{
+			// If this generation was superseded or cancelled after setting
+			// _isLoading = true, we must clear the flag or GetItems() keeps
+			// returning "Loading weather data…" forever.
+			lock (_sync)
+			{
+				if (generation == _favoritesLoadGeneration)
+				{
+					_isLoading = false;
+				}
+			}
+
+			if (generation == _favoritesLoadGeneration)
+			{
+				RaiseItemsChanged();
+			}
 		}
 	}
 
@@ -213,10 +249,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		}
 
 		var current = weatherData.Current;
-		var tempUnit = _settingsManager.TemperatureUnit == "celsius" ? "\u00B0C" : "\u00B0F";
-		var windUnit = _settingsManager.WindSpeedUnit == "mph" ? "mph" : "km/h";
-		var condition = Icons.GetWeatherDescription(current.WeatherCode);
-
 		var detailPage = new WeatherDetailPage(
 			location,
 			_weatherService,
@@ -227,38 +259,42 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 			new CommandContextItem(new RefreshWeatherCommand(this)),
 		};
 
-		if (_pinnedLocationsManager.IsPinned(location))
-		{
-			moreCommands.Add(new CommandContextItem(new UnpinFromDockCommand(location, _pinnedLocationsManager)));
-		}
-		else
-		{
-			moreCommands.Add(new CommandContextItem(new PinToDockCommand(location, _pinnedLocationsManager)));
-		}
-
 		if (_favoritesManager.IsFavorite(location))
 		{
-			moreCommands.Add(new CommandContextItem(new UnfavoriteLocationCommand(location, _favoritesManager)));
+			moreCommands.Add(new CommandContextItem(new UnfavoriteLocationCommand(location, _favoritesManager))
+			{
+				RequestedShortcut = new KeyChord(VirtualKeyModifiers.Control, (int)VirtualKey.D, 0),
+			});
 		}
 		else
 		{
-			moreCommands.Add(new CommandContextItem(new FavoriteLocationCommand(location, _favoritesManager)));
+			moreCommands.Add(new CommandContextItem(new FavoriteLocationCommand(location, _favoritesManager))
+			{
+				RequestedShortcut = new KeyChord(VirtualKeyModifiers.Control, (int)VirtualKey.D, 0),
+			});
+		}
+
+		var tags = new List<ITag>();
+		if (_favoritesManager.IsFavorite(location))
+		{
+			tags.Add(new Tag(Resources.favorite_tag) { Icon = new IconInfo("\u2B50") });
 		}
 
 		var item = new ListItem(detailPage)
 		{
 			Title = location.DisplayName,
-			Subtitle = $"{condition} \u2014 {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
+			Subtitle = WeatherFormatter.CurrentSubtitle(current, _settingsManager.TemperatureUnit),
 			Icon = Icons.GetIconForWeatherCode(current.WeatherCode),
+			Tags = tags.ToArray(),
 			Details = new Details
 			{
 				Title = location.DisplayName,
-				Body = $"{condition} \u2014 {current.Temperature:F0}{tempUnit} (feels like {current.ApparentTemperature:F0}{tempUnit})",
+				Body = WeatherFormatter.CurrentSubtitle(current, _settingsManager.TemperatureUnit),
 				Metadata =
 				[
-					new DetailsElement { Key = "Humidity", Data = new DetailsLink($"{current.RelativeHumidity}%") },
-					new DetailsElement { Key = "Wind", Data = new DetailsLink($"{current.WindSpeed:F1} {windUnit}") },
-					new DetailsElement { Key = "Wind Direction", Data = new DetailsLink(GetWindDirection(current.WindDirection)) },
+					new DetailsElement { Key = Resources.humidity, Data = new DetailsLink(WeatherFormatter.Humidity(current.RelativeHumidity)) },
+					new DetailsElement { Key = Resources.wind_speed, Data = new DetailsLink(WeatherFormatter.Wind(current.WindSpeed, _settingsManager.WindSpeedUnit)) },
+					new DetailsElement { Key = Resources.wind_direction, Data = new DetailsLink(WeatherFormatter.CompassDirection(current.WindDirection)) },
 				],
 			},
 			MoreCommands = moreCommands.ToArray(),
@@ -267,11 +303,26 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		return item;
 	}
 
-	private static string GetWindDirection(int degrees)
+	private static string GetWindDirection(int degrees) => WeatherFormatter.CompassDirection(degrees);
+
+	// Builds a richer empty-state hint card so first-time users see what they
+	// can type and which keyboard shortcuts apply, instead of a single line
+	// like "No favorites".
+	private static ListItem BuildSearchHintCard(string headline, bool includeSearchFormatHint = false)
 	{
-		var directions = new[] { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
-		var index = (int)Math.Round(degrees / 45.0) % 8;
-		return directions[index];
+		// The empty-state panel renders Title + Subtitle only (not Details.Body),
+		// so stack every hint line in Subtitle. Opening the row shows markdown.
+		return new ListItem(new SearchHintPage(headline, includeSearchFormatHint))
+		{
+			Title = headline,
+			Subtitle = SearchHints.BuildListHintEmptySubtitle(),
+			Icon = Icons.WeatherIcon,
+			Details = new Details
+			{
+				Title = headline,
+				Body = SearchHints.BuildListHintBody(),
+			},
+		};
 	}
 
 	public override void UpdateSearchText(string oldSearch, string newSearch)
@@ -288,11 +339,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			ResetSearchToken();
 			_lastSearchQuery = newSearch;
-			EmptyContent = new ListItem(new EmptySearchHintPage())
-			{
-				Title = Resources.search_min_chars,
-				Icon = Icons.WeatherIcon,
-			};
+			EmptyContent = BuildSearchHintCard(Resources.search_min_chars);
 			lock (_sync)
 			{
 				_items = [];
@@ -361,12 +408,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 			if (locations.Count == 0)
 			{
-				EmptyContent = new ListItem(new EmptySearchHintPage())
-				{
-					Title = Resources.no_locations_found,
-					Subtitle = Resources.search_format_hint,
-					Icon = Icons.WeatherIcon,
-				};
+				EmptyContent = BuildSearchHintCard(Resources.no_locations_found, includeSearchFormatHint: true);
 
 				lock (_sync)
 				{
@@ -473,6 +515,13 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		{
 			var ct = ResetSearchToken();
 			LoadFavoriteLocations(ct);
+		}
+		else
+		{
+			// Reflect the new favorite/unfavorite state in any item currently
+			// shown by the active search results without forcing a fresh
+			// network round trip.
+			RefreshWeather();
 		}
 	}
 
