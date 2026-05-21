@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true" />
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="extension_name" xml:space="preserve"><value>الطقس</value></data>
+  <data name="extension_description" xml:space="preserve"><value>اطّلع على الطقس الحالي وتوقّعات الجو</value></data>
+  <data name="plugin_name" xml:space="preserve"><value>الطقس</value></data>
+  <data name="plugin_description" xml:space="preserve"><value>الطقس الحالي وتوقّعاته</value></data>
+  <data name="search_placeholder" xml:space="preserve"><value>أدخل الرمز البريدي أو اسم المدينة…</value></data>
+  <data name="no_locations_found" xml:space="preserve"><value>لم يتم العثور على مواقع</value></data>
+  <data name="search_min_chars" xml:space="preserve"><value>أدخل ٣ أحرف على الأقل</value></data>
+  <data name="no_results_for" xml:space="preserve"><value>لا نتائج لـ "{0}"</value></data>
+  <data name="search_format_hint" xml:space="preserve"><value>جرّب: المدينة، المحافظة/الولاية، الدولة، الرمز البريدي، أو أي مزيج منها.
+
+إذا استمرّت المشكلة، يُرجى [الإبلاغ عن خطأ](https://github.com/michaeljolley/weatherextension/issues/new).</value></data>
+  <data name="no_data_available" xml:space="preserve"><value>لا توجد بيانات طقس متاحة</value></data>
+  <data name="current_weather" xml:space="preserve"><value>الطقس الحالي</value></data>
+  <data name="dock_band_subtitle_title" xml:space="preserve"><value>عنوان فرعي لشريط الإرساء</value></data>
+  <data name="dock_band_subtitle_description" xml:space="preserve"><value>اختر ما يظهر في العنوان الفرعي لشريط الإرساء</value></data>
+  <data name="dock_band_subtitle_location" xml:space="preserve"><value>اسم الموقع</value></data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve"><value>درجة الحرارة العليا/الدنيا</value></data>
+  <data name="loading_data" xml:space="preserve"><value>جارٍ تحميل بيانات الطقس…</value></data>
+  <data name="today" xml:space="preserve"><value>اليوم</value></data>
+  <data name="tomorrow" xml:space="preserve"><value>غدًا</value></data>
+  <data name="temperature" xml:space="preserve"><value>درجة الحرارة</value></data>
+  <data name="feels_like" xml:space="preserve"><value>الإحساس الفعلي</value></data>
+  <data name="humidity" xml:space="preserve"><value>الرطوبة</value></data>
+  <data name="wind_speed" xml:space="preserve"><value>سرعة الرياح</value></data>
+  <data name="wind_direction" xml:space="preserve"><value>اتجاه الرياح</value></data>
+  <data name="high" xml:space="preserve"><value>عظمى</value></data>
+  <data name="low" xml:space="preserve"><value>صغرى</value></data>
+  <data name="precipitation" xml:space="preserve"><value>هطول الأمطار</value></data>
+  <data name="loading" xml:space="preserve"><value>جارٍ التحميل…</value></data>
+  <data name="unavailable" xml:space="preserve"><value>الطقس غير متاح</value></data>
+  <data name="weather_service_error" xml:space="preserve"><value>خدمة الطقس غير متاحة</value></data>
+  <data name="network_error" xml:space="preserve"><value>خطأ في الاتصال</value></data>
+  <data name="location_not_found" xml:space="preserve"><value>لم يتم العثور على الموقع</value></data>
+  <data name="temperature_unit_title" xml:space="preserve"><value>وحدة درجة الحرارة</value></data>
+  <data name="temperature_unit_description" xml:space="preserve"><value>اختر وحدة درجة الحرارة</value></data>
+  <data name="celsius" xml:space="preserve"><value>مئوية</value></data>
+  <data name="fahrenheit" xml:space="preserve"><value>فهرنهايت</value></data>
+  <data name="wind_speed_unit_title" xml:space="preserve"><value>وحدة سرعة الرياح</value></data>
+  <data name="wind_speed_unit_description" xml:space="preserve"><value>اختر وحدة سرعة الرياح</value></data>
+  <data name="kmh" xml:space="preserve"><value>كم/س</value></data>
+  <data name="mph" xml:space="preserve"><value>ميل/س</value></data>
+  <data name="show_forecast_title" xml:space="preserve"><value>إظهار التوقّعات</value></data>
+  <data name="show_forecast_description" xml:space="preserve"><value>عرض توقّعات لعدة أيام</value></data>
+  <data name="update_interval_title" xml:space="preserve"><value>فاصل التحديث</value></data>
+  <data name="update_interval_description" xml:space="preserve"><value>عدد مرات تحديث بيانات الطقس</value></data>
+  <data name="one_hour" xml:space="preserve"><value>ساعة واحدة</value></data>
+  <data name="three_hours" xml:space="preserve"><value>٣ ساعات</value></data>
+  <data name="six_hours" xml:space="preserve"><value>٦ ساعات</value></data>
+  <data name="twelve_hours" xml:space="preserve"><value>١٢ ساعة</value></data>
+  <data name="connectivity_no_internet" xml:space="preserve"><value>لا يوجد اتصال بالإنترنت</value></data>
+  <data name="connectivity_api_blocked" xml:space="preserve"><value>تعذّر الوصول إلى واجهة الطقس — قد تكون محظورة في منطقتك</value></data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve"><value>الطقس الحالي</value></data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve"><value>التوقّعات</value></data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve"><value>التوقّعات بالساعة</value></data>
+  <data name="favorites_section_title" xml:space="preserve"><value>المفضلة</value></data>
+  <data name="favorite_command_name" xml:space="preserve"><value>إضافة إلى المفضلة</value></data>
+  <data name="unfavorite_command_name" xml:space="preserve"><value>إزالة من المفضلة</value></data>
+  <data name="no_favorites_hint" xml:space="preserve"><value>ابحث عن موقع وأضِفه إلى مفضلاتك</value></data>
+  
+  <data name="favorite_tag" xml:space="preserve"><value>مفضّل</value></data>
+  <data name="dock_band_loading" xml:space="preserve"><value>جارٍ تحميل الطقس…</value></data>
+  <data name="card_section_current" xml:space="preserve"><value>الحالي</value></data>
+  <data name="card_section_next_three_hours" xml:space="preserve"><value>الساعات الثلاث القادمة</value></data>
+  <data name="card_section_three_day_forecast" xml:space="preserve"><value>توقّعات ٣ أيام</value></data>
+  <data name="card_label_high_low" xml:space="preserve"><value>عظمى / صغرى</value></data>
+  <data name="card_condition_unknown" xml:space="preserve"><value>غير معروف</value></data>
+  <data name="weather_clear" xml:space="preserve"><value>صافٍ</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>صافٍ في الغالب</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>غائم جزئيًا</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>غائم</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>ضباب</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>رذاذ</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>مطر</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>ثلج</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>زخّات مطر</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>زخّات ثلج</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>عاصفة رعدية</value></data>
+  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1} (الإحساس الفعلي {2})</value></data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve"><value>التوقّعات</value></data>
+  <data name="page_hourly_title" xml:space="preserve"><value>التوقّعات بالساعة</value></data>
+  <data name="card_section_next_hours" xml:space="preserve"><value>الساعات القادمة ({0})</value></data>
+  <data name="card_section_day_forecast" xml:space="preserve"><value>توقّعات {0} أيام</value></data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve"><value>الإعدادات</value></data>
+  <data name="hour_format_title" xml:space="preserve"><value>صيغة الوقت</value></data>
+  <data name="hour_format_description" xml:space="preserve"><value>اختر بين عرض 12 ساعة و24 ساعة.</value></data>
+  <data name="hour_format_12" xml:space="preserve"><value>12 ساعة (ص/م)</value></data>
+  <data name="hour_format_24" xml:space="preserve"><value>24 ساعة</value></data>
+  <data name="settings_save_button" xml:space="preserve"><value>حفظ</value></data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>أمثلة:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>الرياض
+جدة، SA
+11411
+القاهرة، مصر</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>اضغط Ctrl+D لإضافة موقع إلى المفضلة والشريط.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>عند وجود عدة مفضلات، تستخدم البطاقة الموسّعة المفضلة الأولى افتراضيًا. أضف مواقع إضافية إلى الشريط في أي وقت من تخصيص الشريط في لوحة الأوامر.</value></data></root>

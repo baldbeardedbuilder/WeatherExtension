@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true" />
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="extension_name" xml:space="preserve"><value>Pogoda</value></data>
+  <data name="extension_description" xml:space="preserve"><value>Sprawdź aktualną pogodę i prognozę</value></data>
+  <data name="plugin_name" xml:space="preserve"><value>Pogoda</value></data>
+  <data name="plugin_description" xml:space="preserve"><value>Aktualna pogoda i prognoza</value></data>
+  <data name="search_placeholder" xml:space="preserve"><value>Wpisz kod pocztowy lub nazwę miasta…</value></data>
+  <data name="no_locations_found" xml:space="preserve"><value>Nie znaleziono lokalizacji</value></data>
+  <data name="search_min_chars" xml:space="preserve"><value>Wpisz co najmniej 3 znaki</value></data>
+  <data name="no_results_for" xml:space="preserve"><value>Brak wyników dla „{0}”</value></data>
+  <data name="search_format_hint" xml:space="preserve"><value>Spróbuj: Miasto, Województwo/Stan, Kraj, kod pocztowy lub kombinacja.
+
+Jeśli problem się powtarza, [zgłoś błąd](https://github.com/michaeljolley/weatherextension/issues/new).</value></data>
+  <data name="no_data_available" xml:space="preserve"><value>Brak dostępnych danych pogodowych</value></data>
+  <data name="current_weather" xml:space="preserve"><value>Aktualna pogoda</value></data>
+  <data name="dock_band_subtitle_title" xml:space="preserve"><value>Podtytuł paska doku</value></data>
+  <data name="dock_band_subtitle_description" xml:space="preserve"><value>Wybierz, co wyświetlać w podtytule paska doku</value></data>
+  <data name="dock_band_subtitle_location" xml:space="preserve"><value>Nazwa lokalizacji</value></data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve"><value>Maks./Min. temperatura</value></data>
+  <data name="loading_data" xml:space="preserve"><value>Ładowanie danych pogodowych…</value></data>
+  <data name="today" xml:space="preserve"><value>Dzisiaj</value></data>
+  <data name="tomorrow" xml:space="preserve"><value>Jutro</value></data>
+  <data name="temperature" xml:space="preserve"><value>Temperatura</value></data>
+  <data name="feels_like" xml:space="preserve"><value>Odczuwalna</value></data>
+  <data name="humidity" xml:space="preserve"><value>Wilgotność</value></data>
+  <data name="wind_speed" xml:space="preserve"><value>Prędkość wiatru</value></data>
+  <data name="wind_direction" xml:space="preserve"><value>Kierunek wiatru</value></data>
+  <data name="high" xml:space="preserve"><value>Maks.</value></data>
+  <data name="low" xml:space="preserve"><value>Min.</value></data>
+  <data name="precipitation" xml:space="preserve"><value>Opady</value></data>
+  <data name="loading" xml:space="preserve"><value>Ładowanie…</value></data>
+  <data name="unavailable" xml:space="preserve"><value>Pogoda niedostępna</value></data>
+  <data name="weather_service_error" xml:space="preserve"><value>Usługa pogodowa niedostępna</value></data>
+  <data name="network_error" xml:space="preserve"><value>Błąd połączenia</value></data>
+  <data name="location_not_found" xml:space="preserve"><value>Nie znaleziono lokalizacji</value></data>
+  <data name="temperature_unit_title" xml:space="preserve"><value>Jednostka temperatury</value></data>
+  <data name="temperature_unit_description" xml:space="preserve"><value>Wybierz jednostkę temperatury</value></data>
+  <data name="celsius" xml:space="preserve"><value>Celsjusz</value></data>
+  <data name="fahrenheit" xml:space="preserve"><value>Fahrenheit</value></data>
+  <data name="wind_speed_unit_title" xml:space="preserve"><value>Jednostka prędkości wiatru</value></data>
+  <data name="wind_speed_unit_description" xml:space="preserve"><value>Wybierz jednostkę prędkości wiatru</value></data>
+  <data name="kmh" xml:space="preserve"><value>km/h</value></data>
+  <data name="mph" xml:space="preserve"><value>mph</value></data>
+  <data name="show_forecast_title" xml:space="preserve"><value>Pokaż prognozę</value></data>
+  <data name="show_forecast_description" xml:space="preserve"><value>Pokaż prognozę na kilka dni</value></data>
+  <data name="update_interval_title" xml:space="preserve"><value>Częstotliwość odświeżania</value></data>
+  <data name="update_interval_description" xml:space="preserve"><value>Jak często odświeżać dane pogodowe</value></data>
+  <data name="one_hour" xml:space="preserve"><value>1 godzina</value></data>
+  <data name="three_hours" xml:space="preserve"><value>3 godziny</value></data>
+  <data name="six_hours" xml:space="preserve"><value>6 godzin</value></data>
+  <data name="twelve_hours" xml:space="preserve"><value>12 godzin</value></data>
+  <data name="connectivity_no_internet" xml:space="preserve"><value>Brak połączenia z Internetem</value></data>
+  <data name="connectivity_api_blocked" xml:space="preserve"><value>API pogodowe niedostępne — może być zablokowane w Twoim regionie</value></data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve"><value>aktualna pogoda</value></data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve"><value>prognoza</value></data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve"><value>prognoza godzinowa</value></data>
+  <data name="favorites_section_title" xml:space="preserve"><value>Ulubione</value></data>
+  <data name="favorite_command_name" xml:space="preserve"><value>Dodaj do ulubionych</value></data>
+  <data name="unfavorite_command_name" xml:space="preserve"><value>Usuń z ulubionych</value></data>
+  <data name="no_favorites_hint" xml:space="preserve"><value>Wyszukaj lokalizację i dodaj ją do ulubionych</value></data>
+  
+  <data name="favorite_tag" xml:space="preserve"><value>Ulubione</value></data>
+  <data name="dock_band_loading" xml:space="preserve"><value>Ładowanie pogody…</value></data>
+  <data name="card_section_current" xml:space="preserve"><value>Teraz</value></data>
+  <data name="card_section_next_three_hours" xml:space="preserve"><value>Najbliższe 3 godziny</value></data>
+  <data name="card_section_three_day_forecast" xml:space="preserve"><value>Prognoza na 3 dni</value></data>
+  <data name="card_label_high_low" xml:space="preserve"><value>Maks. / Min.</value></data>
+  <data name="card_condition_unknown" xml:space="preserve"><value>Nieznany</value></data>
+  <data name="weather_clear" xml:space="preserve"><value>Bezchmurnie</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>Przeważnie bezchmurnie</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>Częściowe zachmurzenie</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>Pochmurno</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>Mgła</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>Mżawka</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>Deszcz</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>Śnieg</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>Przelotne opady</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>Przelotne opady śniegu</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>Burza</value></data>
+  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1} (odczuwalna {2})</value></data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve"><value>Prognoza</value></data>
+  <data name="page_hourly_title" xml:space="preserve"><value>Prognoza godzinowa</value></data>
+  <data name="card_section_next_hours" xml:space="preserve"><value>Najbliższe {0} godz.</value></data>
+  <data name="card_section_day_forecast" xml:space="preserve"><value>Prognoza na {0} dni</value></data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="hour_format_title" xml:space="preserve"><value>Format godziny</value></data>
+  <data name="hour_format_description" xml:space="preserve"><value>Wybierz format 12- lub 24-godzinny.</value></data>
+  <data name="hour_format_12" xml:space="preserve"><value>12 godzin (AM/PM)</value></data>
+  <data name="hour_format_24" xml:space="preserve"><value>24 godziny</value></data>
+  <data name="settings_save_button" xml:space="preserve"><value>Zapisz</value></data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>Przykłady:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>Warszawa
+Kraków, PL
+00-001
+Berlin, Niemcy</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Naciśnij Ctrl+D, aby dodać miejsce do ulubionych i paska.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>Przy wielu ulubionych rozwinięta karta domyślnie używa pierwszego. Kolejne lokalizacje dodasz w dowolnym momencie w dostosowaniu paska w Palecie poleceń.</value></data></root>

@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true" />
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="extension_name" xml:space="preserve"><value>天气</value></data>
+  <data name="extension_description" xml:space="preserve"><value>查看当前天气和预报</value></data>
+  <data name="plugin_name" xml:space="preserve"><value>天气</value></data>
+  <data name="plugin_description" xml:space="preserve"><value>当前天气和预报</value></data>
+  <data name="search_placeholder" xml:space="preserve"><value>输入邮编或城市名…</value></data>
+  <data name="no_locations_found" xml:space="preserve"><value>未找到地点</value></data>
+  <data name="search_min_chars" xml:space="preserve"><value>请至少输入 3 个字符</value></data>
+  <data name="no_results_for" xml:space="preserve"><value>“{0}”没有结果</value></data>
+  <data name="search_format_hint" xml:space="preserve"><value>请尝试：城市、省/州、国家、邮编或它们的组合。
+
+如仍有问题，请[提交问题反馈](https://github.com/michaeljolley/weatherextension/issues/new)。</value></data>
+  <data name="no_data_available" xml:space="preserve"><value>暂无天气数据</value></data>
+  <data name="current_weather" xml:space="preserve"><value>当前天气</value></data>
+  <data name="dock_band_subtitle_title" xml:space="preserve"><value>停靠条副标题</value></data>
+  <data name="dock_band_subtitle_description" xml:space="preserve"><value>选择停靠条副标题中要显示的内容</value></data>
+  <data name="dock_band_subtitle_location" xml:space="preserve"><value>地点名称</value></data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve"><value>最高/最低温度</value></data>
+  <data name="loading_data" xml:space="preserve"><value>正在加载天气数据…</value></data>
+  <data name="today" xml:space="preserve"><value>今天</value></data>
+  <data name="tomorrow" xml:space="preserve"><value>明天</value></data>
+  <data name="temperature" xml:space="preserve"><value>温度</value></data>
+  <data name="feels_like" xml:space="preserve"><value>体感</value></data>
+  <data name="humidity" xml:space="preserve"><value>湿度</value></data>
+  <data name="wind_speed" xml:space="preserve"><value>风速</value></data>
+  <data name="wind_direction" xml:space="preserve"><value>风向</value></data>
+  <data name="high" xml:space="preserve"><value>最高</value></data>
+  <data name="low" xml:space="preserve"><value>最低</value></data>
+  <data name="precipitation" xml:space="preserve"><value>降水</value></data>
+  <data name="loading" xml:space="preserve"><value>加载中…</value></data>
+  <data name="unavailable" xml:space="preserve"><value>天气不可用</value></data>
+  <data name="weather_service_error" xml:space="preserve"><value>天气服务不可用</value></data>
+  <data name="network_error" xml:space="preserve"><value>连接错误</value></data>
+  <data name="location_not_found" xml:space="preserve"><value>未找到地点</value></data>
+  <data name="temperature_unit_title" xml:space="preserve"><value>温度单位</value></data>
+  <data name="temperature_unit_description" xml:space="preserve"><value>选择温度单位</value></data>
+  <data name="celsius" xml:space="preserve"><value>摄氏度</value></data>
+  <data name="fahrenheit" xml:space="preserve"><value>华氏度</value></data>
+  <data name="wind_speed_unit_title" xml:space="preserve"><value>风速单位</value></data>
+  <data name="wind_speed_unit_description" xml:space="preserve"><value>选择风速单位</value></data>
+  <data name="kmh" xml:space="preserve"><value>km/h</value></data>
+  <data name="mph" xml:space="preserve"><value>mph</value></data>
+  <data name="show_forecast_title" xml:space="preserve"><value>显示预报</value></data>
+  <data name="show_forecast_description" xml:space="preserve"><value>显示多日天气预报</value></data>
+  <data name="update_interval_title" xml:space="preserve"><value>更新间隔</value></data>
+  <data name="update_interval_description" xml:space="preserve"><value>刷新天气数据的频率</value></data>
+  <data name="one_hour" xml:space="preserve"><value>1 小时</value></data>
+  <data name="three_hours" xml:space="preserve"><value>3 小时</value></data>
+  <data name="six_hours" xml:space="preserve"><value>6 小时</value></data>
+  <data name="twelve_hours" xml:space="preserve"><value>12 小时</value></data>
+  <data name="connectivity_no_internet" xml:space="preserve"><value>无网络连接</value></data>
+  <data name="connectivity_api_blocked" xml:space="preserve"><value>无法访问天气 API — 在你所在地区可能被屏蔽</value></data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve"><value>当前天气</value></data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve"><value>预报</value></data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve"><value>每小时预报</value></data>
+  <data name="favorites_section_title" xml:space="preserve"><value>收藏夹</value></data>
+  <data name="favorite_command_name" xml:space="preserve"><value>添加到收藏夹</value></data>
+  <data name="unfavorite_command_name" xml:space="preserve"><value>从收藏夹移除</value></data>
+  <data name="no_favorites_hint" xml:space="preserve"><value>搜索一个地点并添加到收藏夹</value></data>
+  
+  <data name="favorite_tag" xml:space="preserve"><value>已收藏</value></data>
+  <data name="dock_band_loading" xml:space="preserve"><value>正在加载天气…</value></data>
+  <data name="card_section_current" xml:space="preserve"><value>当前</value></data>
+  <data name="card_section_next_three_hours" xml:space="preserve"><value>接下来3小时</value></data>
+  <data name="card_section_three_day_forecast" xml:space="preserve"><value>3天预报</value></data>
+  <data name="card_label_high_low" xml:space="preserve"><value>最高 / 最低</value></data>
+  <data name="card_condition_unknown" xml:space="preserve"><value>未知</value></data>
+  <data name="weather_clear" xml:space="preserve"><value>晴朗</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>基本晴朗</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>局部多云</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>阴</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>雾</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>毛毛雨</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>雨</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>雪</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>阵雨</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>阵雪</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>雷暴</value></data>
+  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1}（体感 {2}）</value></data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve"><value>预报</value></data>
+  <data name="page_hourly_title" xml:space="preserve"><value>每小时预报</value></data>
+  <data name="card_section_next_hours" xml:space="preserve"><value>接下来 {0} 小时</value></data>
+  <data name="card_section_day_forecast" xml:space="preserve"><value>{0} 天预报</value></data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve"><value>设置</value></data>
+  <data name="hour_format_title" xml:space="preserve"><value>时间格式</value></data>
+  <data name="hour_format_description" xml:space="preserve"><value>选择 12 小时制或 24 小时制。</value></data>
+  <data name="hour_format_12" xml:space="preserve"><value>12 小时 (AM/PM)</value></data>
+  <data name="hour_format_24" xml:space="preserve"><value>24 小时</value></data>
+  <data name="settings_save_button" xml:space="preserve"><value>保存</value></data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>示例：</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>北京
+上海, CN
+100000
+香港, 中国</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>按 Ctrl+D 将位置添加到收藏夹和停靠区。</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>有多个收藏时，展开卡片默认使用第一个收藏。可在命令面板的停靠区自定义中随时添加第二个及更多位置。</value></data></root>

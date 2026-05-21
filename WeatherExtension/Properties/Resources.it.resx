@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true" />
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="extension_name" xml:space="preserve"><value>Meteo</value></data>
+  <data name="extension_description" xml:space="preserve"><value>Mostra il meteo attuale e le previsioni</value></data>
+  <data name="plugin_name" xml:space="preserve"><value>Meteo</value></data>
+  <data name="plugin_description" xml:space="preserve"><value>Meteo attuale e previsioni</value></data>
+  <data name="search_placeholder" xml:space="preserve"><value>Inserisci un CAP o una città…</value></data>
+  <data name="no_locations_found" xml:space="preserve"><value>Nessuna località trovata</value></data>
+  <data name="search_min_chars" xml:space="preserve"><value>Inserisci almeno 3 caratteri</value></data>
+  <data name="no_results_for" xml:space="preserve"><value>Nessun risultato per «{0}»</value></data>
+  <data name="search_format_hint" xml:space="preserve"><value>Prova: Città, Regione/Stato, Paese, CAP o una qualsiasi combinazione.
+
+Se il problema persiste, [segnala un bug](https://github.com/michaeljolley/weatherextension/issues/new).</value></data>
+  <data name="no_data_available" xml:space="preserve"><value>Nessun dato meteo disponibile</value></data>
+  <data name="current_weather" xml:space="preserve"><value>Meteo attuale</value></data>
+  <data name="dock_band_subtitle_title" xml:space="preserve"><value>Sottotitolo della banda del dock</value></data>
+  <data name="dock_band_subtitle_description" xml:space="preserve"><value>Scegli cosa mostrare nel sottotitolo della banda del dock</value></data>
+  <data name="dock_band_subtitle_location" xml:space="preserve"><value>Nome località</value></data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve"><value>Temperatura max/min</value></data>
+  <data name="loading_data" xml:space="preserve"><value>Caricamento dati meteo…</value></data>
+  <data name="today" xml:space="preserve"><value>Oggi</value></data>
+  <data name="tomorrow" xml:space="preserve"><value>Domani</value></data>
+  <data name="temperature" xml:space="preserve"><value>Temperatura</value></data>
+  <data name="feels_like" xml:space="preserve"><value>Percepita</value></data>
+  <data name="humidity" xml:space="preserve"><value>Umidità</value></data>
+  <data name="wind_speed" xml:space="preserve"><value>Velocità del vento</value></data>
+  <data name="wind_direction" xml:space="preserve"><value>Direzione del vento</value></data>
+  <data name="high" xml:space="preserve"><value>Max</value></data>
+  <data name="low" xml:space="preserve"><value>Min</value></data>
+  <data name="precipitation" xml:space="preserve"><value>Precipitazioni</value></data>
+  <data name="loading" xml:space="preserve"><value>Caricamento…</value></data>
+  <data name="unavailable" xml:space="preserve"><value>Meteo non disponibile</value></data>
+  <data name="weather_service_error" xml:space="preserve"><value>Servizio meteo non disponibile</value></data>
+  <data name="network_error" xml:space="preserve"><value>Errore di connessione</value></data>
+  <data name="location_not_found" xml:space="preserve"><value>Località non trovata</value></data>
+  <data name="temperature_unit_title" xml:space="preserve"><value>Unità di temperatura</value></data>
+  <data name="temperature_unit_description" xml:space="preserve"><value>Scegli l'unità di temperatura</value></data>
+  <data name="celsius" xml:space="preserve"><value>Celsius</value></data>
+  <data name="fahrenheit" xml:space="preserve"><value>Fahrenheit</value></data>
+  <data name="wind_speed_unit_title" xml:space="preserve"><value>Unità di velocità del vento</value></data>
+  <data name="wind_speed_unit_description" xml:space="preserve"><value>Scegli l'unità di velocità del vento</value></data>
+  <data name="kmh" xml:space="preserve"><value>km/h</value></data>
+  <data name="mph" xml:space="preserve"><value>mph</value></data>
+  <data name="show_forecast_title" xml:space="preserve"><value>Mostra previsione</value></data>
+  <data name="show_forecast_description" xml:space="preserve"><value>Mostra le previsioni su più giorni</value></data>
+  <data name="update_interval_title" xml:space="preserve"><value>Intervallo di aggiornamento</value></data>
+  <data name="update_interval_description" xml:space="preserve"><value>Frequenza di aggiornamento dei dati meteo</value></data>
+  <data name="one_hour" xml:space="preserve"><value>1 ora</value></data>
+  <data name="three_hours" xml:space="preserve"><value>3 ore</value></data>
+  <data name="six_hours" xml:space="preserve"><value>6 ore</value></data>
+  <data name="twelve_hours" xml:space="preserve"><value>12 ore</value></data>
+  <data name="connectivity_no_internet" xml:space="preserve"><value>Nessuna connessione Internet</value></data>
+  <data name="connectivity_api_blocked" xml:space="preserve"><value>API meteo non raggiungibile — potrebbe essere bloccata nella tua regione</value></data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve"><value>meteo attuale</value></data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve"><value>previsione</value></data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve"><value>previsione oraria</value></data>
+  <data name="favorites_section_title" xml:space="preserve"><value>Preferiti</value></data>
+  <data name="favorite_command_name" xml:space="preserve"><value>Aggiungi ai preferiti</value></data>
+  <data name="unfavorite_command_name" xml:space="preserve"><value>Rimuovi dai preferiti</value></data>
+  <data name="no_favorites_hint" xml:space="preserve"><value>Cerca una località e aggiungila ai preferiti</value></data>
+  
+  <data name="favorite_tag" xml:space="preserve"><value>Preferito</value></data>
+  <data name="dock_band_loading" xml:space="preserve"><value>Caricamento meteo…</value></data>
+  <data name="card_section_current" xml:space="preserve"><value>Attuale</value></data>
+  <data name="card_section_next_three_hours" xml:space="preserve"><value>Prossime tre ore</value></data>
+  <data name="card_section_three_day_forecast" xml:space="preserve"><value>Previsione a 3 giorni</value></data>
+  <data name="card_label_high_low" xml:space="preserve"><value>Max / Min</value></data>
+  <data name="card_condition_unknown" xml:space="preserve"><value>Sconosciuto</value></data>
+  <data name="weather_clear" xml:space="preserve"><value>Sereno</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>Prevalentemente sereno</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>Parzialmente nuvoloso</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>Coperto</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>Nebbia</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>Pioggerella</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>Pioggia</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>Neve</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>Rovesci</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>Rovesci di neve</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>Temporale</value></data>
+  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1} (percepita {2})</value></data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve"><value>Previsione</value></data>
+  <data name="page_hourly_title" xml:space="preserve"><value>Previsione oraria</value></data>
+  <data name="card_section_next_hours" xml:space="preserve"><value>Prossime {0} ore</value></data>
+  <data name="card_section_day_forecast" xml:space="preserve"><value>Previsione a {0} giorni</value></data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve"><value>Impostazioni</value></data>
+  <data name="hour_format_title" xml:space="preserve"><value>Formato orario</value></data>
+  <data name="hour_format_description" xml:space="preserve"><value>Scegli tra formato 12 e 24 ore.</value></data>
+  <data name="hour_format_12" xml:space="preserve"><value>12 ore (AM/PM)</value></data>
+  <data name="hour_format_24" xml:space="preserve"><value>24 ore</value></data>
+  <data name="settings_save_button" xml:space="preserve"><value>Salva</value></data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>Esempi:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>Roma
+Milano, IT
+00100
+Lugano, Svizzera</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Premi Ctrl+D per aggiungere un luogo ai preferiti e al dock.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>Con più preferiti, la scheda espansa usa per impostazione predefinita il primo preferito. Aggiungi altre località al dock in qualsiasi momento dalla personalizzazione dock della Tavolozza comandi.</value></data></root>

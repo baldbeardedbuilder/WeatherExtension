@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true" />
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="extension_name" xml:space="preserve"><value>Weer</value></data>
+  <data name="extension_description" xml:space="preserve"><value>Bekijk het huidige weer en de verwachting</value></data>
+  <data name="plugin_name" xml:space="preserve"><value>Weer</value></data>
+  <data name="plugin_description" xml:space="preserve"><value>Huidig weer en verwachting</value></data>
+  <data name="search_placeholder" xml:space="preserve"><value>Voer een postcode of plaatsnaam in…</value></data>
+  <data name="no_locations_found" xml:space="preserve"><value>Geen locaties gevonden</value></data>
+  <data name="search_min_chars" xml:space="preserve"><value>Voer minimaal 3 tekens in</value></data>
+  <data name="no_results_for" xml:space="preserve"><value>Geen resultaten voor '{0}'</value></data>
+  <data name="search_format_hint" xml:space="preserve"><value>Probeer: Stad, Provincie/Staat, Land, Postcode of een combinatie.
+
+Lukt het nog steeds niet, [meld dan een bug](https://github.com/michaeljolley/weatherextension/issues/new).</value></data>
+  <data name="no_data_available" xml:space="preserve"><value>Geen weergegevens beschikbaar</value></data>
+  <data name="current_weather" xml:space="preserve"><value>Huidig weer</value></data>
+  <data name="dock_band_subtitle_title" xml:space="preserve"><value>Ondertitel van dockbalk</value></data>
+  <data name="dock_band_subtitle_description" xml:space="preserve"><value>Kies wat in de ondertitel van de dockbalk verschijnt</value></data>
+  <data name="dock_band_subtitle_location" xml:space="preserve"><value>Naam locatie</value></data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve"><value>Hoogste/Laagste temperatuur</value></data>
+  <data name="loading_data" xml:space="preserve"><value>Weergegevens laden…</value></data>
+  <data name="today" xml:space="preserve"><value>Vandaag</value></data>
+  <data name="tomorrow" xml:space="preserve"><value>Morgen</value></data>
+  <data name="temperature" xml:space="preserve"><value>Temperatuur</value></data>
+  <data name="feels_like" xml:space="preserve"><value>Voelt als</value></data>
+  <data name="humidity" xml:space="preserve"><value>Luchtvochtigheid</value></data>
+  <data name="wind_speed" xml:space="preserve"><value>Windsnelheid</value></data>
+  <data name="wind_direction" xml:space="preserve"><value>Windrichting</value></data>
+  <data name="high" xml:space="preserve"><value>Hoog</value></data>
+  <data name="low" xml:space="preserve"><value>Laag</value></data>
+  <data name="precipitation" xml:space="preserve"><value>Neerslag</value></data>
+  <data name="loading" xml:space="preserve"><value>Laden…</value></data>
+  <data name="unavailable" xml:space="preserve"><value>Weer niet beschikbaar</value></data>
+  <data name="weather_service_error" xml:space="preserve"><value>Weerservice niet beschikbaar</value></data>
+  <data name="network_error" xml:space="preserve"><value>Verbindingsfout</value></data>
+  <data name="location_not_found" xml:space="preserve"><value>Locatie niet gevonden</value></data>
+  <data name="temperature_unit_title" xml:space="preserve"><value>Temperatuureenheid</value></data>
+  <data name="temperature_unit_description" xml:space="preserve"><value>Kies de temperatuureenheid</value></data>
+  <data name="celsius" xml:space="preserve"><value>Celsius</value></data>
+  <data name="fahrenheit" xml:space="preserve"><value>Fahrenheit</value></data>
+  <data name="wind_speed_unit_title" xml:space="preserve"><value>Eenheid windsnelheid</value></data>
+  <data name="wind_speed_unit_description" xml:space="preserve"><value>Kies de eenheid van windsnelheid</value></data>
+  <data name="kmh" xml:space="preserve"><value>km/u</value></data>
+  <data name="mph" xml:space="preserve"><value>mph</value></data>
+  <data name="show_forecast_title" xml:space="preserve"><value>Verwachting tonen</value></data>
+  <data name="show_forecast_description" xml:space="preserve"><value>Toon meerdaagse verwachting</value></data>
+  <data name="update_interval_title" xml:space="preserve"><value>Update-interval</value></data>
+  <data name="update_interval_description" xml:space="preserve"><value>Hoe vaak weergegevens worden vernieuwd</value></data>
+  <data name="one_hour" xml:space="preserve"><value>1 uur</value></data>
+  <data name="three_hours" xml:space="preserve"><value>3 uur</value></data>
+  <data name="six_hours" xml:space="preserve"><value>6 uur</value></data>
+  <data name="twelve_hours" xml:space="preserve"><value>12 uur</value></data>
+  <data name="connectivity_no_internet" xml:space="preserve"><value>Geen internetverbinding</value></data>
+  <data name="connectivity_api_blocked" xml:space="preserve"><value>Weer-API niet bereikbaar — wordt mogelijk in uw regio geblokkeerd</value></data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve"><value>huidig weer</value></data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve"><value>verwachting</value></data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve"><value>uurverwachting</value></data>
+  <data name="favorites_section_title" xml:space="preserve"><value>Favorieten</value></data>
+  <data name="favorite_command_name" xml:space="preserve"><value>Toevoegen aan favorieten</value></data>
+  <data name="unfavorite_command_name" xml:space="preserve"><value>Verwijderen uit favorieten</value></data>
+  <data name="no_favorites_hint" xml:space="preserve"><value>Zoek een locatie en voeg deze toe aan favorieten</value></data>
+  
+  <data name="favorite_tag" xml:space="preserve"><value>Favoriet</value></data>
+  <data name="dock_band_loading" xml:space="preserve"><value>Weer laden…</value></data>
+  <data name="card_section_current" xml:space="preserve"><value>Nu</value></data>
+  <data name="card_section_next_three_hours" xml:space="preserve"><value>Komende drie uur</value></data>
+  <data name="card_section_three_day_forecast" xml:space="preserve"><value>Verwachting voor 3 dagen</value></data>
+  <data name="card_label_high_low" xml:space="preserve"><value>Hoog / Laag</value></data>
+  <data name="card_condition_unknown" xml:space="preserve"><value>Onbekend</value></data>
+  <data name="weather_clear" xml:space="preserve"><value>Helder</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>Voornamelijk helder</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>Gedeeltelijk bewolkt</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>Bewolkt</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>Mist</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>Motregen</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>Regen</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>Sneeuw</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>Regenbuien</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>Sneeuwbuien</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>Onweer</value></data>
+  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1} (voelt als {2})</value></data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve"><value>Verwachting</value></data>
+  <data name="page_hourly_title" xml:space="preserve"><value>Uurverwachting</value></data>
+  <data name="card_section_next_hours" xml:space="preserve"><value>Komende {0} uur</value></data>
+  <data name="card_section_day_forecast" xml:space="preserve"><value>Verwachting voor {0} dagen</value></data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve"><value>Instellingen</value></data>
+  <data name="hour_format_title" xml:space="preserve"><value>Tijdnotatie</value></data>
+  <data name="hour_format_description" xml:space="preserve"><value>Kies tussen 12-uurs en 24-uurs weergave.</value></data>
+  <data name="hour_format_12" xml:space="preserve"><value>12 uur (AM/PM)</value></data>
+  <data name="hour_format_24" xml:space="preserve"><value>24 uur</value></data>
+  <data name="settings_save_button" xml:space="preserve"><value>Opslaan</value></data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>Voorbeelden:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>Amsterdam
+Rotterdam, NL
+1011 AB
+Brussel, België</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Druk op Ctrl+D om een locatie toe te voegen aan favorieten en de dock.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>Met meerdere favorieten gebruikt de uitgevouwen kaart standaard je eerste favoriet. Voeg extra locaties toe aan de dock via dock-aanpassing in de Opdrachtpalet.</value></data></root>

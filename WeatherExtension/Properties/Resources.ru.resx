@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true" />
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="extension_name" xml:space="preserve"><value>Погода</value></data>
+  <data name="extension_description" xml:space="preserve"><value>Текущая погода и прогноз</value></data>
+  <data name="plugin_name" xml:space="preserve"><value>Погода</value></data>
+  <data name="plugin_description" xml:space="preserve"><value>Текущая погода и прогноз</value></data>
+  <data name="search_placeholder" xml:space="preserve"><value>Введите индекс или название города…</value></data>
+  <data name="no_locations_found" xml:space="preserve"><value>Местоположения не найдены</value></data>
+  <data name="search_min_chars" xml:space="preserve"><value>Введите не менее 3 символов</value></data>
+  <data name="no_results_for" xml:space="preserve"><value>Нет результатов по запросу «{0}»</value></data>
+  <data name="search_format_hint" xml:space="preserve"><value>Попробуйте: Город, Регион, Страна, индекс или их сочетание.
+
+Если проблема сохраняется, [сообщите об ошибке](https://github.com/michaeljolley/weatherextension/issues/new).</value></data>
+  <data name="no_data_available" xml:space="preserve"><value>Нет данных о погоде</value></data>
+  <data name="current_weather" xml:space="preserve"><value>Сейчас</value></data>
+  <data name="dock_band_subtitle_title" xml:space="preserve"><value>Подзаголовок панели дока</value></data>
+  <data name="dock_band_subtitle_description" xml:space="preserve"><value>Что показывать в подзаголовке панели дока</value></data>
+  <data name="dock_band_subtitle_location" xml:space="preserve"><value>Название места</value></data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve"><value>Макс./Мин. температура</value></data>
+  <data name="loading_data" xml:space="preserve"><value>Загрузка данных…</value></data>
+  <data name="today" xml:space="preserve"><value>Сегодня</value></data>
+  <data name="tomorrow" xml:space="preserve"><value>Завтра</value></data>
+  <data name="temperature" xml:space="preserve"><value>Температура</value></data>
+  <data name="feels_like" xml:space="preserve"><value>Ощущается как</value></data>
+  <data name="humidity" xml:space="preserve"><value>Влажность</value></data>
+  <data name="wind_speed" xml:space="preserve"><value>Скорость ветра</value></data>
+  <data name="wind_direction" xml:space="preserve"><value>Направление ветра</value></data>
+  <data name="high" xml:space="preserve"><value>Макс</value></data>
+  <data name="low" xml:space="preserve"><value>Мин</value></data>
+  <data name="precipitation" xml:space="preserve"><value>Осадки</value></data>
+  <data name="loading" xml:space="preserve"><value>Загрузка…</value></data>
+  <data name="unavailable" xml:space="preserve"><value>Погода недоступна</value></data>
+  <data name="weather_service_error" xml:space="preserve"><value>Сервис погоды недоступен</value></data>
+  <data name="network_error" xml:space="preserve"><value>Ошибка соединения</value></data>
+  <data name="location_not_found" xml:space="preserve"><value>Местоположение не найдено</value></data>
+  <data name="temperature_unit_title" xml:space="preserve"><value>Единица температуры</value></data>
+  <data name="temperature_unit_description" xml:space="preserve"><value>Выберите единицу температуры</value></data>
+  <data name="celsius" xml:space="preserve"><value>Цельсий</value></data>
+  <data name="fahrenheit" xml:space="preserve"><value>Фаренгейт</value></data>
+  <data name="wind_speed_unit_title" xml:space="preserve"><value>Единица скорости ветра</value></data>
+  <data name="wind_speed_unit_description" xml:space="preserve"><value>Выберите единицу скорости ветра</value></data>
+  <data name="kmh" xml:space="preserve"><value>км/ч</value></data>
+  <data name="mph" xml:space="preserve"><value>миль/ч</value></data>
+  <data name="show_forecast_title" xml:space="preserve"><value>Показывать прогноз</value></data>
+  <data name="show_forecast_description" xml:space="preserve"><value>Показывать прогноз на несколько дней</value></data>
+  <data name="update_interval_title" xml:space="preserve"><value>Интервал обновления</value></data>
+  <data name="update_interval_description" xml:space="preserve"><value>Как часто обновлять данные</value></data>
+  <data name="one_hour" xml:space="preserve"><value>1 час</value></data>
+  <data name="three_hours" xml:space="preserve"><value>3 часа</value></data>
+  <data name="six_hours" xml:space="preserve"><value>6 часов</value></data>
+  <data name="twelve_hours" xml:space="preserve"><value>12 часов</value></data>
+  <data name="connectivity_no_internet" xml:space="preserve"><value>Нет соединения с Интернетом</value></data>
+  <data name="connectivity_api_blocked" xml:space="preserve"><value>API погоды недоступен — возможно, заблокирован в вашем регионе</value></data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve"><value>текущая погода</value></data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve"><value>прогноз</value></data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve"><value>почасовой прогноз</value></data>
+  <data name="favorites_section_title" xml:space="preserve"><value>Избранное</value></data>
+  <data name="favorite_command_name" xml:space="preserve"><value>Добавить в избранное</value></data>
+  <data name="unfavorite_command_name" xml:space="preserve"><value>Убрать из избранного</value></data>
+  <data name="no_favorites_hint" xml:space="preserve"><value>Найдите место и добавьте его в избранное</value></data>
+  
+  <data name="favorite_tag" xml:space="preserve"><value>Избранное</value></data>
+  <data name="dock_band_loading" xml:space="preserve"><value>Загрузка погоды…</value></data>
+  <data name="card_section_current" xml:space="preserve"><value>Сейчас</value></data>
+  <data name="card_section_next_three_hours" xml:space="preserve"><value>Следующие три часа</value></data>
+  <data name="card_section_three_day_forecast" xml:space="preserve"><value>Прогноз на 3 дня</value></data>
+  <data name="card_label_high_low" xml:space="preserve"><value>Макс / Мин</value></data>
+  <data name="card_condition_unknown" xml:space="preserve"><value>Неизвестно</value></data>
+  <data name="weather_clear" xml:space="preserve"><value>Ясно</value></data>
+  <data name="weather_mainly_clear" xml:space="preserve"><value>В основном ясно</value></data>
+  <data name="weather_partly_cloudy" xml:space="preserve"><value>Переменная облачность</value></data>
+  <data name="weather_overcast" xml:space="preserve"><value>Пасмурно</value></data>
+  <data name="weather_fog" xml:space="preserve"><value>Туман</value></data>
+  <data name="weather_drizzle" xml:space="preserve"><value>Морось</value></data>
+  <data name="weather_rain" xml:space="preserve"><value>Дождь</value></data>
+  <data name="weather_snow" xml:space="preserve"><value>Снег</value></data>
+  <data name="weather_rain_showers" xml:space="preserve"><value>Ливень</value></data>
+  <data name="weather_snow_showers" xml:space="preserve"><value>Снежный ливень</value></data>
+  <data name="weather_thunderstorm" xml:space="preserve"><value>Гроза</value></data>
+  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1} (ощущается как {2})</value></data>
+  
+  
+  
+  
+  <data name="page_forecast_title" xml:space="preserve"><value>Прогноз</value></data>
+  <data name="page_hourly_title" xml:space="preserve"><value>Почасовой прогноз</value></data>
+  <data name="card_section_next_hours" xml:space="preserve"><value>Следующие {0} ч.</value></data>
+  <data name="card_section_day_forecast" xml:space="preserve"><value>Прогноз на {0} дн.</value></data>
+  
+  
+  <data name="settings_page_title" xml:space="preserve"><value>Параметры</value></data>
+  <data name="hour_format_title" xml:space="preserve"><value>Формат времени</value></data>
+  <data name="hour_format_description" xml:space="preserve"><value>Выберите 12-часовой или 24-часовой формат.</value></data>
+  <data name="hour_format_12" xml:space="preserve"><value>12 часов (AM/PM)</value></data>
+  <data name="hour_format_24" xml:space="preserve"><value>24 часа</value></data>
+  <data name="settings_save_button" xml:space="preserve"><value>Сохранить</value></data>
+  
+  
+<data name="search_hint_examples_title" xml:space="preserve"><value>Примеры:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>Москва
+Санкт-Петербург, RU
+101000
+Минск, Беларусь</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Нажмите Ctrl+D, чтобы добавить место в избранное и в док.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>При нескольких избранных развёрнутая карточка по умолчанию использует первое избранное. Добавляйте другие места в док через настройку дока в палитре команд.</value></data></root>
