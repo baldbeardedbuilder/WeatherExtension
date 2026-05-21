@@ -1,0 +1,78 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "eneshenderson",
+      "name": "Enes Hikmet Kayım",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49413090?v=4",
+      "profile": "https://github.com/eneshenderson",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "michaeljolley",
+      "name": "Michael Jolley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1228996?v=4",
+      "profile": "https://baldbeardedbuilder.com/",
+      "contributions": [
+        "code",
+        "test",
+        "design"
+      ]
+    },
+    {
+      "login": "damianoschal-star",
+      "name": "damianoschal-star",
+      "avatar_url": "https://avatars.githubusercontent.com/u/275190590?v=4",
+      "profile": "https://github.com/damianoschal-star",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "Xqzmoi",
+      "name": "Xqzmoi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/283920763?v=4",
+      "profile": "https://github.com/Xqzmoi",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "Codalexandre69200",
+      "name": "Codalexandre69200",
+      "avatar_url": "https://avatars.githubusercontent.com/u/254201681?v=4",
+      "profile": "https://github.com/Codalexandre69200",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "nyhtz",
+      "name": "nyhtz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69047113?v=4",
+      "profile": "https://github.com/nyhtz",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "WeatherExtension",
+  "projectOwner": "michaeljolley"
+}
