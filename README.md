@@ -1,6 +1,6 @@
 # Weather Extension for Microsoft Command Palette
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>](https://get.microsoft.com/installer/download/9N01D6BS9V98?referrer=appbadge) ![WinGet Package Version](https://img.shields.io/winget/v/BaldBeardedBuilder.WeatherforCommandPalette)
@@ -90,6 +90,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://baldbeardedbuilder.com/"><img src="https://avatars.githubusercontent.com/u/1228996?v=4?s=100" width="100px;" alt="Michael Jolley"/><br /><sub><b>Michael Jolley</b></sub></a><br /><a href="https://github.com/michaeljolley/WeatherExtension/commits?author=michaeljolley" title="Code">💻</a> <a href="https://github.com/michaeljolley/WeatherExtension/commits?author=michaeljolley" title="Tests">⚠️</a> <a href="#design-michaeljolley" title="Design">🎨</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/damianoschal-star"><img src="https://avatars.githubusercontent.com/u/275190590?v=4?s=100" width="100px;" alt="damianoschal-star"/><br /><sub><b>damianoschal-star</b></sub></a><br /><a href="https://github.com/michaeljolley/WeatherExtension/issues?q=author%3Adamianoschal-star" title="Bug reports">🐛</a> <a href="#userTesting-damianoschal-star" title="User Testing">📓</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Xqzmoi"><img src="https://avatars.githubusercontent.com/u/283920763?v=4?s=100" width="100px;" alt="Xqzmoi"/><br /><sub><b>Xqzmoi</b></sub></a><br /><a href="https://github.com/michaeljolley/WeatherExtension/issues?q=author%3AXqzmoi" title="Bug reports">🐛</a> <a href="#userTesting-Xqzmoi" title="User Testing">📓</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Codalexandre69200"><img src="https://avatars.githubusercontent.com/u/254201681?v=4?s=100" width="100px;" alt="Codalexandre69200"/><br /><sub><b>Codalexandre69200</b></sub></a><br /><a href="https://github.com/michaeljolley/WeatherExtension/issues?q=author%3ACodalexandre69200" title="Bug reports">🐛</a> <a href="#userTesting-Codalexandre69200" title="User Testing">📓</a></td>
     </tr>
   </tbody>
 </table>
