@@ -19,6 +19,7 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 	private readonly WeatherSettingsManager _settings;
 	private readonly WeatherBandCard _contentPage;
 	private readonly Timer _updateTimer;
+	private readonly CancellationTokenSource _cts = new();
 	private bool _isDisposed;
 	private int _isUpdating;
 
@@ -63,7 +64,8 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 				_location.Latitude,
 				_location.Longitude,
 				_settings.TemperatureUnit,
-				_settings.WindSpeedUnit);
+				_settings.WindSpeedUnit,
+				_cts.Token);
 
 			if (weather?.Current != null)
 			{
@@ -82,7 +84,8 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 					var forecast = await _weatherService.GetForecastAsync(
 						_location.Latitude,
 						_location.Longitude,
-						_settings.TemperatureUnit);
+						_settings.TemperatureUnit,
+						_cts.Token);
 
 					if (forecast?.Daily?.TemperatureMax?.Count > 0 &&
 						forecast.Daily.TemperatureMin?.Count > 0)
@@ -153,10 +156,12 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 	{
 		if (!_isDisposed)
 		{
+			_cts.Cancel();
 			_isDisposed = true;
 			_settings.Settings.SettingsChanged -= OnSettingsChanged;
 			_updateTimer?.Stop();
 			_updateTimer?.Dispose();
+			_cts.Dispose();
 		}
 	}
 }
