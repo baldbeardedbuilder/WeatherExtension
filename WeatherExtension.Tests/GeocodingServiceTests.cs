@@ -191,6 +191,12 @@ public class GeocodingServiceTests
 	}
 
 	[TestMethod]
+	public void MaxFallbackAttempts_IsFiveToAllowSegmentRetry()
+	{
+		Assert.AreEqual(5, GeocodingService.MaxFallbackAttempts);
+	}
+
+	[TestMethod]
 	public async Task SearchLocationAsync_LongCommaInput_CapsAttemptsAtMaxFallbackAttempts()
 	{
 		var callCount = 0;
@@ -342,7 +348,9 @@ public class GeocodingServiceTests
 		var results = await service.SearchLocationAsync("90210", CancellationToken.None);
 
 		Assert.IsTrue(results.Count > 0, "Expected non-empty results from Photon fallback for postal code");
-		Assert.AreEqual(2, callCount, "Expected 1 failed Nominatim postal-code call + 1 successful Photon call");
+		// The postal code path tries Nominatim's postalcode= endpoint, then a
+		// free-text Nominatim retry, before finally falling back to Photon.
+		Assert.AreEqual(3, callCount, "Expected 2 failed Nominatim postal-code calls + 1 successful Photon call");
 	}
 
 	[TestMethod]
@@ -362,6 +370,180 @@ public class GeocodingServiceTests
 		Assert.IsTrue(
 			callCount <= GeocodingService.MaxFallbackAttempts,
 			$"Expected at most {GeocodingService.MaxFallbackAttempts} HTTP calls, got {callCount}");
+	}
+
+	// ── Header policy / locale stability ───────────────────────────────────
+
+	[TestMethod]
+	public async Task SearchLocationAsync_SendsContactUserAgentAndAcceptLanguage()
+	{
+		HttpRequestMessage? captured = null;
+		var handler = new CountingHttpHandler(
+			_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("[]") },
+			request => captured ??= request);
+
+		using var service = new GeocodingService(handler);
+		await service.SearchLocationAsync("Seattle", CancellationToken.None);
+
+		Assert.IsNotNull(captured, "Expected at least one outgoing request");
+
+		var ua = string.Join(' ', captured!.Headers.UserAgent.Select(p => p.ToString()));
+		Assert.IsTrue(
+			ua.Contains("PowerToys-CmdPal-Weather", StringComparison.Ordinal),
+			$"User-Agent should identify the extension. Got: '{ua}'");
+		Assert.IsTrue(
+			ua.Contains("github.com", StringComparison.OrdinalIgnoreCase),
+			$"User-Agent should include a contact URL per Nominatim policy. Got: '{ua}'");
+
+		var acceptLang = string.Join(',', captured.Headers.AcceptLanguage.Select(v => v.Value));
+		Assert.IsTrue(
+			acceptLang.Contains("en", StringComparison.OrdinalIgnoreCase),
+			$"Accept-Language should request English to keep display names stable. Got: '{acceptLang}'");
+	}
+
+	// ── Postal code free-text retry ────────────────────────────────────────
+
+	private const string ValidNominatimIstanbulPostcodeJson = """
+		[{
+			"place_id": 378361098,
+			"licence": "Data",
+			"lat": "41.0077058",
+			"lon": "28.9795504",
+			"class": "boundary",
+			"type": "postal_code",
+			"name": "34122",
+			"display_name": "34122, Cankurtaran Mahallesi, İstanbul, Fatih, İstanbul, Marmara Bölgesi, Türkiye",
+			"address": {
+				"postcode": "34122",
+				"suburb": "Cankurtaran Mahallesi",
+				"city": "İstanbul",
+				"town": "Fatih",
+				"country": "Türkiye",
+				"country_code": "tr"
+			}
+		}]
+		""";
+
+	[TestMethod]
+	public async Task SearchLocationAsync_PostalCodePath_PrefersAddressLocalityForName()
+	{
+		var handler = new CountingHttpHandler(request =>
+		{
+			Assert.IsTrue(request.RequestUri!.Host.Contains("nominatim", StringComparison.OrdinalIgnoreCase));
+			return new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new StringContent(ValidNominatimIstanbulPostcodeJson),
+			};
+		});
+
+		using var service = new GeocodingService(handler);
+		var results = await service.SearchLocationAsync("34122", CancellationToken.None);
+
+		Assert.AreEqual(1, results.Count);
+		// Prior code surfaced the postcode itself ("34122") as Name, hiding
+		// the actual locality. The address-derived name keeps results readable.
+		Assert.AreEqual("İstanbul", results[0].Name);
+		Assert.AreEqual("TR", results[0].CountryCode);
+	}
+
+	[TestMethod]
+	public async Task SearchLocationAsync_PostalCodeEmpty_RetriesAsFreeTextNominatim()
+	{
+		var requestUris = new List<Uri>();
+		var nominatimCalls = 0;
+		var handler = new CountingHttpHandler(
+			request =>
+			{
+				if (request.RequestUri!.Host.Contains("nominatim", StringComparison.OrdinalIgnoreCase))
+				{
+					nominatimCalls++;
+					var query = request.RequestUri.Query;
+					// First call uses postalcode=, second uses q=
+					if (query.Contains("postalcode=", StringComparison.Ordinal))
+					{
+						return new HttpResponseMessage(HttpStatusCode.OK)
+						{
+							Content = new StringContent("[]"),
+						};
+					}
+
+					return new HttpResponseMessage(HttpStatusCode.OK)
+					{
+						Content = new StringContent(ValidNominatimIstanbulPostcodeJson),
+					};
+				}
+
+				Assert.Fail("Photon should not be reached when free-text Nominatim retry succeeds.");
+				return new HttpResponseMessage(HttpStatusCode.OK);
+			},
+			request => requestUris.Add(request.RequestUri!));
+
+		using var service = new GeocodingService(handler);
+		var results = await service.SearchLocationAsync("34122", CancellationToken.None);
+
+		Assert.AreEqual(2, nominatimCalls, "Expected one postalcode= call followed by one free-text q= retry.");
+		Assert.IsTrue(results.Count > 0, "Free-text Nominatim retry should surface postal code results.");
+		Assert.IsTrue(requestUris[0].Query.Contains("postalcode=", StringComparison.Ordinal));
+		Assert.IsTrue(requestUris[1].Query.Contains("q=", StringComparison.Ordinal));
+	}
+
+	// ── Photon broad retry when osm_tag=place returns nothing ──────────────
+
+	private const string ValidPhotonGenericLocationJson = """
+		{
+			"type": "FeatureCollection",
+			"features": [
+				{
+					"type": "Feature",
+					"geometry": { "type": "Point", "coordinates": [28.9784, 41.0082] },
+					"properties": {
+						"name": "İstanbul",
+						"country": "Türkiye",
+						"osm_key": "boundary",
+						"osm_value": "administrative"
+					}
+				}
+			]
+		}
+		""";
+
+	[TestMethod]
+	public async Task SearchLocationAsync_PhotonPlaceFilterEmpty_RetriesWithoutFilter()
+	{
+		var photonQueries = new List<string>();
+		var handler = new CountingHttpHandler(request =>
+		{
+			if (request.RequestUri!.Host.Contains("nominatim", StringComparison.OrdinalIgnoreCase))
+			{
+				return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+			}
+
+			var query = Uri.UnescapeDataString(request.RequestUri.Query);
+			photonQueries.Add(query);
+
+			// First Photon call uses osm_tag=place and returns nothing.
+			// The retry without that filter should succeed.
+			if (query.Contains("osm_tag=place", StringComparison.Ordinal))
+			{
+				return new HttpResponseMessage(HttpStatusCode.OK)
+				{
+					Content = new StringContent("""{ "type":"FeatureCollection", "features":[] }"""),
+				};
+			}
+
+			return new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new StringContent(ValidPhotonGenericLocationJson),
+			};
+		});
+
+		using var service = new GeocodingService(handler);
+		var results = await service.SearchLocationAsync("istanbul", CancellationToken.None);
+
+		Assert.IsTrue(results.Count > 0, "Broad Photon retry should surface results when place-filter is empty.");
+		Assert.AreEqual(2, photonQueries.Count, "Expected exactly two Photon calls: place-filtered then broad.");
+		Assert.IsTrue(photonQueries[0].Contains("osm_tag=place", StringComparison.Ordinal));
+		Assert.IsFalse(photonQueries[1].Contains("osm_tag=place", StringComparison.Ordinal));
 	}
 
 }
