@@ -16,7 +16,11 @@ public sealed partial class GeocodingService : IGeocodingService
 	private const string NominatimUrl = "https://nominatim.openstreetmap.org/search";
 	private const string PhotonUrl = "https://photon.komoot.io/api/";
 	private const int MinSearchLength = 3;
-	internal const int MaxFallbackAttempts = 3;
+	// Worst case per comma-trimmed query segment: Nominatim (1) + Photon places (1)
+	// + Photon broad retry (1) = 3 HTTP calls. A budget of 4 left only one slot for
+	// the next segment (Nominatim-only, no Photon retries). 5 allows one full
+	// three-call pass plus a trimmed-segment retry with Nominatim + Photon places.
+	internal const int MaxFallbackAttempts = 5;
 
 	[GeneratedRegex(@"^\d{5}(-\d{4})?$")]
 	private static partial Regex UsZipCodeRegex();
@@ -41,7 +45,17 @@ public sealed partial class GeocodingService : IGeocodingService
 		{
 			Timeout = TimeSpan.FromSeconds(10),
 		};
-		_httpClient.DefaultRequestHeaders.Add("User-Agent", "PowerToys-CmdPal-Weather/1.0");
+
+		// Nominatim Usage Policy requires a meaningful User-Agent that identifies
+		// the application and includes a contact. Stock library UAs are blocked.
+		// https://operations.osmfoundation.org/policies/nominatim/
+		_httpClient.DefaultRequestHeaders.Add(
+			"User-Agent",
+			"PowerToys-CmdPal-Weather/1.0 (+https://github.com/michaeljolley/WeatherExtension)");
+
+		// Ask providers for a stable English display_name so result formatting and
+		// ranking aren't culture-sensitive (avoids Turkish dotless-i style folding).
+		_httpClient.DefaultRequestHeaders.Add("Accept-Language", "en");
 	}
 
 	public async Task<List<GeocodingResult>> SearchLocationAsync(string query, CancellationToken ct = default)
@@ -89,9 +103,9 @@ public sealed partial class GeocodingService : IGeocodingService
 	private async Task<List<GeocodingResult>> SearchWithProgressiveFallbackAsync(string query, CancellationToken ct)
 	{
 		var currentQuery = query;
-		// MaxFallbackAttempts caps the total number of outbound HTTP calls across
-		// both Nominatim and Photon combined, not per-provider. Each provider call
-		// consumes one slot from this budget.
+		// MaxFallbackAttempts caps outbound HTTP calls across Nominatim and Photon
+		// for this search (not per-provider). Each call consumes one slot. See the
+		// constant comment for per-segment worst-case math (3 calls/segment).
 		var remainingCalls = MaxFallbackAttempts;
 		var nominatimAlive = true;
 
@@ -139,6 +153,21 @@ public sealed partial class GeocodingService : IGeocodingService
 				return photonResults;
 			}
 
+			// Photon's place-only filter silently drops cities that OSM doesn't
+			// tag with osm_tag=place (common for non-English locality names).
+			// Retry once without the filter when budget allows before falling back.
+			if (remainingCalls > 0)
+			{
+				ct.ThrowIfCancellationRequested();
+				var broadResults = await SearchPhotonAsync(currentQuery, placesOnly: false, ct).ConfigureAwait(false);
+				remainingCalls--;
+
+				if (broadResults.Count > 0)
+				{
+					return broadResults;
+				}
+			}
+
 			// Strip the last comma-separated segment and retry
 			var lastComma = currentQuery.LastIndexOf(',');
 			if (lastComma <= 0)
@@ -169,7 +198,7 @@ public sealed partial class GeocodingService : IGeocodingService
 
 			if (!response.IsSuccessStatusCode)
 			{
-				return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
+				return await SearchPostalCodeFallbackAsync(postalCode, ct).ConfigureAwait(false);
 			}
 
 			var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
@@ -180,12 +209,12 @@ public sealed partial class GeocodingService : IGeocodingService
 				WeatherLogger.LogToHost(
 					MessageState.Info,
 					$"Nominatim deserialization returned null. Status: {response.StatusCode}, Content length: {content.Length}");
-				return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
+				return await SearchPostalCodeFallbackAsync(postalCode, ct).ConfigureAwait(false);
 			}
 
 			if (nominatimResults.Count == 0)
 			{
-				return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
+				return await SearchPostalCodeFallbackAsync(postalCode, ct).ConfigureAwait(false);
 			}
 
 			return ConvertNominatimResults(nominatimResults);
@@ -195,8 +224,32 @@ public sealed partial class GeocodingService : IGeocodingService
 			WeatherLogger.LogToHost(
 				MessageState.Error,
 				$"Nominatim postal code lookup error: {ex.Message}");
-			return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
+			return await SearchPostalCodeFallbackAsync(postalCode, ct).ConfigureAwait(false);
 		}
+	}
+
+	// Postal codes are notoriously inconsistent across providers. When the
+	// Nominatim postalcode= endpoint comes up empty (e.g. blocked, rate-limited,
+	// or the postal code isn't tagged as a postcode in OSM), retry as a regular
+	// free-text Nominatim search before falling back to Photon.
+	private async Task<List<GeocodingResult>> SearchPostalCodeFallbackAsync(string postalCode, CancellationToken ct)
+	{
+		try
+		{
+			var freeTextResults = await SearchNominatimAsync(postalCode, ct).ConfigureAwait(false);
+			if (freeTextResults.Count > 0)
+			{
+				return freeTextResults;
+			}
+		}
+		catch (Exception ex)
+		{
+			WeatherLogger.LogToHost(
+				MessageState.Info,
+				$"Nominatim free-text postal code retry failed: {ex.Message}");
+		}
+
+		return await SearchPhotonAsync(postalCode, placesOnly: false, ct).ConfigureAwait(false);
 	}
 
 	private async Task<List<GeocodingResult>> SearchNominatimAsync(string query, CancellationToken ct)
@@ -315,10 +368,15 @@ public sealed partial class GeocodingService : IGeocodingService
 
 		foreach (var nr in nominatimResults)
 		{
-			var rawPlaceName = nr.Name
-				?? nr.Address?.City
+			// When the user searched by postal code, Nominatim sets Name to the
+			// postal code itself ("34122"). Prefer the actual locality so list
+			// items show "İstanbul" rather than just the postcode.
+			var addressLocality = nr.Address?.City
 				?? nr.Address?.Town
-				?? nr.Address?.Village
+				?? nr.Address?.Village;
+
+			var rawPlaceName = addressLocality
+				?? nr.Name
 				?? nr.DisplayName?.Split(',')[0].Trim();
 
 			if (string.IsNullOrWhiteSpace(rawPlaceName))
