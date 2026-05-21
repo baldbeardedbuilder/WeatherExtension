@@ -564,5 +564,70 @@ namespace Microsoft.CmdPal.Ext.Weather {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Favorite.
+        /// </summary>
+        public static string favorite_tag {
+            get {
+                return ResourceManager.GetString("favorite_tag", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Loading weather….
+        /// </summary>
+        public static string dock_band_loading {
+            get {
+                return ResourceManager.GetString("dock_band_loading", resourceCulture);
+            }
+        }
+
+        public static string card_section_current {
+            get { return ResourceManager.GetString("card_section_current", resourceCulture); }
+        }
+
+        public static string card_section_next_three_hours {
+            get { return ResourceManager.GetString("card_section_next_three_hours", resourceCulture); }
+        }
+
+        public static string card_section_three_day_forecast {
+            get { return ResourceManager.GetString("card_section_three_day_forecast", resourceCulture); }
+        }
+
+        public static string card_label_high_low {
+            get { return ResourceManager.GetString("card_label_high_low", resourceCulture); }
+        }
+
+        public static string card_condition_unknown {
+            get { return ResourceManager.GetString("card_condition_unknown", resourceCulture); }
+        }
+
+        public static string weather_clear { get { return ResourceManager.GetString("weather_clear", resourceCulture); } }
+        public static string weather_mainly_clear { get { return ResourceManager.GetString("weather_mainly_clear", resourceCulture); } }
+        public static string weather_partly_cloudy { get { return ResourceManager.GetString("weather_partly_cloudy", resourceCulture); } }
+        public static string weather_overcast { get { return ResourceManager.GetString("weather_overcast", resourceCulture); } }
+        public static string weather_fog { get { return ResourceManager.GetString("weather_fog", resourceCulture); } }
+        public static string weather_drizzle { get { return ResourceManager.GetString("weather_drizzle", resourceCulture); } }
+        public static string weather_rain { get { return ResourceManager.GetString("weather_rain", resourceCulture); } }
+        public static string weather_snow { get { return ResourceManager.GetString("weather_snow", resourceCulture); } }
+        public static string weather_rain_showers { get { return ResourceManager.GetString("weather_rain_showers", resourceCulture); } }
+        public static string weather_snow_showers { get { return ResourceManager.GetString("weather_snow_showers", resourceCulture); } }
+        public static string weather_thunderstorm { get { return ResourceManager.GetString("weather_thunderstorm", resourceCulture); } }
+        public static string feels_like_template { get { return ResourceManager.GetString("feels_like_template", resourceCulture); } }
+        public static string search_hint_examples_title { get { return ResourceManager.GetString("search_hint_examples_title", resourceCulture); } }
+        public static string search_hint_examples_block { get { return ResourceManager.GetString("search_hint_examples_block", resourceCulture); } }
+        public static string search_hint_favorite_shortcut { get { return ResourceManager.GetString("search_hint_favorite_shortcut", resourceCulture); } }
+        public static string search_hint_multiple_favorites { get { return ResourceManager.GetString("search_hint_multiple_favorites", resourceCulture); } }
+        public static string page_forecast_title { get { return ResourceManager.GetString("page_forecast_title", resourceCulture); } }
+        public static string page_hourly_title { get { return ResourceManager.GetString("page_hourly_title", resourceCulture); } }
+        public static string card_section_next_hours { get { return ResourceManager.GetString("card_section_next_hours", resourceCulture); } }
+        public static string card_section_day_forecast { get { return ResourceManager.GetString("card_section_day_forecast", resourceCulture); } }
+        public static string settings_page_title { get { return ResourceManager.GetString("settings_page_title", resourceCulture); } }
+        public static string hour_format_title { get { return ResourceManager.GetString("hour_format_title", resourceCulture); } }
+        public static string hour_format_description { get { return ResourceManager.GetString("hour_format_description", resourceCulture); } }
+        public static string hour_format_12 { get { return ResourceManager.GetString("hour_format_12", resourceCulture); } }
+        public static string hour_format_24 { get { return ResourceManager.GetString("hour_format_24", resourceCulture); } }
+        public static string settings_save_button { get { return ResourceManager.GetString("settings_save_button", resourceCulture); } }
+
     }
 }

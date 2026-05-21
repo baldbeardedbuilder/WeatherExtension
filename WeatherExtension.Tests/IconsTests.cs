@@ -2,224 +2,86 @@
 // Bald Bearded Builder LLC licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 
 namespace Microsoft.CmdPal.Ext.Weather.UnitTests;
 
 [TestClass]
 public class IconsTests
 {
-    [TestMethod]
-    public void GetWeatherDescription_ClearSky_ReturnsCorrectDescription()
+    // GetWeatherDescription used to return one string per WMO code (29 distinct
+    // strings). That made every supported language ship 29 translations and
+    // produced low-value variations like "Slight rain" / "Moderate rain" /
+    // "Heavy rain" — the icon already conveys intensity. The descriptions are
+    // now grouped into 11 broad categories. These tests pin every WMO code in
+    // the open-meteo schema to the category we expect.
+    //
+    // Tests run with the invariant culture so we assert against the neutral
+    // (English) resx without having to ship a fixed culture in test setup.
+
+    private CultureInfo? _originalUiCulture;
+
+    [TestInitialize]
+    public void Setup()
     {
-        var result = Icons.GetWeatherDescription(0);
-        Assert.AreEqual("Clear sky", result);
+        _originalUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (_originalUiCulture != null)
+        {
+            CultureInfo.CurrentUICulture = _originalUiCulture;
+        }
+    }
+
+    [DataTestMethod]
+    [DataRow(0, "Clear sky")]
+    [DataRow(1, "Mainly clear")]
+    [DataRow(2, "Partly cloudy")]
+    [DataRow(3, "Overcast")]
+    [DataRow(45, "Fog")]
+    [DataRow(48, "Fog")]
+    [DataRow(51, "Drizzle")]
+    [DataRow(53, "Drizzle")]
+    [DataRow(55, "Drizzle")]
+    [DataRow(56, "Drizzle")]
+    [DataRow(57, "Drizzle")]
+    [DataRow(61, "Rain")]
+    [DataRow(63, "Rain")]
+    [DataRow(65, "Rain")]
+    [DataRow(66, "Rain")]
+    [DataRow(67, "Rain")]
+    [DataRow(71, "Snow")]
+    [DataRow(73, "Snow")]
+    [DataRow(75, "Snow")]
+    [DataRow(77, "Snow")]
+    [DataRow(80, "Rain showers")]
+    [DataRow(81, "Rain showers")]
+    [DataRow(82, "Rain showers")]
+    [DataRow(85, "Snow showers")]
+    [DataRow(86, "Snow showers")]
+    [DataRow(95, "Thunderstorm")]
+    [DataRow(96, "Thunderstorm")]
+    [DataRow(99, "Thunderstorm")]
+    public void GetWeatherDescription_KnownCode_ReturnsExpectedCategory(int weatherCode, string expected)
+    {
+        Assert.AreEqual(expected, Icons.GetWeatherDescription(weatherCode));
+    }
+
+    [DataTestMethod]
+    [DataRow(999)]
+    [DataRow(-1)]
+    [DataRow(int.MaxValue)]
+    public void GetWeatherDescription_UnknownCode_ReturnsUnknown(int weatherCode)
+    {
+        Assert.AreEqual("Unknown", Icons.GetWeatherDescription(weatherCode));
     }
 
     [TestMethod]
-    public void GetWeatherDescription_MainlyClear_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(1);
-        Assert.AreEqual("Mainly clear", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_PartlyCloudy_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(2);
-        Assert.AreEqual("Partly cloudy", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_Overcast_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(3);
-        Assert.AreEqual("Overcast", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_Fog_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(45);
-        Assert.AreEqual("Fog", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_DepositingRimeFog_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(48);
-        Assert.AreEqual("Depositing rime fog", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_LightDrizzle_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(51);
-        Assert.AreEqual("Light drizzle", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_ModerateDrizzle_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(53);
-        Assert.AreEqual("Moderate drizzle", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_DenseDrizzle_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(55);
-        Assert.AreEqual("Dense drizzle", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_LightFreezingDrizzle_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(56);
-        Assert.AreEqual("Light freezing drizzle", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_DenseFreezingDrizzle_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(57);
-        Assert.AreEqual("Dense freezing drizzle", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_SlightRain_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(61);
-        Assert.AreEqual("Slight rain", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_ModerateRain_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(63);
-        Assert.AreEqual("Moderate rain", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_HeavyRain_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(65);
-        Assert.AreEqual("Heavy rain", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_LightFreezingRain_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(66);
-        Assert.AreEqual("Light freezing rain", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_HeavyFreezingRain_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(67);
-        Assert.AreEqual("Heavy freezing rain", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_SlightSnowFall_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(71);
-        Assert.AreEqual("Slight snow fall", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_ModerateSnowFall_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(73);
-        Assert.AreEqual("Moderate snow fall", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_HeavySnowFall_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(75);
-        Assert.AreEqual("Heavy snow fall", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_SnowGrains_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(77);
-        Assert.AreEqual("Snow grains", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_SlightRainShowers_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(80);
-        Assert.AreEqual("Slight rain showers", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_ModerateRainShowers_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(81);
-        Assert.AreEqual("Moderate rain showers", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_ViolentRainShowers_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(82);
-        Assert.AreEqual("Violent rain showers", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_SlightSnowShowers_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(85);
-        Assert.AreEqual("Slight snow showers", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_HeavySnowShowers_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(86);
-        Assert.AreEqual("Heavy snow showers", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_Thunderstorm_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(95);
-        Assert.AreEqual("Thunderstorm", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_ThunderstormWithSlightHail_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(96);
-        Assert.AreEqual("Thunderstorm with slight hail", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_ThunderstormWithHeavyHail_ReturnsCorrectDescription()
-    {
-        var result = Icons.GetWeatherDescription(99);
-        Assert.AreEqual("Thunderstorm with heavy hail", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_UnknownCode_ReturnsUnknown()
-    {
-        var result = Icons.GetWeatherDescription(999);
-        Assert.AreEqual("Unknown", result);
-    }
-
-    [TestMethod]
-    public void GetWeatherDescription_NegativeCode_ReturnsUnknown()
-    {
-        var result = Icons.GetWeatherDescription(-1);
-        Assert.AreEqual("Unknown", result);
-    }
-
-    [TestMethod]
-    public void GetIconForWeatherCode_ClearSky_ReturnsNotNull()
+    public void GetIconForWeatherCode_ClearSky_ReturnsClearSkyIcon()
     {
         var result = Icons.GetIconForWeatherCode(0);
         Assert.IsNotNull(result);
@@ -227,147 +89,96 @@ public class IconsTests
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_MainlyClear_ReturnsNotNull()
+    public void GetIconForWeatherCode_MainlyClear_GroupsCodes1And2()
     {
-        var result1 = Icons.GetIconForWeatherCode(1);
-        var result2 = Icons.GetIconForWeatherCode(2);
-        Assert.IsNotNull(result1);
-        Assert.IsNotNull(result2);
-        Assert.AreEqual(Icons.MainlyClear, result1);
-        Assert.AreEqual(Icons.MainlyClear, result2);
+        Assert.AreEqual(Icons.MainlyClear, Icons.GetIconForWeatherCode(1));
+        Assert.AreEqual(Icons.MainlyClear, Icons.GetIconForWeatherCode(2));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_PartlyCloudy_ReturnsNotNull()
+    public void GetIconForWeatherCode_PartlyCloudy_ReturnsPartlyCloudyIcon()
     {
-        var result = Icons.GetIconForWeatherCode(3);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(Icons.PartlyCloudy, result);
+        Assert.AreEqual(Icons.PartlyCloudy, Icons.GetIconForWeatherCode(3));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_Fog_ReturnsNotNull()
+    public void GetIconForWeatherCode_Fog_GroupsCodes45And48()
     {
-        var result45 = Icons.GetIconForWeatherCode(45);
-        var result48 = Icons.GetIconForWeatherCode(48);
-        Assert.IsNotNull(result45);
-        Assert.IsNotNull(result48);
-        Assert.AreEqual(Icons.Fog, result45);
-        Assert.AreEqual(Icons.Fog, result48);
+        Assert.AreEqual(Icons.Fog, Icons.GetIconForWeatherCode(45));
+        Assert.AreEqual(Icons.Fog, Icons.GetIconForWeatherCode(48));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_Drizzle_ReturnsNotNull()
+    public void GetIconForWeatherCode_Drizzle_GroupsCodes51To55()
     {
-        var result51 = Icons.GetIconForWeatherCode(51);
-        var result53 = Icons.GetIconForWeatherCode(53);
-        var result55 = Icons.GetIconForWeatherCode(55);
-        Assert.IsNotNull(result51);
-        Assert.IsNotNull(result53);
-        Assert.IsNotNull(result55);
-        Assert.AreEqual(Icons.Drizzle, result51);
+        Assert.AreEqual(Icons.Drizzle, Icons.GetIconForWeatherCode(51));
+        Assert.AreEqual(Icons.Drizzle, Icons.GetIconForWeatherCode(53));
+        Assert.AreEqual(Icons.Drizzle, Icons.GetIconForWeatherCode(55));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_FreezingDrizzle_ReturnsNotNull()
+    public void GetIconForWeatherCode_FreezingDrizzle_GroupsCodes56And57()
     {
-        var result56 = Icons.GetIconForWeatherCode(56);
-        var result57 = Icons.GetIconForWeatherCode(57);
-        Assert.IsNotNull(result56);
-        Assert.IsNotNull(result57);
-        Assert.AreEqual(Icons.DrizzleFreezing, result56);
+        Assert.AreEqual(Icons.DrizzleFreezing, Icons.GetIconForWeatherCode(56));
+        Assert.AreEqual(Icons.DrizzleFreezing, Icons.GetIconForWeatherCode(57));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_Rain_ReturnsNotNull()
+    public void GetIconForWeatherCode_Rain_GroupsCodes61To65()
     {
-        var result61 = Icons.GetIconForWeatherCode(61);
-        var result63 = Icons.GetIconForWeatherCode(63);
-        var result65 = Icons.GetIconForWeatherCode(65);
-        Assert.IsNotNull(result61);
-        Assert.IsNotNull(result63);
-        Assert.IsNotNull(result65);
-        Assert.AreEqual(Icons.Rain, result61);
+        Assert.AreEqual(Icons.Rain, Icons.GetIconForWeatherCode(61));
+        Assert.AreEqual(Icons.Rain, Icons.GetIconForWeatherCode(63));
+        Assert.AreEqual(Icons.Rain, Icons.GetIconForWeatherCode(65));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_FreezingRain_ReturnsNotNull()
+    public void GetIconForWeatherCode_FreezingRain_GroupsCodes66And67()
     {
-        var result66 = Icons.GetIconForWeatherCode(66);
-        var result67 = Icons.GetIconForWeatherCode(67);
-        Assert.IsNotNull(result66);
-        Assert.IsNotNull(result67);
-        Assert.AreEqual(Icons.RainFreezing, result66);
+        Assert.AreEqual(Icons.RainFreezing, Icons.GetIconForWeatherCode(66));
+        Assert.AreEqual(Icons.RainFreezing, Icons.GetIconForWeatherCode(67));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_Snow_ReturnsNotNull()
+    public void GetIconForWeatherCode_Snow_GroupsCodes71To77()
     {
-        var result71 = Icons.GetIconForWeatherCode(71);
-        var result73 = Icons.GetIconForWeatherCode(73);
-        var result75 = Icons.GetIconForWeatherCode(75);
-        var result77 = Icons.GetIconForWeatherCode(77);
-        Assert.IsNotNull(result71);
-        Assert.IsNotNull(result73);
-        Assert.IsNotNull(result75);
-        Assert.IsNotNull(result77);
-        Assert.AreEqual(Icons.Snow, result71);
+        Assert.AreEqual(Icons.Snow, Icons.GetIconForWeatherCode(71));
+        Assert.AreEqual(Icons.Snow, Icons.GetIconForWeatherCode(73));
+        Assert.AreEqual(Icons.Snow, Icons.GetIconForWeatherCode(75));
+        Assert.AreEqual(Icons.Snow, Icons.GetIconForWeatherCode(77));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_RainShowers_ReturnsNotNull()
+    public void GetIconForWeatherCode_RainShowers_GroupsCodes80To82()
     {
-        var result80 = Icons.GetIconForWeatherCode(80);
-        var result81 = Icons.GetIconForWeatherCode(81);
-        var result82 = Icons.GetIconForWeatherCode(82);
-        Assert.IsNotNull(result80);
-        Assert.IsNotNull(result81);
-        Assert.IsNotNull(result82);
-        Assert.AreEqual(Icons.RainShowers, result80);
+        Assert.AreEqual(Icons.RainShowers, Icons.GetIconForWeatherCode(80));
+        Assert.AreEqual(Icons.RainShowers, Icons.GetIconForWeatherCode(81));
+        Assert.AreEqual(Icons.RainShowers, Icons.GetIconForWeatherCode(82));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_SnowShowers_ReturnsNotNull()
+    public void GetIconForWeatherCode_SnowShowers_GroupsCodes85And86()
     {
-        var result85 = Icons.GetIconForWeatherCode(85);
-        var result86 = Icons.GetIconForWeatherCode(86);
-        Assert.IsNotNull(result85);
-        Assert.IsNotNull(result86);
-        Assert.AreEqual(Icons.SnowShowers, result85);
+        Assert.AreEqual(Icons.SnowShowers, Icons.GetIconForWeatherCode(85));
+        Assert.AreEqual(Icons.SnowShowers, Icons.GetIconForWeatherCode(86));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_Thunderstorm_ReturnsNotNull()
+    public void GetIconForWeatherCode_Thunderstorm_ReturnsThunderstormIcon()
     {
-        var result = Icons.GetIconForWeatherCode(95);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(Icons.Thunderstorm, result);
+        Assert.AreEqual(Icons.Thunderstorm, Icons.GetIconForWeatherCode(95));
     }
 
     [TestMethod]
-    public void GetIconForWeatherCode_ThunderstormHail_ReturnsNotNull()
+    public void GetIconForWeatherCode_ThunderstormHail_GroupsCodes96And99()
     {
-        var result96 = Icons.GetIconForWeatherCode(96);
-        var result99 = Icons.GetIconForWeatherCode(99);
-        Assert.IsNotNull(result96);
-        Assert.IsNotNull(result99);
-        Assert.AreEqual(Icons.ThunderstormHail, result96);
-        Assert.AreEqual(Icons.ThunderstormHail, result99);
+        Assert.AreEqual(Icons.ThunderstormHail, Icons.GetIconForWeatherCode(96));
+        Assert.AreEqual(Icons.ThunderstormHail, Icons.GetIconForWeatherCode(99));
     }
 
     [TestMethod]
     public void GetIconForWeatherCode_UnknownCode_ReturnsDefaultWeatherIcon()
     {
-        var result = Icons.GetIconForWeatherCode(999);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(Icons.WeatherIcon, result);
-    }
-
-    [TestMethod]
-    public void GetIconForWeatherCode_NegativeCode_ReturnsDefaultWeatherIcon()
-    {
-        var result = Icons.GetIconForWeatherCode(-1);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(Icons.WeatherIcon, result);
+        Assert.AreEqual(Icons.WeatherIcon, Icons.GetIconForWeatherCode(999));
+        Assert.AreEqual(Icons.WeatherIcon, Icons.GetIconForWeatherCode(-1));
     }
 }
