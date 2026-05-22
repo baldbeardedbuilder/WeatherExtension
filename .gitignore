@@ -49,3 +49,6 @@ WeatherExtension/signing/
 # Logs and one-off build artifacts
 weather-extension.log
 build_log.txt
+
+# Visual Studio IDE state
+.vs/
