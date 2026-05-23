@@ -15,7 +15,9 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 	private readonly HttpClient _httpClient;
 	private const string BaseUrl = "https://api.open-meteo.com/v1/forecast";
 	private const string ConnectivityProbeUrl = "https://connectivitycheck.gstatic.com/generate_204";
-	private const int CacheExpirationMinutes = 15;
+	private const int CurrentWeatherCacheMinutes = 15;
+	private const int ForecastCacheMinutes = 60;
+	private const int HourlyCacheMinutes = 30;
 
 	private WeatherData? _cachedWeather;
 	private DateTime _weatherCacheTime;
@@ -63,7 +65,7 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 			{
 				if (_cachedWeather != null &&
 					_weatherCacheKey == cacheKey &&
-					(DateTime.UtcNow - _weatherCacheTime).TotalMinutes < CacheExpirationMinutes)
+					(DateTime.UtcNow - _weatherCacheTime).TotalMinutes < CurrentWeatherCacheMinutes)
 				{
 					return _cachedWeather;
 				}
@@ -133,7 +135,7 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 			{
 				if (_cachedForecast != null &&
 					_forecastCacheKey == cacheKey &&
-					(DateTime.UtcNow - _forecastCacheTime).TotalMinutes < CacheExpirationMinutes)
+					(DateTime.UtcNow - _forecastCacheTime).TotalMinutes < ForecastCacheMinutes)
 				{
 					return _cachedForecast;
 				}
@@ -204,7 +206,7 @@ public sealed partial class OpenMeteoService : IWeatherService, IDisposable
 			{
 				if (_cachedHourly != null &&
 					_hourlyCacheKey == cacheKey &&
-					(DateTime.UtcNow - _hourlyCacheTime).TotalMinutes < CacheExpirationMinutes)
+					(DateTime.UtcNow - _hourlyCacheTime).TotalMinutes < HourlyCacheMinutes)
 				{
 					return _cachedHourly;
 				}
