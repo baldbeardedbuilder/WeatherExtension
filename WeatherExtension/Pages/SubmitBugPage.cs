@@ -14,7 +14,7 @@ namespace Microsoft.CmdPal.Ext.Weather.Pages;
 /// Displays two actions — save logs to Desktop and open GitHub Issues —
 /// with step-by-step instructions in the Details panel.
 /// </summary>
-internal sealed partial class SubmitBugPage : DynamicListPage
+internal sealed partial class SubmitBugPage : ListPage
 {
     private readonly IListItem[] _items;
 
