@@ -28,6 +28,7 @@ public sealed class FavoritesManager
 
 	public void Favorite(GeocodingResult location)
 	{
+		BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"FavoritesManager.Favorite: {location.DisplayName}");
 		var added = _store.Add(
 			new PinnedLocation
 			{
@@ -43,18 +44,21 @@ public sealed class FavoritesManager
 
 		if (added)
 		{
+			BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"FavoritesManager.Favorite: Actually added {location.DisplayName}");
 			FavoritesChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
 
 	public void Unfavorite(GeocodingResult location)
 	{
+		BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"FavoritesManager.Unfavorite: {location.DisplayName}");
 		var removed = _store.Remove(
 			p => Math.Abs(p.Latitude - location.Latitude) < 0.01 &&
 				 Math.Abs(p.Longitude - location.Longitude) < 0.01);
 
 		if (removed)
 		{
+			BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"FavoritesManager.Unfavorite: Actually removed {location.DisplayName}");
 			FavoritesChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}

@@ -108,12 +108,13 @@ public class CommandInvocationTests
 
 	private WeatherListPage CreateListPage()
 	{
+		var settingsManager = new WeatherSettingsManager(_settingsPath);
 		return new WeatherListPage(
 			new StubWeatherService(),
 			new StubGeocodingService(),
-			new WeatherSettingsManager(_settingsPath),
-			
-			new FavoritesManager(_favoritesPath));
+			settingsManager,
+			new FavoritesManager(_favoritesPath),
+			new WeatherSettingsPage(settingsManager));
 	}
 
 }

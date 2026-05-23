@@ -20,6 +20,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	private readonly IGeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settingsManager;
 	private readonly FavoritesManager _favoritesManager;
+	private readonly WeatherSettingsPage _settingsPage;
 	private readonly Lock _sync = new();
 	private readonly CancellationTokenSource _cts = new();
 
@@ -33,7 +34,8 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		IWeatherService weatherService,
 		IGeocodingService geocodingService,
 		WeatherSettingsManager settingsManager,
-		FavoritesManager favoritesManager)
+		FavoritesManager favoritesManager,
+		WeatherSettingsPage settingsPage)
 	{
 		ArgumentNullException.ThrowIfNull(weatherService);
 		ArgumentNullException.ThrowIfNull(geocodingService);
@@ -44,6 +46,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		_geocodingService = geocodingService;
 		_settingsManager = settingsManager;
 		_favoritesManager = favoritesManager;
+		_settingsPage = settingsPage;
 
 		Name = Resources.plugin_name;
 		Title = Resources.plugin_name;
@@ -252,11 +255,13 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		var detailPage = new WeatherDetailPage(
 			location,
 			_weatherService,
-			_settingsManager);
+			_settingsManager,
+			_settingsPage);
 
 		var moreCommands = new List<ICommandContextItem>
 		{
 			new CommandContextItem(new RefreshWeatherCommand(this)),
+			new CommandContextItem(_settingsPage) { Title = Resources.settings_page_title },
 		};
 
 		if (_favoritesManager.IsFavorite(location))

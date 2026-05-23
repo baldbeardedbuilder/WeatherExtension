@@ -138,4 +138,12 @@ public class WeatherSettingsManagerTests
 
         manager.RaiseSettingsChanged();
     }
+
+    [TestMethod]
+    public void DefaultLocationKey_DefaultsToAuto()
+    {
+        var manager = new WeatherSettingsManager(_tempFilePath);
+
+        Assert.AreEqual("auto", manager.DefaultLocationKey);
+    }
 }

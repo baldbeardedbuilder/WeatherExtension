@@ -20,13 +20,15 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 	private readonly FormContent _weatherForm = new();
 	private readonly CancellationTokenSource _cts = new();
 	private readonly GeocodingResult? _fixedLocation;
+	private readonly WeatherSettingsPage? _settingsPage;
 
 	public WeatherBandCard(
 		OpenMeteoService weatherService,
 		IGeocodingService geocodingService,
 		WeatherSettingsManager settings,
 		FavoritesManager? favoritesManager = null,
-		GeocodingResult? fixedLocation = null)
+		GeocodingResult? fixedLocation = null,
+		WeatherSettingsPage? settingsPage = null)
 	{
 		_weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
 		_geocodingService = geocodingService ?? throw new ArgumentNullException(nameof(geocodingService));
@@ -41,6 +43,8 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 
 		_weatherForm.TemplateJson = GetCardTemplate();
 		_weatherForm.DataJson = GetLoadingData();
+
+		_settingsPage = settingsPage;
 
 		_settings.Settings.SettingsChanged += OnSettingsChanged;
 		if (_favoritesManager != null)
@@ -104,6 +108,7 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 				_cts.Token);
 
 			_weatherForm.DataJson = BuildWeatherData(location, weather, forecast, hourly);
+			
 			RaiseItemsChanged();
 		}
 		catch (Exception ex)
@@ -114,6 +119,7 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 
 			_weatherForm.DataJson = GetErrorData(
 				Resources.unavailable);
+				
 			RaiseItemsChanged();
 		}
 	}

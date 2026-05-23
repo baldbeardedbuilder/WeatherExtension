@@ -3,121 +3,333 @@
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true" />
   </xsd:schema>
-  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
-  <resheader name="version"><value>2.0</value></resheader>
-  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="extension_name" xml:space="preserve">
+    <value>天気</value>
+  </data>
+  <data name="extension_description" xml:space="preserve">
+    <value>現在の天気と予報を表示します</value>
+  </data>
+  <data name="plugin_name" xml:space="preserve">
+    <value>天気</value>
+  </data>
+  <data name="plugin_description" xml:space="preserve">
+    <value>現在の天気と予報</value>
+  </data>
+  <data name="search_placeholder" xml:space="preserve">
+    <value>郵便番号または都市名を入力…</value>
+  </data>
+  <data name="no_locations_found" xml:space="preserve">
+    <value>場所が見つかりません</value>
+  </data>
+  <data name="search_min_chars" xml:space="preserve">
+    <value>3 文字以上入力してください</value>
+  </data>
+  <data name="no_results_for" xml:space="preserve">
+    <value>「{0}」の結果はありません</value>
+  </data>
+  <data name="search_format_hint" xml:space="preserve">
+    <value>都市、地域/州、国、郵便番号、またはこれらの組み合わせを試してください。
 
-  <data name="extension_name" xml:space="preserve"><value>天気</value></data>
-  <data name="extension_description" xml:space="preserve"><value>現在の天気と予報を表示します</value></data>
-  <data name="plugin_name" xml:space="preserve"><value>天気</value></data>
-  <data name="plugin_description" xml:space="preserve"><value>現在の天気と予報</value></data>
-  <data name="search_placeholder" xml:space="preserve"><value>郵便番号または都市名を入力…</value></data>
-  <data name="no_locations_found" xml:space="preserve"><value>場所が見つかりません</value></data>
-  <data name="search_min_chars" xml:space="preserve"><value>3 文字以上入力してください</value></data>
-  <data name="no_results_for" xml:space="preserve"><value>「{0}」の結果はありません</value></data>
-  <data name="search_format_hint" xml:space="preserve"><value>都市、地域/州、国、郵便番号、またはこれらの組み合わせを試してください。
-
-問題が解決しない場合は [バグを報告](https://github.com/michaeljolley/weatherextension/issues/new) してください。</value></data>
-  <data name="no_data_available" xml:space="preserve"><value>天気データはありません</value></data>
-  <data name="current_weather" xml:space="preserve"><value>現在の天気</value></data>
-  <data name="dock_band_subtitle_title" xml:space="preserve"><value>ドック バーのサブタイトル</value></data>
-  <data name="dock_band_subtitle_description" xml:space="preserve"><value>ドック バーのサブタイトルに何を表示するか選択します</value></data>
-  <data name="dock_band_subtitle_location" xml:space="preserve"><value>場所名</value></data>
-  <data name="dock_band_subtitle_highlow" xml:space="preserve"><value>最高/最低気温</value></data>
-  <data name="loading_data" xml:space="preserve"><value>天気データを読み込み中…</value></data>
-  <data name="today" xml:space="preserve"><value>今日</value></data>
-  <data name="tomorrow" xml:space="preserve"><value>明日</value></data>
-  <data name="temperature" xml:space="preserve"><value>気温</value></data>
-  <data name="feels_like" xml:space="preserve"><value>体感</value></data>
-  <data name="humidity" xml:space="preserve"><value>湿度</value></data>
-  <data name="wind_speed" xml:space="preserve"><value>風速</value></data>
-  <data name="wind_direction" xml:space="preserve"><value>風向</value></data>
-  <data name="high" xml:space="preserve"><value>最高</value></data>
-  <data name="low" xml:space="preserve"><value>最低</value></data>
-  <data name="precipitation" xml:space="preserve"><value>降水</value></data>
-  <data name="loading" xml:space="preserve"><value>読み込み中…</value></data>
-  <data name="unavailable" xml:space="preserve"><value>天気は利用できません</value></data>
-  <data name="weather_service_error" xml:space="preserve"><value>天気サービスは利用できません</value></data>
-  <data name="network_error" xml:space="preserve"><value>接続エラー</value></data>
-  <data name="location_not_found" xml:space="preserve"><value>場所が見つかりません</value></data>
-  <data name="temperature_unit_title" xml:space="preserve"><value>気温の単位</value></data>
-  <data name="temperature_unit_description" xml:space="preserve"><value>気温の単位を選択します</value></data>
-  <data name="celsius" xml:space="preserve"><value>摂氏</value></data>
-  <data name="fahrenheit" xml:space="preserve"><value>華氏</value></data>
-  <data name="wind_speed_unit_title" xml:space="preserve"><value>風速の単位</value></data>
-  <data name="wind_speed_unit_description" xml:space="preserve"><value>風速の単位を選択します</value></data>
-  <data name="kmh" xml:space="preserve"><value>km/h</value></data>
-  <data name="mph" xml:space="preserve"><value>mph</value></data>
-  <data name="show_forecast_title" xml:space="preserve"><value>予報を表示</value></data>
-  <data name="show_forecast_description" xml:space="preserve"><value>複数日の予報を表示します</value></data>
-  <data name="update_interval_title" xml:space="preserve"><value>更新間隔</value></data>
-  <data name="update_interval_description" xml:space="preserve"><value>天気データを更新する頻度</value></data>
-  <data name="one_hour" xml:space="preserve"><value>1 時間</value></data>
-  <data name="three_hours" xml:space="preserve"><value>3 時間</value></data>
-  <data name="six_hours" xml:space="preserve"><value>6 時間</value></data>
-  <data name="twelve_hours" xml:space="preserve"><value>12 時間</value></data>
-  <data name="connectivity_no_internet" xml:space="preserve"><value>インターネット接続がありません</value></data>
-  <data name="connectivity_api_blocked" xml:space="preserve"><value>天気 API に到達できません — お住まいの地域でブロックされている可能性があります</value></data>
-  <data name="connectivity_endpoint_current_weather" xml:space="preserve"><value>現在の天気</value></data>
-  <data name="connectivity_endpoint_forecast" xml:space="preserve"><value>予報</value></data>
-  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve"><value>毎時の予報</value></data>
-  <data name="favorites_section_title" xml:space="preserve"><value>お気に入り</value></data>
-  <data name="favorite_command_name" xml:space="preserve"><value>お気に入りに追加</value></data>
-  <data name="unfavorite_command_name" xml:space="preserve"><value>お気に入りから削除</value></data>
-  <data name="no_favorites_hint" xml:space="preserve"><value>場所を検索してお気に入りに追加してください</value></data>
-  
-  <data name="favorite_tag" xml:space="preserve"><value>お気に入り</value></data>
-  <data name="dock_band_loading" xml:space="preserve"><value>天気を読み込み中…</value></data>
-  <data name="card_section_current" xml:space="preserve"><value>現在</value></data>
-  <data name="card_section_next_three_hours" xml:space="preserve"><value>次の3時間</value></data>
-  <data name="card_section_three_day_forecast" xml:space="preserve"><value>3日間の予報</value></data>
-  <data name="card_label_high_low" xml:space="preserve"><value>最高 / 最低</value></data>
-  <data name="card_condition_unknown" xml:space="preserve"><value>不明</value></data>
-  <data name="weather_clear" xml:space="preserve"><value>快晴</value></data>
-  <data name="weather_mainly_clear" xml:space="preserve"><value>おおむね晴れ</value></data>
-  <data name="weather_partly_cloudy" xml:space="preserve"><value>部分的に曇り</value></data>
-  <data name="weather_overcast" xml:space="preserve"><value>曇り</value></data>
-  <data name="weather_fog" xml:space="preserve"><value>霧</value></data>
-  <data name="weather_drizzle" xml:space="preserve"><value>霧雨</value></data>
-  <data name="weather_rain" xml:space="preserve"><value>雨</value></data>
-  <data name="weather_snow" xml:space="preserve"><value>雪</value></data>
-  <data name="weather_rain_showers" xml:space="preserve"><value>にわか雨</value></data>
-  <data name="weather_snow_showers" xml:space="preserve"><value>にわか雪</value></data>
-  <data name="weather_thunderstorm" xml:space="preserve"><value>雷雨</value></data>
-  <data name="feels_like_template" xml:space="preserve"><value>{0} — {1} (体感 {2})</value></data>
-  
-  
-  
-  
-  <data name="page_forecast_title" xml:space="preserve"><value>予報</value></data>
-  <data name="page_hourly_title" xml:space="preserve"><value>毎時の予報</value></data>
-  <data name="card_section_next_hours" xml:space="preserve"><value>次の {0} 時間</value></data>
-  <data name="card_section_day_forecast" xml:space="preserve"><value>{0} 日間の予報</value></data>
-  
-  
-  <data name="settings_page_title" xml:space="preserve"><value>設定</value></data>
-  <data name="hour_format_title" xml:space="preserve"><value>時刻表示</value></data>
-  <data name="hour_format_description" xml:space="preserve"><value>12 時間表示か 24 時間表示を選択します。</value></data>
-  <data name="hour_format_12" xml:space="preserve"><value>12 時間 (AM/PM)</value></data>
-  <data name="hour_format_24" xml:space="preserve"><value>24 時間</value></data>
-  <data name="settings_save_button" xml:space="preserve"><value>保存</value></data>
-  
-  
-<data name="search_hint_examples_title" xml:space="preserve"><value>例:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>東京
+問題が解決しない場合は [バグを報告](https://github.com/michaeljolley/weatherextension/issues/new) してください。</value>
+  </data>
+  <data name="no_data_available" xml:space="preserve">
+    <value>天気データはありません</value>
+  </data>
+  <data name="current_weather" xml:space="preserve">
+    <value>現在の天気</value>
+  </data>
+  <data name="dock_band_subtitle_title" xml:space="preserve">
+    <value>ドック バーのサブタイトル</value>
+  </data>
+  <data name="dock_band_subtitle_description" xml:space="preserve">
+    <value>ドック バーのサブタイトルに何を表示するか選択します</value>
+  </data>
+  <data name="dock_band_subtitle_location" xml:space="preserve">
+    <value>場所名</value>
+  </data>
+  <data name="dock_band_subtitle_highlow" xml:space="preserve">
+    <value>最高/最低気温</value>
+  </data>
+  <data name="loading_data" xml:space="preserve">
+    <value>天気データを読み込み中…</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>今日</value>
+  </data>
+  <data name="tomorrow" xml:space="preserve">
+    <value>明日</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>気温</value>
+  </data>
+  <data name="feels_like" xml:space="preserve">
+    <value>体感</value>
+  </data>
+  <data name="humidity" xml:space="preserve">
+    <value>湿度</value>
+  </data>
+  <data name="wind_speed" xml:space="preserve">
+    <value>風速</value>
+  </data>
+  <data name="wind_direction" xml:space="preserve">
+    <value>風向</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>最高</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>最低</value>
+  </data>
+  <data name="precipitation" xml:space="preserve">
+    <value>降水</value>
+  </data>
+  <data name="loading" xml:space="preserve">
+    <value>読み込み中…</value>
+  </data>
+  <data name="unavailable" xml:space="preserve">
+    <value>天気は利用できません</value>
+  </data>
+  <data name="weather_service_error" xml:space="preserve">
+    <value>天気サービスは利用できません</value>
+  </data>
+  <data name="network_error" xml:space="preserve">
+    <value>接続エラー</value>
+  </data>
+  <data name="location_not_found" xml:space="preserve">
+    <value>場所が見つかりません</value>
+  </data>
+  <data name="temperature_unit_title" xml:space="preserve">
+    <value>気温の単位</value>
+  </data>
+  <data name="temperature_unit_description" xml:space="preserve">
+    <value>気温の単位を選択します</value>
+  </data>
+  <data name="celsius" xml:space="preserve">
+    <value>摂氏</value>
+  </data>
+  <data name="fahrenheit" xml:space="preserve">
+    <value>華氏</value>
+  </data>
+  <data name="wind_speed_unit_title" xml:space="preserve">
+    <value>風速の単位</value>
+  </data>
+  <data name="wind_speed_unit_description" xml:space="preserve">
+    <value>風速の単位を選択します</value>
+  </data>
+  <data name="kmh" xml:space="preserve">
+    <value>km/h</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="show_forecast_title" xml:space="preserve">
+    <value>予報を表示</value>
+  </data>
+  <data name="show_forecast_description" xml:space="preserve">
+    <value>複数日の予報を表示します</value>
+  </data>
+  <data name="update_interval_title" xml:space="preserve">
+    <value>更新間隔</value>
+  </data>
+  <data name="update_interval_description" xml:space="preserve">
+    <value>天気データを更新する頻度</value>
+  </data>
+  <data name="one_hour" xml:space="preserve">
+    <value>1 時間</value>
+  </data>
+  <data name="three_hours" xml:space="preserve">
+    <value>3 時間</value>
+  </data>
+  <data name="six_hours" xml:space="preserve">
+    <value>6 時間</value>
+  </data>
+  <data name="twelve_hours" xml:space="preserve">
+    <value>12 時間</value>
+  </data>
+  <data name="connectivity_no_internet" xml:space="preserve">
+    <value>インターネット接続がありません</value>
+  </data>
+  <data name="connectivity_api_blocked" xml:space="preserve">
+    <value>天気 API に到達できません — お住まいの地域でブロックされている可能性があります</value>
+  </data>
+  <data name="connectivity_endpoint_current_weather" xml:space="preserve">
+    <value>現在の天気</value>
+  </data>
+  <data name="connectivity_endpoint_forecast" xml:space="preserve">
+    <value>予報</value>
+  </data>
+  <data name="connectivity_endpoint_hourly_forecast" xml:space="preserve">
+    <value>毎時の予報</value>
+  </data>
+  <data name="favorites_section_title" xml:space="preserve">
+    <value>お気に入り</value>
+  </data>
+  <data name="favorite_command_name" xml:space="preserve">
+    <value>お気に入りに追加</value>
+  </data>
+  <data name="unfavorite_command_name" xml:space="preserve">
+    <value>お気に入りから削除</value>
+  </data>
+  <data name="no_favorites_hint" xml:space="preserve">
+    <value>場所を検索してお気に入りに追加してください</value>
+  </data>
+  <data name="favorite_tag" xml:space="preserve">
+    <value>お気に入り</value>
+  </data>
+  <data name="dock_band_loading" xml:space="preserve">
+    <value>天気を読み込み中…</value>
+  </data>
+  <data name="card_section_current" xml:space="preserve">
+    <value>現在</value>
+  </data>
+  <data name="card_section_next_three_hours" xml:space="preserve">
+    <value>次の3時間</value>
+  </data>
+  <data name="card_section_three_day_forecast" xml:space="preserve">
+    <value>3日間の予報</value>
+  </data>
+  <data name="card_label_high_low" xml:space="preserve">
+    <value>最高 / 最低</value>
+  </data>
+  <data name="card_condition_unknown" xml:space="preserve">
+    <value>不明</value>
+  </data>
+  <data name="weather_clear" xml:space="preserve">
+    <value>快晴</value>
+  </data>
+  <data name="weather_mainly_clear" xml:space="preserve">
+    <value>おおむね晴れ</value>
+  </data>
+  <data name="weather_partly_cloudy" xml:space="preserve">
+    <value>部分的に曇り</value>
+  </data>
+  <data name="weather_overcast" xml:space="preserve">
+    <value>曇り</value>
+  </data>
+  <data name="weather_fog" xml:space="preserve">
+    <value>霧</value>
+  </data>
+  <data name="weather_drizzle" xml:space="preserve">
+    <value>霧雨</value>
+  </data>
+  <data name="weather_rain" xml:space="preserve">
+    <value>雨</value>
+  </data>
+  <data name="weather_snow" xml:space="preserve">
+    <value>雪</value>
+  </data>
+  <data name="weather_rain_showers" xml:space="preserve">
+    <value>にわか雨</value>
+  </data>
+  <data name="weather_snow_showers" xml:space="preserve">
+    <value>にわか雪</value>
+  </data>
+  <data name="weather_thunderstorm" xml:space="preserve">
+    <value>雷雨</value>
+  </data>
+  <data name="feels_like_template" xml:space="preserve">
+    <value>{0} — {1} (体感 {2})</value>
+  </data>
+  <data name="page_forecast_title" xml:space="preserve">
+    <value>予報</value>
+  </data>
+  <data name="page_hourly_title" xml:space="preserve">
+    <value>毎時の予報</value>
+  </data>
+  <data name="card_section_next_hours" xml:space="preserve">
+    <value>次の {0} 時間</value>
+  </data>
+  <data name="card_section_day_forecast" xml:space="preserve">
+    <value>{0} 日間の予報</value>
+  </data>
+  <data name="settings_page_title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="hour_format_title" xml:space="preserve">
+    <value>時刻表示</value>
+  </data>
+  <data name="hour_format_description" xml:space="preserve">
+    <value>12 時間表示か 24 時間表示を選択します。</value>
+  </data>
+  <data name="hour_format_12" xml:space="preserve">
+    <value>12 時間 (AM/PM)</value>
+  </data>
+  <data name="hour_format_24" xml:space="preserve">
+    <value>24 時間</value>
+  </data>
+  <data name="settings_save_button" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="search_hint_examples_title" xml:space="preserve">
+    <value>例:</value>
+  </data>
+  <data name="search_hint_examples_block" xml:space="preserve">
+    <value>東京
 大阪, JP
 100-0001
-ソウル, 韓国</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Ctrl+D で場所をお気に入りとドックに追加します。</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>お気に入りが複数ある場合、展開カードは既定で最初のお気に入りを参照します。2件目以降はコマンド パレットのドックのカスタマイズからいつでも追加できます。</value></data>
-  <data name="command_change_location" xml:space="preserve"><value>å ´æ‰€ã‚’å¤‰æ›´</value></data>
-  <data name="command_refresh" xml:space="preserve"><value>æ›´æ–°</value></data>
-  <data name="command_view_hourly" xml:space="preserve"><value>æ¯æ™‚è¡¨ç¤º</value></data>
-  <data name="dock_band_title_template" xml:space="preserve"><value>å¤©æ°— - {0}</value></data>
-  <data name="compass_n" xml:space="preserve"><value>åŒ—</value></data>
-  <data name="compass_ne" xml:space="preserve"><value>åŒ—æ±</value></data>
-  <data name="compass_e" xml:space="preserve"><value>æ±</value></data>
-  <data name="compass_se" xml:space="preserve"><value>å—æ±</value></data>
-  <data name="compass_s" xml:space="preserve"><value>å—</value></data>
-  <data name="compass_sw" xml:space="preserve"><value>å—è¥¿</value></data>
-  <data name="compass_w" xml:space="preserve"><value>è¥¿</value></data>
-  <data name="compass_nw" xml:space="preserve"><value>åŒ—è¥¿</value></data>
+ソウル, 韓国</value>
+  </data>
+  <data name="search_hint_favorite_shortcut" xml:space="preserve">
+    <value>Ctrl+D で場所をお気に入りとドックに追加します。</value>
+  </data>
+  <data name="search_hint_multiple_favorites" xml:space="preserve">
+    <value>お気に入りが複数ある場合、展開カードは既定で最初のお気に入りを参照します。2件目以降はコマンド パレットのドックのカスタマイズからいつでも追加できます。</value>
+  </data>
+  <data name="command_change_location" xml:space="preserve">
+    <value>å ´æ‰€ã‚’å¤‰æ›´</value>
+  </data>
+  <data name="command_refresh" xml:space="preserve">
+    <value>æ›´æ–°</value>
+  </data>
+  <data name="command_view_hourly" xml:space="preserve">
+    <value>æ¯æ™‚è¡¨ç¤º</value>
+  </data>
+  <data name="dock_band_title_template" xml:space="preserve">
+    <value>å¤©æ°— - {0}</value>
+  </data>
+  <data name="compass_n" xml:space="preserve">
+    <value>åŒ—</value>
+  </data>
+  <data name="compass_ne" xml:space="preserve">
+    <value>åŒ—æ±</value>
+  </data>
+  <data name="compass_e" xml:space="preserve">
+    <value>æ±</value>
+  </data>
+  <data name="compass_se" xml:space="preserve">
+    <value>å—æ±</value>
+  </data>
+  <data name="compass_s" xml:space="preserve">
+    <value>å—</value>
+  </data>
+  <data name="compass_sw" xml:space="preserve">
+    <value>å—è¥¿</value>
+  </data>
+  <data name="compass_w" xml:space="preserve">
+    <value>è¥¿</value>
+  </data>
+  <data name="compass_nw" xml:space="preserve">
+    <value>åŒ—è¥¿</value>
+  </data>
+  <data name="default_location_title" xml:space="preserve">
+    <value>デフォルトの場所</value>
+  </data>
+  <data name="default_location_description" xml:space="preserve">
+    <value>ドックに表示するお気に入りの場所を選択します。</value>
+  </data>
+  <data name="default_location_none" xml:space="preserve">
+    <value>なし</value>
+  </data>
 </root>

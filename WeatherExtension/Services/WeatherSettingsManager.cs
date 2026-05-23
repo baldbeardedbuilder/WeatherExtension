@@ -72,6 +72,14 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
             new ChoiceSetSetting.Choice(Resources.hour_format_24, "24"),
         ]);
 
+    private readonly ChoiceSetSetting _defaultLocation = new(
+        Namespaced(nameof(DefaultLocationKey)),
+        Resources.default_location_title,
+        Resources.default_location_description,
+        [
+            new ChoiceSetSetting.Choice(Resources.default_location_auto, "auto"),
+        ]);
+
     private static readonly HashSet<string> _validIntervals = ["60", "180", "360", "720"];
 
     public string TemperatureUnit => _temperatureUnit.Value ?? "celsius";
@@ -91,6 +99,8 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
     public string HourFormat => _hourFormat.Value ?? "12";
 
     public bool Use24HourClock => HourFormat == "24";
+
+    public string DefaultLocationKey => _defaultLocation.Value ?? "auto";
 
     public WeatherSettingsManager()
     {
@@ -122,6 +132,7 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         Settings.Add(_updateInterval);
         Settings.Add(_dockBandSubtitle);
         Settings.Add(_hourFormat);
+        Settings.Add(_defaultLocation);
     }
 
     private void MigrateUpdateInterval()
@@ -130,6 +141,28 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         if (current != null && !_validIntervals.Contains(current))
         {
             _updateInterval.Value = "60";
+            SaveSettings();
+        }
+    }
+
+    public void RefreshDefaultLocationChoices(IReadOnlyList<PinnedLocation> favorites)
+    {
+        var choices = new List<ChoiceSetSetting.Choice>
+        {
+            new ChoiceSetSetting.Choice(Resources.default_location_auto, "auto")
+        };
+
+        foreach (var fav in favorites)
+        {
+            var key = string.Format(CultureInfo.InvariantCulture, "{0:F4}_{1:F4}", fav.Latitude, fav.Longitude);
+            choices.Add(new ChoiceSetSetting.Choice(fav.DisplayName ?? "Unknown", key));
+        }
+
+        _defaultLocation.Choices = choices;
+
+        if (DefaultLocationKey != "auto" && !choices.Any(c => c.Value == DefaultLocationKey))
+        {
+            _defaultLocation.Value = "auto";
             SaveSettings();
         }
     }

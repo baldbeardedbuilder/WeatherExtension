@@ -17,7 +17,7 @@ namespace Microsoft.CmdPal.Ext.Weather.Pages;
 /// That makes adjusting more than one option a frustrating round trip,
 /// so we own the page ourselves and return <c>KeepOpen()</c> instead.
 /// </summary>
-internal sealed partial class WeatherSettingsPage : ContentPage
+internal sealed partial class WeatherSettingsPage : ContentPage, IDisposable
 {
 	private readonly WeatherSettingsManager _settingsManager;
 	private readonly WeatherSettingsForm _form;
@@ -34,6 +34,12 @@ internal sealed partial class WeatherSettingsPage : ContentPage
 		Id = "com.baldbeardedbuilder.cmdpal.weather.settings";
 
 		_form = new WeatherSettingsForm(_settingsManager);
+		_settingsManager.Settings.SettingsChanged += OnSettingsChanged;
+	}
+
+	private void OnSettingsChanged(object? sender, Settings e)
+	{
+		Refresh();
 	}
 
 	public override IContent[] GetContent() => [_form];
@@ -47,6 +53,11 @@ internal sealed partial class WeatherSettingsPage : ContentPage
 	{
 		_form.Refresh();
 		RaiseItemsChanged();
+	}
+
+	public void Dispose()
+	{
+		_settingsManager.Settings.SettingsChanged -= OnSettingsChanged;
 	}
 }
 

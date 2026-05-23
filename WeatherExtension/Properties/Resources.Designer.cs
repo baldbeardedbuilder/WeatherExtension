@@ -623,6 +623,9 @@ namespace Microsoft.CmdPal.Ext.Weather {
         public static string card_section_next_hours { get { return ResourceManager.GetString("card_section_next_hours", resourceCulture); } }
         public static string card_section_day_forecast { get { return ResourceManager.GetString("card_section_day_forecast", resourceCulture); } }
         public static string settings_page_title { get { return ResourceManager.GetString("settings_page_title", resourceCulture); } }
+        public static string default_location_title { get { return ResourceManager.GetString("default_location_title", resourceCulture); } }
+        public static string default_location_description { get { return ResourceManager.GetString("default_location_description", resourceCulture); } }
+        public static string default_location_auto { get { return ResourceManager.GetString("default_location_auto", resourceCulture); } }
         public static string hour_format_title { get { return ResourceManager.GetString("hour_format_title", resourceCulture); } }
         public static string hour_format_description { get { return ResourceManager.GetString("hour_format_description", resourceCulture); } }
         public static string hour_format_12 { get { return ResourceManager.GetString("hour_format_12", resourceCulture); } }

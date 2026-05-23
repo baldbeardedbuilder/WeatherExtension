@@ -19,6 +19,7 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 	private readonly OpenMeteoService _weatherService;
 	private readonly WeatherSettingsManager _settings;
 	private readonly WeatherBandCard _contentPage;
+	private readonly WeatherSettingsPage _settingsPage;
 	private readonly Timer _updateTimer;
 	private readonly CancellationTokenSource _cts = new();
 	private bool _isDisposed;
@@ -32,17 +33,25 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		GeocodingResult location,
 		OpenMeteoService weatherService,
 		WeatherSettingsManager settings,
-		WeatherBandCard contentPage)
+		WeatherBandCard contentPage,
+		WeatherSettingsPage settingsPage)
 	{
+		BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"PinnedWeatherBand.ctor: {location?.DisplayName}");
 		_location = location ?? throw new ArgumentNullException(nameof(location));
 		_weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
 		_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 		_contentPage = contentPage ?? throw new ArgumentNullException(nameof(contentPage));
+		_settingsPage = settingsPage ?? throw new ArgumentNullException(nameof(settingsPage));
 
 		Command = _contentPage;
 		Icon = Icons.WeatherIcon;
 		Title = Resources.dock_band_loading;
 		Subtitle = _location.DisplayName;
+
+		MoreCommands =
+		[
+			new CommandContextItem(_settingsPage) { Title = Resources.settings_page_title },
+		];
 
 		var intervalMs = _settings.UpdateIntervalMinutes * 60 * 1000;
 		_updateTimer = new Timer(intervalMs);
@@ -223,6 +232,7 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 
 	public void Dispose()
 	{
+		BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"PinnedWeatherBand.Dispose: {_location?.DisplayName}");
 		if (_isDisposed)
 		{
 			return;

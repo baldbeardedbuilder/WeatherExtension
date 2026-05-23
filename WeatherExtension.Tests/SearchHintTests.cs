@@ -73,7 +73,7 @@ public class SearchHintTests
 			var block = Resources.search_hint_examples_block;
 
 			StringAssert.Contains(block, "İstanbul");
-			StringAssert.Contains(Resources.search_hint_multiple_favorites, "ilk favori");
+			StringAssert.Contains(Resources.search_hint_multiple_favorites, "eklenti ayarlarından");
 		}
 		finally
 		{

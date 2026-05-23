@@ -159,10 +159,12 @@ public class WeatherListPageTests
 		FavoritesManager? favorites = null,
 		StubGeocodingService? geocoding = null)
 	{
+		var settingsManager = new WeatherSettingsManager(_settingsPath);
 		return new WeatherListPage(
 			new StubWeatherService(),
 			geocoding ?? new StubGeocodingService(),
-			new WeatherSettingsManager(_settingsPath),
-			favorites ?? new FavoritesManager(_favoritesPath));
+			settingsManager,
+			favorites ?? new FavoritesManager(_favoritesPath),
+			new WeatherSettingsPage(settingsManager));
 	}
 }

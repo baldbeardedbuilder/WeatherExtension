@@ -16,6 +16,7 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 	private readonly GeocodingResult _location;
 	private readonly IWeatherService _weatherService;
 	private readonly WeatherSettingsManager _settingsManager;
+	private readonly WeatherSettingsPage _settingsPage;
 	private readonly Lock _sync = new();
 	private readonly CancellationTokenSource _cts = new();
 
@@ -25,7 +26,8 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 	public WeatherDetailPage(
 		GeocodingResult location,
 		IWeatherService weatherService,
-		WeatherSettingsManager settingsManager)
+		WeatherSettingsManager settingsManager,
+		WeatherSettingsPage settingsPage)
 	{
 		ArgumentNullException.ThrowIfNull(location);
 		ArgumentNullException.ThrowIfNull(weatherService);
@@ -34,6 +36,7 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 		_location = location;
 		_weatherService = weatherService;
 		_settingsManager = settingsManager;
+		_settingsPage = settingsPage;
 
 		Name = Resources.page_forecast_title;
 		Title = Resources.page_forecast_title;

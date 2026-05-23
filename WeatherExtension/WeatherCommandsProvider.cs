@@ -46,8 +46,10 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		// the right-click context menu — the dock should reflect that change
 		// immediately, so we re-emit ItemsChanged on every update.
 		_favoritesManager.FavoritesChanged += OnFavoritesChanged;
+		_settingsManager.RefreshDefaultLocationChoices(_favoritesManager.GetFavorites());
 
 		Settings = _settingsManager.Settings;
+		_settingsManager.Settings.SettingsChanged += OnSettingsChanged;
 
 		// Use our own settings page so saving keeps the user inside the
 		// settings sheet instead of bouncing to the root command palette.
@@ -55,7 +57,7 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		_settingsPage = new WeatherSettingsPage(_settingsManager);
 
 		// Create main weather page
-		_weatherPage = new WeatherListPage(_weatherService, _geocodingService, _settingsManager, _favoritesManager);
+		_weatherPage = new WeatherListPage(_weatherService, _geocodingService, _settingsManager, _favoritesManager, _settingsPage);
 
 		_topLevelItems =
 		[
@@ -72,54 +74,72 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 
 	public override ICommandItem[] GetDockBands()
 	{
+		BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug("GetDockBands() start");
 		var favorites = _favoritesManager.GetFavorites();
-		var dockItems = new List<ICommandItem>(favorites.Count);
+		var dockItems = new List<ICommandItem>();
 
+		if (favorites.Count == 0)
+		{
+			lock (_bandsSync)
+			{
+				foreach (var entry in _bandsByKey.Values)
+				{
+					entry.Band.Dispose();
+				}
+				_bandsByKey.Clear();
+			}
+			return [];
+		}
+
+		var defaultKey = _settingsManager.DefaultLocationKey;
+		Microsoft.CmdPal.Ext.Weather.Models.PinnedLocation? selectedFavorite = null;
+
+		if (defaultKey != "auto")
+		{
+			selectedFavorite = favorites.FirstOrDefault(f => BandKey(f.Latitude, f.Longitude) == defaultKey);
+		}
+		
+		if (selectedFavorite == null)
+		{
+			selectedFavorite = favorites[0];
+		}
+
+		var key = BandKey(selectedFavorite.Latitude, selectedFavorite.Longitude);
 		List<PinnedWeatherBand> bandsToDispose = [];
 
 		lock (_bandsSync)
 		{
-			// Reconcile against the cache so a hover or any other
-			// non-favorite-changing GetDockBands() call returns the same
-			// band instances with their already-resolved weather data
-			// instead of fresh "Loading weather…" placeholders.
 			var fresh = new Dictionary<string, BandEntry>(StringComparer.Ordinal);
-			foreach (var favorite in favorites)
-			{
-				var key = BandKey(favorite.Latitude, favorite.Longitude);
-				if (fresh.ContainsKey(key))
-				{
-					// User favorited two locations that round-trip to the
-					// same lat/lon at our F4 precision — keep the first.
-					continue;
-				}
+			BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"GetDockBands: Selected favorite = {selectedFavorite.DisplayName}");
 
-				if (_bandsByKey.TryGetValue(key, out var existing) && !existing.Band.IsDisposed)
-				{
-					fresh[key] = existing;
-					dockItems.Add(existing.DockItem);
-				}
-				else
-				{
-					var entry = CreateBand(favorite.ToGeocodingResult());
-					fresh[key] = entry;
-					dockItems.Add(entry.DockItem);
-				}
+			if (_bandsByKey.TryGetValue(key, out var existing) && !existing.Band.IsDisposed)
+			{
+				BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"GetDockBands: Reusing existing for {key}");
+				fresh[key] = existing;
+				dockItems.Add(existing.DockItem);
+			}
+			else
+			{
+				BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"GetDockBands: Creating new for {key}");
+				var entry = CreateBand(selectedFavorite.ToGeocodingResult());
+				fresh[key] = entry;
+				dockItems.Add(entry.DockItem);
 			}
 
-			// Dispose bands whose location is no longer favorited.
-			foreach (var (key, entry) in _bandsByKey)
+			// Dispose bands whose location is no longer the primary one.
+			foreach (var (oldKey, entry) in _bandsByKey)
 			{
-				if (!fresh.ContainsKey(key))
+				if (!fresh.ContainsKey(oldKey))
 				{
+					BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug($"GetDockBands: Scheduling dispose for {oldKey}");
 					bandsToDispose.Add(entry.Band);
 				}
 			}
 
 			_bandsByKey.Clear();
-			foreach (var (key, entry) in fresh)
+			foreach (var (k, entry) in fresh)
 			{
-				_bandsByKey[key] = entry;
+				_bandsByKey[k] = entry;
 			}
 		}
 
@@ -136,13 +156,12 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 
 	private BandEntry CreateBand(Microsoft.CmdPal.Ext.Weather.Models.GeocodingResult location)
 	{
-		var bandCard = new WeatherBandCard(_weatherService, _geocodingService, _settingsManager, _favoritesManager, location);
-		var pinnedBand = new PinnedWeatherBand(location, _weatherService, _settingsManager, bandCard);
+		var bandCard = new WeatherBandCard(_weatherService, _geocodingService, _settingsManager, _favoritesManager, location, _settingsPage);
+		var pinnedBand = new PinnedWeatherBand(location, _weatherService, _settingsManager, bandCard, _settingsPage);
 
 		var dockItem = new WrappedDockItem(
 			[pinnedBand],
-			FormattableString.Invariant(
-				$"com.baldbeardedbuilder.cmdpal.weather.pinnedBand.{location.Latitude}_{location.Longitude}"),
+			"com.baldbeardedbuilder.cmdpal.weather.pinnedBand.primary",
 			WeatherFormatter.DockBandTitle(location.DisplayName));
 
 		dockItem.Icon = Icons.WeatherIcon;
@@ -153,6 +172,10 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 
 	private void OnFavoritesChanged(object? sender, EventArgs e)
 	{
+		BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug("OnFavoritesChanged triggered");
+		_settingsManager.RefreshDefaultLocationChoices(_favoritesManager.GetFavorites());
+		_settingsManager.RaiseSettingsChanged();
+
 		// Reconcile immediately — don't wait for the host to call GetDockBands().
 		// If the user re-favorites a location before the host polls, a stale
 		// disposed band would otherwise be reused from the cache.
@@ -164,9 +187,16 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		RaiseItemsChanged(0);
 	}
 
+	private void OnSettingsChanged(object? sender, Microsoft.CommandPalette.Extensions.Toolkit.Settings e)
+	{
+		BaldBeardedBuilder.WeatherExtension.WeatherLogger.Debug("OnSettingsChanged triggered");
+		RaiseItemsChanged(0);
+	}
+
 	public override void Dispose()
 	{
 		_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
+		_settingsManager.Settings.SettingsChanged -= OnSettingsChanged;
 		List<PinnedWeatherBand> bandsToDispose;
 		lock (_bandsSync)
 		{
@@ -180,6 +210,7 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 		}
 
 		_weatherPage?.Dispose();
+		_settingsPage?.Dispose();
 		_weatherService?.Dispose();
 		_geocodingService?.Dispose();
 		base.Dispose();

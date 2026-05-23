@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -367,11 +367,20 @@ If you continue to have issues, please [file a bug](https://github.com/michaeljo
     <comment>Label on the Save button at the bottom of the settings sheet.</comment>
   </data>
   
+  <data name="default_location_title" xml:space="preserve">
+    <value>Default Dock Location</value>
+  </data>
+  <data name="default_location_description" xml:space="preserve">
+    <value>Choose which favorite location appears on the dock</value>
+  </data>
+  <data name="default_location_auto" xml:space="preserve">
+    <value>First Favorite (Auto)</value>
+  </data>
   
 <data name="search_hint_examples_title" xml:space="preserve"><value>Examples:</value></data><data name="search_hint_examples_block" xml:space="preserve"><value>London
 Paris, FR
 90210
-Berlin, Germany</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Press Ctrl+D to add a location to your favorites and the dock.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>With multiple favorites, the expanded card uses your first favorite by default. Add a second (or more) location to the dock anytime from Command Palette dock customization.</value></data>
+Berlin, Germany</value></data><data name="search_hint_favorite_shortcut" xml:space="preserve"><value>Press Ctrl+D to add a location to your favorites and the dock.</value></data><data name="search_hint_multiple_favorites" xml:space="preserve"><value>With multiple favorites, the dock displays your first favorite by default. You can change which location appears on the dock from the extension Settings.</value></data>
   <data name="command_change_location" xml:space="preserve"><value>Change Location</value></data>
   <data name="command_refresh" xml:space="preserve"><value>Refresh</value></data>
   <data name="command_view_hourly" xml:space="preserve"><value>View Hourly</value></data>
