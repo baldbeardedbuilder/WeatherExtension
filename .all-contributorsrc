@@ -67,6 +67,15 @@
         "bug",
         "userTesting"
       ]
+    },
+    {
+      "login": "andy-c-jones",
+      "name": "Andrew \"AJ\" Jones",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2070987?v=4",
+      "profile": "http://darkpeak.dev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
