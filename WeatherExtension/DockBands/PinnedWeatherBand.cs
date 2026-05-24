@@ -47,18 +47,8 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		Title = Resources.dock_band_loading;
 		Subtitle = _location.DisplayName;
 
-<<<<<<< Updated upstream
-		var intervalMs = _settings.UpdateIntervalMinutes * 60 * 1000;
-		_updateTimer = new Timer(intervalMs);
-=======
-		MoreCommands =
-		[
-			new CommandContextItem(_settingsPage) { Title = Resources.settings_page_title },
-		];
-
 		// Tick every 1 minute to check staleness without fetching
 		_updateTimer = new Timer(60 * 1000);
->>>>>>> Stashed changes
 		_updateTimer.Elapsed += OnTimerElapsed;
 		_updateTimer.Start();
 
