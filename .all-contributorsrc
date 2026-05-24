@@ -76,6 +76,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "niels9001",
+      "name": "Niels Laute",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9866362?v=4",
+      "profile": "https://github.com/niels9001",
+      "contributions": [
+        "design"
+      ]
     }
   ],
   "contributorsPerLine": 7,
