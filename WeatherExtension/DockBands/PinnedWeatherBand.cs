@@ -9,6 +9,7 @@ using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using System.Globalization;
+using System.Net.NetworkInformation;
 using Timer = System.Timers.Timer;
 
 namespace Microsoft.CmdPal.Ext.Weather.DockBands;
@@ -23,6 +24,8 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 	private readonly CancellationTokenSource _cts = new();
 	private bool _isDisposed;
 	private int _isUpdating;
+	private DateTime _lastUpdateAttempt = DateTime.MinValue;
+	private DateTime _lastSuccessfulFetch = DateTime.MinValue;
 
 	internal bool IsDisposed => _isDisposed;
 
@@ -44,14 +47,47 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		Title = Resources.dock_band_loading;
 		Subtitle = _location.DisplayName;
 
+<<<<<<< Updated upstream
 		var intervalMs = _settings.UpdateIntervalMinutes * 60 * 1000;
 		_updateTimer = new Timer(intervalMs);
+=======
+		MoreCommands =
+		[
+			new CommandContextItem(_settingsPage) { Title = Resources.settings_page_title },
+		];
+
+		// Tick every 1 minute to check staleness without fetching
+		_updateTimer = new Timer(60 * 1000);
+>>>>>>> Stashed changes
 		_updateTimer.Elapsed += OnTimerElapsed;
 		_updateTimer.Start();
 
 		_settings.Settings.SettingsChanged += OnSettingsChanged;
+		NetworkChange.NetworkAvailabilityChanged += OnNetworkAvailabilityChanged;
+		NetworkChange.NetworkAddressChanged += OnNetworkAddressChanged;
 
 		_ = UpdateWeatherAsync();
+	}
+
+	private void OnNetworkAddressChanged(object? sender, EventArgs e)
+	{
+		// Network address change guarantees an IP assignment (e.g. WiFi connected).
+		if (_lastUpdateAttempt > _lastSuccessfulFetch || _lastSuccessfulFetch == DateTime.MinValue)
+		{
+			_ = UpdateWeatherAsync();
+		}
+	}
+
+	private void OnNetworkAvailabilityChanged(object? sender, NetworkAvailabilityEventArgs e)
+	{
+		if (e.IsAvailable)
+		{
+			// If our last attempt failed (or we never succeeded), fetch instantly!
+			if (_lastUpdateAttempt > _lastSuccessfulFetch || _lastSuccessfulFetch == DateTime.MinValue)
+			{
+				_ = UpdateWeatherAsync();
+			}
+		}
 	}
 
 	private async void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -62,7 +98,18 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		// try/catch and log anything that still escapes.
 		try
 		{
-			await UpdateWeatherAsync().ConfigureAwait(false);
+			var intervalMinutes = _settings.UpdateIntervalMinutes;
+			var timeSinceLastUpdate = DateTime.UtcNow - _lastUpdateAttempt;
+			var lastAttemptFailed = _lastUpdateAttempt > _lastSuccessfulFetch;
+
+			if (timeSinceLastUpdate.TotalMinutes >= intervalMinutes || lastAttemptFailed)
+			{
+				await UpdateWeatherAsync().ConfigureAwait(false);
+			}
+			else
+			{
+				MarkAsStaleIfNeeded();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -81,6 +128,8 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 
 		try
 		{
+			_lastUpdateAttempt = DateTime.UtcNow;
+
 			var weather = await _weatherService.GetCurrentWeatherAsync(
 				_location.Latitude,
 				_location.Longitude,
@@ -99,6 +148,7 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 
 			if (weather?.Current != null)
 			{
+				_lastSuccessfulFetch = DateTime.UtcNow;
 				var tempUnit = _settings.TemperatureUnit;
 				var current = weather.Current;
 				var condition = Icons.GetWeatherDescription(current.WeatherCode);
@@ -108,11 +158,6 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 					WeatherFormatter.Temperature(current.Temperature, tempUnit),
 					condition);
 				Icon = Icons.GetIconForWeatherCode(current.WeatherCode);
-
-				if (DockItem is CommandItem dockCommandItem)
-				{
-					dockCommandItem.Icon = Icon;
-				}
 
 				if (_settings.DockBandSubtitle == "highlow")
 				{
@@ -152,9 +197,18 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 			}
 			else
 			{
-				Title = "--";
-				Subtitle = $"{_location.DisplayName} — {Resources.weather_service_error}";
+				if (Title == Resources.dock_band_loading)
+				{
+					Title = "⚠️ --";
+					Subtitle = $"{_location.DisplayName} — {Resources.weather_service_error}";
+				}
+				else
+				{
+					MarkAsStaleIfNeeded();
+				}
 			}
+
+			SyncDockItem();
 
 			// Refresh the expanded content page to stay in sync with the band
 			if (!_isDisposed)
@@ -180,8 +234,12 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 
 			if (Title == Resources.dock_band_loading)
 			{
-				Title = "--";
+				Title = "⚠️ --";
 				Subtitle = $"{_location.DisplayName} — {Resources.network_error}";
+			}
+			else
+			{
+				MarkAsStaleIfNeeded();
 			}
 		}
 		catch (Exception ex)
@@ -192,9 +250,14 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 
 			if (Title == Resources.dock_band_loading)
 			{
-				Title = "--";
+				Title = "⚠️ --";
 				Subtitle = $"{_location.DisplayName} — {Resources.unavailable}";
 			}
+			else
+			{
+				MarkAsStaleIfNeeded();
+			}
+			SyncDockItem();
 		}
 		finally
 		{
@@ -233,6 +296,8 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		// the inner content page so its own subscriptions get released too.
 		_isDisposed = true;
 		_settings.Settings.SettingsChanged -= OnSettingsChanged;
+		NetworkChange.NetworkAvailabilityChanged -= OnNetworkAvailabilityChanged;
+		NetworkChange.NetworkAddressChanged -= OnNetworkAddressChanged;
 		_updateTimer.Elapsed -= OnTimerElapsed;
 		_updateTimer.Stop();
 		_updateTimer.Dispose();
@@ -248,5 +313,39 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 
 		_cts.Dispose();
 		_contentPage.Dispose();
+	}
+
+	private void MarkAsStaleIfNeeded()
+	{
+		if (_lastSuccessfulFetch == DateTime.MinValue || _isDisposed)
+		{
+			return;
+		}
+
+		// Don't mark generic error or loading states as stale
+		if (Title == "--" || Title == Resources.dock_band_loading)
+		{
+			return;
+		}
+
+		var age = DateTime.UtcNow - _lastSuccessfulFetch;
+		if (age.TotalMinutes >= 15)
+		{
+			if (Subtitle != null && !Subtitle.StartsWith("⚠ ", StringComparison.Ordinal))
+			{
+				Subtitle = "⚠ " + Subtitle;
+			}
+		}
+		SyncDockItem();
+	}
+
+	private void SyncDockItem()
+	{
+		if (DockItem is CommandItem dockCommandItem)
+		{
+			dockCommandItem.Icon = Icon;
+			dockCommandItem.Title = Title;
+			dockCommandItem.Subtitle = Subtitle;
+		}
 	}
 }

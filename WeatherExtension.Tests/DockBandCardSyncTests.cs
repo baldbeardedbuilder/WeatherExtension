@@ -144,6 +144,43 @@ public class DockBandCardSyncTests
     }
 
     // ---------------------------------------------------------------
+    // Structural: Stale Data Indicator tracking fields
+    // ---------------------------------------------------------------
+
+    [TestMethod]
+    public void PinnedWeatherBand_HasStalenessTrackingFields()
+    {
+        var type = typeof(PinnedWeatherBand);
+        
+        var attemptField = type.GetField("_lastUpdateAttempt", PrivateInstance);
+        Assert.IsNotNull(attemptField, "PinnedWeatherBand must track _lastUpdateAttempt");
+        Assert.AreEqual(typeof(DateTime), attemptField!.FieldType);
+
+        var successField = type.GetField("_lastSuccessfulFetch", PrivateInstance);
+        Assert.IsNotNull(successField, "PinnedWeatherBand must track _lastSuccessfulFetch");
+        Assert.AreEqual(typeof(DateTime), successField!.FieldType);
+    }
+
+    [TestMethod]
+    public void PinnedWeatherBand_HasMarkAsStaleIfNeededMethod()
+    {
+        var method = typeof(PinnedWeatherBand)
+            .GetMethod("MarkAsStaleIfNeeded", PrivateInstance);
+
+        Assert.IsNotNull(method, "PinnedWeatherBand must have MarkAsStaleIfNeeded method for issue #120");
+    }
+
+    [TestMethod]
+    public void PinnedWeatherBand_OnTimerElapsed_CallsMarkAsStaleIfNeeded()
+    {
+        AssertAsyncMethodCallsTarget(
+            typeof(PinnedWeatherBand),
+            "OnTimerElapsed",
+            typeof(PinnedWeatherBand),
+            "MarkAsStaleIfNeeded");
+    }
+
+    // ---------------------------------------------------------------
     // Helper: scan async state-machine IL to verify a target call
     // ---------------------------------------------------------------
 
