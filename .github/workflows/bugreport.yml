@@ -25,13 +25,13 @@ jobs:
         with:
           script: |
             const body = [
-              'I need a bit more information to really debug this issue. Can you add a "Report Bug" zip file here?',
+              'I need a bit more information to really debug this issue. Can you add a "Submit a Bug Report" zip file here?',
               '',
               'Before you generate the bug report, please make sure to reproduce the issue you are having with the extension. This will ensure that the logs contain the relevant information to help me debug the issue.',
               '',
-              'Then, just right-click on the PowerToys system tray icon and go to Report Bug. Then drag the zip file from your desktop onto the GitHub comment box in this issue.',
+              'Then, use the context menu for Weather in Command Palette and go to Submit a Bug Report. Then use the "Save Logs to Desktop" command to save the logs to your desktop. Finally, drag the zip file from your desktop onto the GitHub comment box in this issue.',
               '',
-              '![Report Bug](https://user-images.githubusercontent.com/11349917/133042052-4975be21-4699-4363-83c9-a8e1869d079d.png)',
+              '![Report Bug](https://github.com/user-attachments/assets/15fcc39d-4774-4ccb-a45a-676020169dfa)',
               '',
               'This will let me review the logs of the extension to see what error is occurring so we can get it working for you. 👍🏼',
             ].join('\n');
