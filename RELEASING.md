@@ -110,3 +110,57 @@ The workflow automatically:
 | Store submission rejected | Check Partner Center dashboard for validation errors |
 | WinGet submission fails | Verify `WINGET_TOKEN` secret is set and not expired. For the first release, manually submit using `wingetcreate new` |
 | Build fails | The release workflow uses the same build process as CI — check for build errors in the Actions log |
+
+## Graceful Shutdown & Uninstall
+
+### Architecture
+
+The extension now supports graceful shutdown during uninstall without requiring Command Palette to close. This is implemented via:
+
+- **ShutdownCoordinator**: Listens on a named pipe (`\\.\pipe\WeatherExtension-Shutdown`) for external shutdown signals, with a fallback named event (`WeatherExtension-Shutdown`)
+- **Program.cs**: Uses `WaitHandle.WaitAny()` to coordinate between normal Command Palette shutdown and external uninstall signals
+- **Watchdog Timer**: A 5-second timeout ensures the process exits cleanly even if disposal hangs
+
+### How Uninstall Works
+
+1. Windows initiates uninstall
+2. Uninstall script or tool sends shutdown signal via the named pipe
+3. Extension process receives signal and gracefully disposes all resources
+4. Process exits cleanly, allowing Windows to remove the package
+5. No manual restart of Command Palette required
+
+### Signaling Shutdown Externally (PowerShell Example)
+
+```powershell
+# Signal graceful shutdown via named pipe
+$pipeName = "WeatherExtension-Shutdown"
+$pipeClient = New-Object System.IO.Pipes.NamedPipeClientStream(".", $pipeName, "Out")
+try {
+    $pipeClient.Connect(1000)
+    $sw = New-Object System.IO.StreamWriter($pipeClient)
+    $sw.WriteLine("SHUTDOWN")
+    $sw.Flush()
+} catch {
+    Write-Host "Could not signal shutdown: $_"
+} finally {
+    $pipeClient.Close()
+}
+```
+
+Alternatively, use the named event for simpler but less robust signaling:
+
+```powershell
+# Signal shutdown via named event
+[System.Threading.EventWaitHandle]::new($false, "Global", "WeatherExtension-Shutdown").Set()
+```
+
+### Resource Cleanup During Shutdown
+
+The extension ensures all resources are properly disposed during shutdown:
+- Timers are stopped
+- HTTP client connections are closed
+- Cancellation tokens are signalled
+- Event handler subscriptions are unsubscribed
+- No dangling handles or resources remain
+
+See `ShutdownCoordinator.cs` and disposal methods for implementation details.
