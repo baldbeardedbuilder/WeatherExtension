@@ -18,13 +18,31 @@ namespace Microsoft.CmdPal.Ext.Weather.UnitTests;
 [TestClass]
 public class ResxCompletenessTests
 {
-    // Resolve the Properties directory relative to the test output directory.
-    // Test output: WeatherExtension.Tests/bin/Debug/net8.0-windows10.0.22621.0/
-    // Target:      WeatherExtension/Properties/
-    private static readonly string PropertiesDir = Path.GetFullPath(
-        Path.Combine(AppContext.BaseDirectory, "../../../..", "WeatherExtension", "Properties"));
-
+    private static readonly string PropertiesDir = FindPropertiesDirectory();
     private static readonly string BaselineFile = Path.Combine(PropertiesDir, "Resources.resx");
+
+    /// <summary>
+    /// Walks up from AppContext.BaseDirectory until it finds WeatherExtension/Properties.
+    /// This is more robust than a fixed relative path depth.
+    /// </summary>
+    private static string FindPropertiesDirectory()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (current != null)
+        {
+            var candidate = Path.Combine(current.FullName, "WeatherExtension", "Properties");
+            if (Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            current = current.Parent;
+        }
+
+        throw new DirectoryNotFoundException(
+            $"Could not find WeatherExtension/Properties directory by walking up from {AppContext.BaseDirectory}");
+    }
 
     private static IReadOnlyList<string> ReadKeys(string resxPath)
     {
