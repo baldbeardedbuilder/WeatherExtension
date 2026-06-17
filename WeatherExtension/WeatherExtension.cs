@@ -4,6 +4,7 @@
 
 using System.Runtime.InteropServices;
 using System.Threading;
+using BaldBeardedBuilder.WeatherExtension;
 using Microsoft.CommandPalette.Extensions;
 
 namespace WeatherExtension;
