@@ -14,7 +14,7 @@ namespace WeatherExtension;
 /// Allows external processes (e.g., uninstaller) to signal shutdown without
 /// relying on Command Palette's disposal chain.
 /// </summary>
-internal sealed class ShutdownCoordinator
+internal sealed class ShutdownCoordinator : IDisposable
 {
 	private readonly ManualResetEvent _shutdownSignal = new(false);
 	private readonly CancellationTokenSource _listenerCts = new();
@@ -64,7 +64,7 @@ internal sealed class ShutdownCoordinator
 	/// Attempts to listen on a named pipe for shutdown signals.
 	/// Returns true if shutdown was signaled; false if the operation failed or was cancelled.
 	/// </summary>
-	private bool TryNamedPipeShutdown()
+	private static bool TryNamedPipeShutdown()
 	{
 		try
 		{
