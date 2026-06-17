@@ -111,7 +111,7 @@ public class ShutdownCoordinatorTests
     }
 
     [TestMethod]
-    public void ShutdownCoordinator_DisposeCancelsList enerThread()
+    public void ShutdownCoordinator_DisposeCancelsListenerThread()
     {
         // Arrange
         var coordinator = new WeatherExtension.ShutdownCoordinator();
