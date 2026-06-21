@@ -56,6 +56,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CommandPalette.Extensions" />
+		<PackageReference Include="Microsoft.Win32.SystemEvents" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" />
 		<PackageReference Include="Shmuelie.WinRTServer" />
 		<PackageReference Include="System.Text.Json" />

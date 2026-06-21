@@ -8,6 +8,7 @@ using Microsoft.CmdPal.Ext.Weather.Pages;
 using Microsoft.CmdPal.Ext.Weather.Services;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.Win32;
 using System.Globalization;
 using Timer = System.Timers.Timer;
 
@@ -20,7 +21,7 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 	private readonly WeatherSettingsManager _settings;
 	private readonly WeatherBandCard _contentPage;
 	private readonly Timer _updateTimer;
-	private readonly CancellationTokenSource _cts = new();
+	private CancellationTokenSource _cts = new();
 	private bool _isDisposed;
 	private int _isUpdating;
 
@@ -50,6 +51,7 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		_updateTimer.Start();
 
 		_settings.Settings.SettingsChanged += OnSettingsChanged;
+		SystemEvents.PowerModeChanged += OnPowerModeChanged;
 
 		_ = UpdateWeatherAsync();
 	}
@@ -69,6 +71,48 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 			WeatherLogger.LogToHost(
 				MessageState.Error,
 				$"Pinned band timer tick failed: {ex.Message}");
+		}
+	}
+
+	private async void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
+	{
+		if (e.Mode != PowerModes.Resume || _isDisposed)
+		{
+			return;
+		}
+
+		try
+		{
+			// Cancel any in-flight request that may be stuck from before
+			// sleep and replace the CTS so the next update uses a fresh token.
+			var stale = Interlocked.Exchange(ref _cts, new CancellationTokenSource());
+			try
+			{
+				stale.Cancel();
+			}
+			catch (ObjectDisposedException)
+			{
+			}
+
+			stale.Dispose();
+
+			// Clear the re-entrancy guard in case the previous request is
+			// still holding it (its catch/finally will run on the cancelled
+			// token path, but a race is possible).
+			Interlocked.Exchange(ref _isUpdating, 0);
+
+			// Restart the timer so the next tick is a full interval away
+			// from this fresh update rather than firing immediately after.
+			_updateTimer.Stop();
+			_updateTimer.Start();
+
+			await UpdateWeatherAsync().ConfigureAwait(false);
+		}
+		catch (Exception ex)
+		{
+			WeatherLogger.LogToHost(
+				MessageState.Error,
+				$"Pinned band resume refresh failed: {ex.Message}");
 		}
 	}
 
@@ -232,6 +276,7 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		// in-flight work to cancel, then dispose the cancellation source and
 		// the inner content page so its own subscriptions get released too.
 		_isDisposed = true;
+		SystemEvents.PowerModeChanged -= OnPowerModeChanged;
 		_settings.Settings.SettingsChanged -= OnSettingsChanged;
 		_updateTimer.Elapsed -= OnTimerElapsed;
 		_updateTimer.Stop();
