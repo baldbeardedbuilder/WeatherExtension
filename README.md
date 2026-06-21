@@ -1,7 +1,7 @@
 # Weather Extension for Microsoft Command Palette
 
 [<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>](https://get.microsoft.com/installer/download/9N01D6BS9V98?referrer=appbadge) ![WinGet Package Version](https://img.shields.io/winget/v/BaldBeardedBuilder.WeatherforCommandPalette) <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 
@@ -95,6 +95,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/niels9001"><img src="https://avatars.githubusercontent.com/u/9866362?v=4?s=100" width="100px;" alt="Niels Laute"/><br /><sub><b>Niels Laute</b></sub></a><br /><a href="#design-niels9001" title="Design">🎨</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/DewSeek"><img src="https://avatars.githubusercontent.com/u/51229845?v=4?s=100" width="100px;" alt="Myroslav"/><br /><sub><b>Myroslav</b></sub></a><br /><a href="#ideas-DewSeek" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
 </table>
