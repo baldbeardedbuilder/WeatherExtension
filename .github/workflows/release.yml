@@ -67,16 +67,6 @@ jobs:
       
       - name: Run tests
         run: dotnet test WeatherExtension.Tests/WeatherExtension.Tests.csproj -c Release -r win-x64 --no-build
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: |
-            WeatherExtension/bin/
-            WeatherExtension/obj/
-            WeatherExtension/Package.appxmanifest
-          retention-days: 1
 
   package:
     needs: build-and-test
@@ -90,11 +80,6 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
-      
-      - name: Download build artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: build-output
       
       - name: Update Package.appxmanifest version
         shell: pwsh
