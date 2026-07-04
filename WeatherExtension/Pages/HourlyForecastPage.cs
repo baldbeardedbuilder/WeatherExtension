@@ -21,6 +21,7 @@ internal sealed partial class HourlyForecastPage : ListPage, IDisposable
 
 	private IListItem[] _items = [];
 	private bool _isLoading = true;
+	private int _loadStarted;
 
 	public HourlyForecastPage(
 		GeocodingResult location,
@@ -41,7 +42,18 @@ internal sealed partial class HourlyForecastPage : ListPage, IDisposable
 		Id = $"com.baldbeardedbuilder.cmdpal.weather.hourly.{location.Id}";
 		ShowDetails = true;
 
-		LoadHourlyData();
+		// Loading is deferred until the host first renders the page (GetItems).
+		// Constructing this page no longer triggers a network call, so callers
+		// that create it speculatively (e.g. list rows the user never opens)
+		// don't pay for an hourly-forecast fetch.
+	}
+
+	private void EnsureLoadStarted()
+	{
+		if (Interlocked.Exchange(ref _loadStarted, 1) == 0)
+		{
+			LoadHourlyData();
+		}
 	}
 
 	private async void LoadHourlyData()
@@ -199,6 +211,8 @@ internal sealed partial class HourlyForecastPage : ListPage, IDisposable
 
 	public override IListItem[] GetItems()
 	{
+		EnsureLoadStarted();
+
 		lock (_sync)
 		{
 			if (_isLoading)

@@ -24,6 +24,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	private readonly CancellationTokenSource _cts = new();
 
 	private IListItem[] _items = [];
+	private readonly List<WeatherDetailPage> _detailPages = [];
 	private bool _isLoading;
 	private int _favoritesLoadGeneration;
 	private string _lastSearchQuery = string.Empty;
@@ -61,6 +62,10 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	private async void LoadFavoriteLocations(CancellationToken searchCt = default)
 	{
 		var generation = Interlocked.Increment(ref _favoritesLoadGeneration);
+
+		// Release the detail pages built for the previous set of rows before
+		// this load replaces them.
+		DisposeTrackedDetailPages();
 
 		try
 		{
@@ -254,6 +259,11 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 			_weatherService,
 			_settingsManager);
 
+		lock (_sync)
+		{
+			_detailPages.Add(detailPage);
+		}
+
 		var moreCommands = new List<ICommandContextItem>
 		{
 			new CommandContextItem(new RefreshWeatherCommand(this)),
@@ -340,6 +350,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 			ResetSearchToken();
 			_lastSearchQuery = newSearch;
 			EmptyContent = BuildSearchHintCard(Resources.search_min_chars);
+			DisposeTrackedDetailPages();
 			lock (_sync)
 			{
 				_items = [];
@@ -386,6 +397,10 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	{
 		try
 		{
+			// Release the detail pages built for the previous set of rows before
+			// this search replaces them.
+			DisposeTrackedDetailPages();
+
 			lock (_sync)
 			{
 				_isLoading = true;
@@ -538,6 +553,31 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		}
 	}
 
+	// Disposes the WeatherDetailPage instances created for the previous set of
+	// rows. Each detail page owns a CancellationTokenSource, so dropping the
+	// items array without disposing them would leak those pages until GC. Called
+	// at the start of every fresh load, before the next generation of rows is
+	// built, so only superseded pages are released.
+	private void DisposeTrackedDetailPages()
+	{
+		WeatherDetailPage[] toDispose;
+		lock (_sync)
+		{
+			if (_detailPages.Count == 0)
+			{
+				return;
+			}
+
+			toDispose = _detailPages.ToArray();
+			_detailPages.Clear();
+		}
+
+		foreach (var page in toDispose)
+		{
+			page.Dispose();
+		}
+	}
+
 	public override IListItem[] GetItems()
 	{
 		lock (_sync)
@@ -566,5 +606,6 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		_searchCts?.Dispose();
 		_cts?.Cancel();
 		_cts?.Dispose();
+		DisposeTrackedDetailPages();
 	}
 }
