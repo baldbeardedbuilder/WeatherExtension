@@ -21,6 +21,8 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 
 	private IListItem[] _items = [];
 	private bool _isLoading = true;
+	private int _loadStarted;
+	private HourlyForecastPage? _hourlyPage;
 
 	public WeatherDetailPage(
 		GeocodingResult location,
@@ -41,7 +43,17 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 		Id = $"com.baldbeardedbuilder.cmdpal.weather.detail.{location.Id}";
 		ShowDetails = true;
 
-		LoadWeatherData();
+		// Loading is deferred until the host first renders the page (GetItems).
+		// This page is created for every search/favorite row, but only fetches
+		// weather (and builds its nested hourly page) once the user opens it.
+	}
+
+	private void EnsureLoadStarted()
+	{
+		if (Interlocked.Exchange(ref _loadStarted, 1) == 0)
+		{
+			LoadWeatherData();
+		}
 	}
 
 	private async void LoadWeatherData()
@@ -107,6 +119,7 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 		var condition = Icons.GetWeatherDescription(current.WeatherCode);
 
 		var hourlyPage = new HourlyForecastPage(_location, _weatherService, _settingsManager);
+		_hourlyPage = hourlyPage;
 
 		return new ListItem(hourlyPage)
 		{
@@ -191,6 +204,8 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 
 	public override IListItem[] GetItems()
 	{
+		EnsureLoadStarted();
+
 		lock (_sync)
 		{
 			if (_isLoading)
@@ -213,6 +228,7 @@ internal sealed partial class WeatherDetailPage : ListPage, IDisposable
 	{
 		_cts?.Cancel();
 		_cts?.Dispose();
+		_hourlyPage?.Dispose();
 		GC.SuppressFinalize(this);
 	}
 }
