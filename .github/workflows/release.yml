@@ -378,6 +378,15 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
 
+          # Surface the API response body on any failing REST call (PowerShell otherwise
+          # only shows the status line and hides the useful error detail).
+          trap {
+            if ($_.ErrorDetails -and $_.ErrorDetails.Message) {
+              Write-Host "API error response: $($_.ErrorDetails.Message)"
+            }
+            break
+          }
+
           $tenantId     = "${{ secrets.PARTNER_CENTER_TENANT_ID }}"
           $clientId     = "${{ secrets.PARTNER_CENTER_CLIENT_ID }}"
           $clientSecret = "${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}"
@@ -416,18 +425,30 @@ jobs:
           $submissionUri = "$base/submissions/$subId"
           $submission = Invoke-RestMethod -Method Get -Uri $submissionUri -Headers $headers
 
-          # --- Step 3: mark every package that isn't this release for deletion ---
+          # --- Step 3: mark inherited packages for deletion ---
+          # Discriminate by fileStatus, NOT version: a freshly uploaded package is
+          # "PendingUpload" and its version field is still empty (Partner Center hasn't
+          # extracted its manifest yet), so a version comparison would wrongly match it.
+          # Every "Uploaded" package is inherited from the previously published submission
+          # and must go; the new bundle we just uploaded is "PendingUpload" and is kept.
           Write-Host "Release version: $version"
           Write-Host "Packages in draft:"
           $changed = $false
           foreach ($p in $submission.applicationPackages) {
             $marker = ""
-            if ($p.version -ne $version -and $p.fileStatus -ne "PendingDelete") {
+            if ($p.fileStatus -eq "Uploaded") {
               $p.fileStatus = "PendingDelete"
               $changed = $true
               $marker = "  <-- marked for deletion"
             }
             Write-Host "  $($p.fileName) v$($p.version) [$($p.fileStatus)]$marker"
+          }
+
+          # Safety guard: never commit a submission with no surviving package.
+          $surviving = @($submission.applicationPackages | Where-Object { $_.fileStatus -ne "PendingDelete" })
+          if ($surviving.Count -eq 0) {
+            Write-Error "Refusing to commit: every package is marked PendingDelete. The new bundle should still be PendingUpload."
+            exit 1
           }
 
           # --- Step 4: PUT the edited draft (only when something changed) ---
