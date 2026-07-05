@@ -360,10 +360,107 @@ jobs:
             --clientId "${{ secrets.PARTNER_CENTER_CLIENT_ID }}" `
             --clientSecret "${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}"
       
-      - name: Submit to Microsoft Store
+      - name: Submit to Microsoft Store (draft, no commit)
         shell: pwsh
         run: |
-          msstore publish "${{ steps.bundle.outputs.bundle_file }}" -id "${{ secrets.STORE_PRODUCT_ID }}"
+          # Create/upload the draft submission but DON'T commit yet. Partner Center
+          # builds every new submission as a *copy of the last published one*, so the
+          # draft still carries any previously published packages. We commit only after
+          # the cleanup step below has removed the stale ones.
+          msstore publish "${{ steps.bundle.outputs.bundle_file }}" -id "${{ secrets.STORE_PRODUCT_ID }}" --noCommit
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "msstore publish --noCommit failed with exit code $LASTEXITCODE"
+            exit 1
+          }
+
+      - name: Remove stale packages and commit submission
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $tenantId     = "${{ secrets.PARTNER_CENTER_TENANT_ID }}"
+          $clientId     = "${{ secrets.PARTNER_CENTER_CLIENT_ID }}"
+          $clientSecret = "${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}"
+          $appId        = "${{ secrets.STORE_PRODUCT_ID }}"
+          $version      = "${{ needs.build-and-test.outputs.version }}"
+
+          # msstore's own 'submission update' can't be used here: it passes the entire
+          # submission JSON as a command-line argument (Windows caps args at ~32 KB) and
+          # it DELETES the draft when pricing.priceId == "Base". The raw Store submission
+          # REST API avoids both problems and lets us surgically mark packages for delete.
+
+          # --- Step 1: Azure AD access token (client credentials) ---
+          $tokenBody = @{
+            grant_type    = "client_credentials"
+            client_id     = $clientId
+            client_secret = $clientSecret
+            resource      = "https://manage.devcenter.microsoft.com"
+          }
+          $token = (Invoke-RestMethod -Method Post `
+            -Uri "https://login.microsoftonline.com/$tenantId/oauth2/token" `
+            -ContentType "application/x-www-form-urlencoded" `
+            -Body $tokenBody).access_token
+          if (-not $token) { Write-Error "Failed to acquire Azure AD access token."; exit 1 }
+          $headers = @{ Authorization = "Bearer $token" }
+          $base = "https://manage.devcenter.microsoft.com/v1.0/my/applications/$appId"
+
+          # --- Step 2: locate the pending draft created by the previous step ---
+          $app = Invoke-RestMethod -Method Get -Uri $base -Headers $headers
+          $subId = $app.pendingApplicationSubmission.id
+          if (-not $subId) {
+            Write-Error "No pending submission found. Did 'msstore publish --noCommit' succeed?"
+            exit 1
+          }
+          Write-Host "Pending submission: $subId"
+
+          $submissionUri = "$base/submissions/$subId"
+          $submission = Invoke-RestMethod -Method Get -Uri $submissionUri -Headers $headers
+
+          # --- Step 3: mark every package that isn't this release for deletion ---
+          Write-Host "Release version: $version"
+          Write-Host "Packages in draft:"
+          $changed = $false
+          foreach ($p in $submission.applicationPackages) {
+            $marker = ""
+            if ($p.version -ne $version -and $p.fileStatus -ne "PendingDelete") {
+              $p.fileStatus = "PendingDelete"
+              $changed = $true
+              $marker = "  <-- marked for deletion"
+            }
+            Write-Host "  $($p.fileName) v$($p.version) [$($p.fileStatus)]$marker"
+          }
+
+          # --- Step 4: PUT the edited draft (only when something changed) ---
+          if ($changed) {
+            $body = $submission | ConvertTo-Json -Depth 100
+            Invoke-RestMethod -Method Put -Uri $submissionUri -Headers $headers `
+              -ContentType "application/json" -Body $body | Out-Null
+            Write-Host "Draft updated: stale packages marked PendingDelete."
+          } else {
+            Write-Host "No stale packages to remove."
+          }
+
+          # --- Step 5: commit the submission ---
+          Invoke-RestMethod -Method Post -Uri "$submissionUri/commit" -Headers $headers | Out-Null
+          Write-Host "Submission commit requested."
+
+          # --- Step 6: poll until the commit is accepted (or fails) ---
+          $okStates   = @("Certification", "Release", "Published", "PreProcessing", "Publishing")
+          $failStates = @("CommitFailed", "PreProcessingFailed", "CertificationFailed", "ReleaseFailed", "PublishFailed", "Canceled")
+          for ($i = 0; $i -lt 20; $i++) {
+            Start-Sleep -Seconds 30
+            $status = Invoke-RestMethod -Method Get -Uri "$submissionUri/status" -Headers $headers
+            Write-Host "Status: $($status.status)"
+            if ($failStates -contains $status.status) {
+              Write-Host ($status.statusDetails | ConvertTo-Json -Depth 10)
+              Write-Error "Submission entered failure state '$($status.status)'."
+              exit 1
+            }
+            if ($okStates -contains $status.status) {
+              Write-Host "Submission committed successfully; certification is now in progress."
+              break
+            }
+          }
 
   winget-publish:
     needs: [package, build-and-test]
