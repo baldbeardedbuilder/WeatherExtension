@@ -296,7 +296,39 @@ jobs:
           Get-ChildItem -Path "msix-packages" -Filter "*.msix" -Recurse | ForEach-Object {
             Write-Host "  $($_.FullName) ($([math]::Round($_.Length / 1MB, 2)) MB)"
           }
-      
+
+      - name: Bundle Store MSIX packages into .msixupload
+        id: bundle
+        shell: pwsh
+        run: |
+          $version = "${{ needs.build-and-test.outputs.version }}"
+
+          # msstore publish -i expects a single '.msix' or '.msixupload' FILE, not a
+          # directory. Passing a directory makes the CLI ignore the input and clone the
+          # previously published submission (which re-publishes stale packages). A
+          # '.msixupload' is a plain ZIP that can carry all architecture-specific .msix
+          # packages, so bundle them into one file to submit as-is.
+          $msixFiles = Get-ChildItem -Path "msix-packages" -Filter "*.msix" -Recurse
+          if ($msixFiles.Count -eq 0) {
+            Write-Error "No MSIX packages found to bundle!"
+            exit 1
+          }
+
+          $uploadDir = Join-Path $env:GITHUB_WORKSPACE "store-upload"
+          New-Item -Path $uploadDir -ItemType Directory -Force | Out-Null
+
+          $zipPath = Join-Path $uploadDir "WeatherExtension_$version.zip"
+          $uploadPath = Join-Path $uploadDir "WeatherExtension_$version.msixupload"
+
+          Compress-Archive -Path $msixFiles.FullName -DestinationPath $zipPath -Force
+          Move-Item -Path $zipPath -Destination $uploadPath -Force
+
+          $resolved = (Resolve-Path $uploadPath).Path
+          Write-Host "Created .msixupload bundle: $resolved"
+          Write-Host "Bundled packages:"
+          $msixFiles | ForEach-Object { Write-Host "  $($_.Name)" }
+          echo "upload_file=$resolved" >> $env:GITHUB_OUTPUT
+
       - name: Setup Microsoft Store CLI
         uses: microsoft/microsoft-store-apppublisher@v1.3
       
@@ -312,7 +344,7 @@ jobs:
       - name: Submit to Microsoft Store
         shell: pwsh
         run: |
-          msstore publish WeatherExtension -i msix-packages -id "${{ secrets.STORE_PRODUCT_ID }}"
+          msstore publish WeatherExtension -i "${{ steps.bundle.outputs.upload_file }}" -id "${{ secrets.STORE_PRODUCT_ID }}"
 
   winget-publish:
     needs: [package, build-and-test]
