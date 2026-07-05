@@ -462,7 +462,11 @@ jobs:
           }
 
           # --- Step 5: commit the submission ---
-          Invoke-RestMethod -Method Post -Uri "$submissionUri/commit" -Headers $headers | Out-Null
+          # The Ingestion API rejects the commit unless the request advertises a JSON
+          # content type, even though the commit itself carries no body. Passing
+          # -ContentType sends the header (Content-Length: 0) and satisfies the check.
+          Invoke-RestMethod -Method Post -Uri "$submissionUri/commit" -Headers $headers `
+            -ContentType "application/json" | Out-Null
           Write-Host "Submission commit requested."
 
           # --- Step 6: poll until the commit is accepted (or fails) ---
