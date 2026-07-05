@@ -488,6 +488,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Preflight - validate WINGET_TOKEN
+        shell: pwsh
+        env:
+          WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+        run: |
+          # komac masks every HTTP error on its package-existence check as
+          # "<id> does not exist in microsoft/winget-pkgs", which hides the real cause
+          # (almost always a rejected token -> 401). This step exercises the same reads
+          # komac performs, with the same WINGET_TOKEN, and prints the true HTTP status.
+          if ([string]::IsNullOrWhiteSpace($env:WINGET_TOKEN)) {
+            Write-Error "WINGET_TOKEN secret is empty or unset."
+            exit 1
+          }
+          if ($env:WINGET_TOKEN -ne $env:WINGET_TOKEN.Trim()) {
+            Write-Warning "WINGET_TOKEN has leading/trailing whitespace - re-save the secret without newlines."
+          }
+
+          $auth = @{ Authorization = "Bearer $($env:WINGET_TOKEN.Trim())"; "User-Agent" = "winget-preflight"; Accept = "application/vnd.github+json" }
+
+          # 1) Who is this token, and what classic scopes does it carry?
+          $u = Invoke-WebRequest -Uri "https://api.github.com/user" -Headers $auth -SkipHttpErrorCheck
+          Write-Host "GET /user                 -> HTTP $($u.StatusCode)"
+          Write-Host "  x-oauth-scopes:         '$($u.Headers['x-oauth-scopes'])'"
+          Write-Host "  x-ratelimit-remaining:  $($u.Headers['x-ratelimit-remaining'])"
+          if ($u.StatusCode -eq 200) {
+            Write-Host "  authenticated as:       $(($u.Content | ConvertFrom-Json).login)"
+          }
+
+          # 2) REST read of the package folder (proves the package is visible to this token).
+          $pkg = "https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/b/BaldBeardedBuilder/WeatherforCommandPalette"
+          $r = Invoke-WebRequest -Uri $pkg -Headers $auth -SkipHttpErrorCheck
+          Write-Host "GET package manifest path -> HTTP $($r.StatusCode)"
+
+          # 3) GraphQL viewer query - komac uses the GraphQL API, so this mirrors it best.
+          $g = Invoke-WebRequest -Uri "https://api.github.com/graphql" -Method Post -Headers $auth `
+            -Body '{"query":"{viewer{login}}"}' -SkipHttpErrorCheck
+          Write-Host "POST /graphql viewer      -> HTTP $($g.StatusCode)"
+
+          if ($u.StatusCode -ne 200 -or $g.StatusCode -ne 200) {
+            Write-Host ""
+            Write-Host "WINGET_TOKEN is being REJECTED by GitHub (see HTTP statuses above)."
+            Write-Host "komac reports this as 'does not exist in microsoft/winget-pkgs'."
+            Write-Host "Fix: create a *classic* PAT (not fine-grained) with the 'public_repo' scope,"
+            Write-Host "confirm it is not expired, authorize it for SSO if your account requires it,"
+            Write-Host "and paste it into the WINGET_TOKEN secret with no surrounding whitespace."
+            Write-Error "WINGET_TOKEN failed validation."
+            exit 1
+          }
+          Write-Host ""
+          Write-Host "Token is valid. If komac still reports 'does not exist', the cause is not the token."
+
       - name: Submit to WinGet
         uses: vedantmgoyal9/winget-releaser@v2
         with:
