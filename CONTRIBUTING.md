@@ -38,7 +38,7 @@ dotnet test WeatherExtension.Tests/WeatherExtension.Tests.csproj -r win-x64
 
 ### Reporting Bugs
 
-- Search [existing issues](https://github.com/michaeljolley/WeatherExtension/issues)
+- Search [existing issues](https://github.com/baldbeardedbuilder/WeatherExtension/issues)
   before opening a new one
 - Include steps to reproduce, expected behavior, and actual behavior
 - Screenshots are very helpful for UI issues
