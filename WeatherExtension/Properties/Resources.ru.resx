@@ -132,4 +132,8 @@
 
 ZIP-файл будет сохранён на рабочем столе.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Журналы сохранены на рабочий стол</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Не удалось сохранить журналы на рабочий стол</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Закрепить на панели</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Открепить от панели</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Закреплено</value></data>
 </root>

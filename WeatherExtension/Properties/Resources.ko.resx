@@ -132,4 +132,8 @@
 
 ZIP 파일이 바탕화면에 저장됩니다.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>로그가 바탕화면에 저장됨</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>로그를 바탕화면에 저장할 수 없습니다</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>독에 고정</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>독에서 고정 해제</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>고정됨</value></data>
 </root>

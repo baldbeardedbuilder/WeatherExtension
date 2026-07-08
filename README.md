@@ -19,8 +19,9 @@ forecasts right from your desktop.
   precipitation chance, and conditions
 - **3-Day Forecast** — Quick glance at upcoming weather with highs, lows, and
   conditions
-- **Dock Bands** — Pin your favorite locations to the Command Palette dock for
-  at-a-glance weather cards
+- **Dock Bands** — Pin a location to the Command Palette dock with the "Pin to
+  Dock" command for an at-a-glance weather card. Dock pinning is independent
+  from Favorites, so you can favorite a location, dock it, or both.
 - **Postal Code Search** — Search by postal/ZIP code or city name
 - **Configurable Units** — Fahrenheit/Celsius, mph/km/h, and adjustable update
   intervals

@@ -20,6 +20,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	private readonly IGeocodingService _geocodingService;
 	private readonly WeatherSettingsManager _settingsManager;
 	private readonly FavoritesManager _favoritesManager;
+	private readonly DockPinsManager _dockPinsManager;
 	private readonly Lock _sync = new();
 	private readonly CancellationTokenSource _cts = new();
 
@@ -34,17 +35,20 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		IWeatherService weatherService,
 		IGeocodingService geocodingService,
 		WeatherSettingsManager settingsManager,
-		FavoritesManager favoritesManager)
+		FavoritesManager favoritesManager,
+		DockPinsManager dockPinsManager)
 	{
 		ArgumentNullException.ThrowIfNull(weatherService);
 		ArgumentNullException.ThrowIfNull(geocodingService);
 		ArgumentNullException.ThrowIfNull(settingsManager);
 		ArgumentNullException.ThrowIfNull(favoritesManager);
+		ArgumentNullException.ThrowIfNull(dockPinsManager);
 
 		_weatherService = weatherService;
 		_geocodingService = geocodingService;
 		_settingsManager = settingsManager;
 		_favoritesManager = favoritesManager;
+		_dockPinsManager = dockPinsManager;
 
 		Name = Resources.plugin_name;
 		Title = Resources.plugin_name;
@@ -57,6 +61,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 
 		_settingsManager.Settings.SettingsChanged += OnSettingsChanged;
 		_favoritesManager.FavoritesChanged += OnFavoritesChanged;
+		_dockPinsManager.DockPinsChanged += OnDockPinsChanged;
 	}
 
 	private async void LoadFavoriteLocations(CancellationToken searchCt = default)
@@ -284,10 +289,32 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 			});
 		}
 
+		// Dock pinning is independent of favorites — a location can be pinned to
+		// the Dock without being a favorite. Offer the matching toggle command.
+		if (_dockPinsManager.IsPinnedToDock(location))
+		{
+			moreCommands.Add(new CommandContextItem(new UnpinFromDockCommand(location, _dockPinsManager))
+			{
+				RequestedShortcut = new KeyChord(VirtualKeyModifiers.Control, (int)VirtualKey.P, 0),
+			});
+		}
+		else
+		{
+			moreCommands.Add(new CommandContextItem(new PinToDockCommand(location, _dockPinsManager))
+			{
+				RequestedShortcut = new KeyChord(VirtualKeyModifiers.Control, (int)VirtualKey.P, 0),
+			});
+		}
+
 		var tags = new List<ITag>();
 		if (_favoritesManager.IsFavorite(location))
 		{
 			tags.Add(new Tag(Resources.favorite_tag) { Icon = new IconInfo("\u2B50") });
+		}
+
+		if (_dockPinsManager.IsPinnedToDock(location))
+		{
+			tags.Add(new Tag(Resources.dock_pinned_tag) { Icon = new IconInfo("\uE840") });
 		}
 
 		var item = new ListItem(detailPage)
@@ -540,6 +567,21 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 		}
 	}
 
+	private void OnDockPinsChanged(object? sender, EventArgs e)
+	{
+		// A dock pin/unpin changes which toggle command and tag a row shows,
+		// so re-render the current view just like a favorites change does.
+		if (string.IsNullOrWhiteSpace(_lastSearchQuery))
+		{
+			var ct = ResetSearchToken();
+			LoadFavoriteLocations(ct);
+		}
+		else
+		{
+			RefreshWeather();
+		}
+	}
+
 	public void RefreshWeather()
 	{
 		var ct = ResetSearchToken();
@@ -602,6 +644,7 @@ internal sealed partial class WeatherListPage : DynamicListPage, IDisposable
 	{
 		_settingsManager.Settings.SettingsChanged -= OnSettingsChanged;
 		_favoritesManager.FavoritesChanged -= OnFavoritesChanged;
+		_dockPinsManager.DockPinsChanged -= OnDockPinsChanged;
 		_searchCts?.Cancel();
 		_searchCts?.Dispose();
 		_cts?.Cancel();

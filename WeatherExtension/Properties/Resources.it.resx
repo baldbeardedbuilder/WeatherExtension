@@ -132,4 +132,8 @@ Lugano, Svizzera</value></data><data name="search_hint_favorite_shortcut" xml:sp
 
 Il file ZIP verrà salvato sul Desktop.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Log salvati sul Desktop</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Impossibile salvare i log sul Desktop</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Aggiungi al Dock</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Rimuovi dal Dock</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Nel Dock</value></data>
 </root>

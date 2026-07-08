@@ -646,6 +646,10 @@ namespace Microsoft.CmdPal.Ext.Weather {
         public static string bug_report_open_github { get { return ResourceManager.GetString("bug_report_open_github", resourceCulture); } }
         public static string bug_report_instructions { get { return ResourceManager.GetString("bug_report_instructions", resourceCulture); } }
         public static string bug_report_logs_saved { get { return ResourceManager.GetString("bug_report_logs_saved", resourceCulture); } }
+        public static string bug_report_logs_save_failed { get { return ResourceManager.GetString("bug_report_logs_save_failed", resourceCulture); } }
+        public static string pin_to_dock_command_name { get { return ResourceManager.GetString("pin_to_dock_command_name", resourceCulture); } }
+        public static string unpin_from_dock_command_name { get { return ResourceManager.GetString("unpin_from_dock_command_name", resourceCulture); } }
+        public static string dock_pinned_tag { get { return ResourceManager.GetString("dock_pinned_tag", resourceCulture); } }
 
     }
 }

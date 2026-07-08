@@ -39,7 +39,14 @@ internal sealed partial class RollingFileLogger : IDisposable
 
 	private RollingFileLogger()
 	{
-		_logDirectory = Path.Combine(AppContext.BaseDirectory, "Logs");
+		// Use LocalApplicationData rather than AppContext.BaseDirectory. For a
+		// packaged (MSIX/Store) install the base directory lives under
+		// C:\Program Files\WindowsApps\... which is read-only for standard
+		// users, so Directory.CreateDirectory would throw and logging would
+		// silently never write. FavoritesManager and WeatherSettingsManager
+		// already store their data here for the same reason.
+		var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+		_logDirectory = Path.Combine(localAppData, "Microsoft.CmdPal", "WeatherLogs");
 	}
 
 	public void Log(LogLevel level, string message)

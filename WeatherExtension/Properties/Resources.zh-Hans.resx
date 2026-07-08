@@ -132,4 +132,8 @@
 
 ZIP 文件将保存到您的桌面。</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>日志已保存到桌面</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>无法将日志保存到桌面</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>固定到 Dock</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>从 Dock 取消固定</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>已固定</value></data>
 </root>

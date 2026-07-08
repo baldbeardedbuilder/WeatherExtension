@@ -132,4 +132,8 @@ Buenos Aires, Argentina</value></data><data name="search_hint_favorite_shortcut"
 
 El archivo ZIP se guardará en tu escritorio.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Registros guardados en el escritorio</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>No se pudieron guardar los registros en el escritorio</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Anclar al Dock</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Desanclar del Dock</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Anclado</value></data>
 </root>

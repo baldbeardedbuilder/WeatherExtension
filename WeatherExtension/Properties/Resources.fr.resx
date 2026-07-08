@@ -132,4 +132,8 @@ Bruxelles, Belgique</value></data><data name="search_hint_favorite_shortcut" xml
 
 Le fichier ZIP sera enregistré sur votre bureau.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Journaux enregistrés sur le bureau</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Impossible d'enregistrer les journaux sur le bureau</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Épingler au Dock</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Détacher du Dock</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Épinglé</value></data>
 </root>
