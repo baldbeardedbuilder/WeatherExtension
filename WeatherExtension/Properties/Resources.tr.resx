@@ -257,4 +257,8 @@ Berlin, Almanya</value></data><data name="search_hint_favorite_shortcut" xml:spa
 
 ZIP dosyası masaüstünüze kaydedilecektir.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Günlükler masaüstüne kaydedildi</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Günlükler masaüstüne kaydedilemedi</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Dock'a Sabitle</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Dock'tan Kaldır</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Sabit</value></data>
 </root>

@@ -396,4 +396,8 @@ Berlin, Germany</value></data><data name="search_hint_favorite_shortcut" xml:spa
 
 The zip file will be saved to your Desktop.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Logs saved to Desktop</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Could not save logs to Desktop</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Pin to Dock</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Unpin from Dock</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Docked</value></data>
 </root>

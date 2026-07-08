@@ -132,4 +132,8 @@ Berlin, Niemcy</value></data><data name="search_hint_favorite_shortcut" xml:spac
 
 Plik ZIP zostanie zapisany na pulpicie.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Logi zapisano na pulpicie</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Nie można zapisać logów na pulpicie</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Przypnij do Docka</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Odepnij od Docka</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Przypięte</value></data>
 </root>

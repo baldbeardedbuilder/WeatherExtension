@@ -132,4 +132,8 @@ Wien, Österreich</value></data><data name="search_hint_favorite_shortcut" xml:s
 
 Die ZIP-Datei wird auf Ihrem Desktop gespeichert.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Protokolle auf Desktop gespeichert</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Protokolle konnten nicht auf dem Desktop gespeichert werden</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>An Dock anheften</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Vom Dock lösen</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Angeheftet</value></data>
 </root>

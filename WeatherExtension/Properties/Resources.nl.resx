@@ -132,4 +132,8 @@ Brussel, België</value></data><data name="search_hint_favorite_shortcut" xml:sp
 
 Het ZIP-bestand wordt op uw bureaublad opgeslagen.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Logbestanden opgeslagen op bureaublad</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Kan logbestanden niet op bureaublad opslaan</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Vastmaken aan Dock</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Losmaken van Dock</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Vastgemaakt</value></data>
 </root>

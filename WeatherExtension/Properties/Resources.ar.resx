@@ -132,4 +132,8 @@
 
 سيتم حفظ ملف ZIP على سطح المكتب.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>تم حفظ السجلات على سطح المكتب</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>تعذّر حفظ السجلات على سطح المكتب</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>تثبيت في الإرساء</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>إلغاء التثبيت من الإرساء</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>مثبّت</value></data>
 </root>

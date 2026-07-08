@@ -132,4 +132,8 @@
 
 ZIP ファイルはデスクトップに保存されます。</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>ログをデスクトップに保存しました</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>ログをデスクトップに保存できませんでした</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>ドックにピン留め</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>ドックからピン留めを外す</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>ドック</value></data>
 </root>

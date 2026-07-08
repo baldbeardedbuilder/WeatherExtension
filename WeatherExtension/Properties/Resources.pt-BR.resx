@@ -132,4 +132,8 @@ Lisboa, Portugal</value></data><data name="search_hint_favorite_shortcut" xml:sp
 
 O arquivo ZIP será salvo na sua área de trabalho.</value></data>
   <data name="bug_report_logs_saved" xml:space="preserve"><value>Logs salvos na área de trabalho</value></data>
+  <data name="bug_report_logs_save_failed" xml:space="preserve"><value>Não foi possível salvar os logs na área de trabalho</value></data>
+  <data name="pin_to_dock_command_name" xml:space="preserve"><value>Fixar no Dock</value></data>
+  <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Desafixar do Dock</value></data>
+  <data name="dock_pinned_tag" xml:space="preserve"><value>Fixado</value></data>
 </root>

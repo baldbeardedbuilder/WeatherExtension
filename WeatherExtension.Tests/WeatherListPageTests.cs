@@ -22,6 +22,7 @@ public class WeatherListPageTests
 
 	private string _settingsPath = string.Empty;
 	private string _favoritesPath = string.Empty;
+	private string _dockPinsPath = string.Empty;
 	
 
 	[TestInitialize]
@@ -29,12 +30,13 @@ public class WeatherListPageTests
 	{
 		_settingsPath = Path.Combine(Path.GetTempPath(), $"weather-list-settings-{Guid.NewGuid()}.json");
 		_favoritesPath = Path.Combine(Path.GetTempPath(), $"weather-list-fav-{Guid.NewGuid()}.json");
+		_dockPinsPath = Path.Combine(Path.GetTempPath(), $"weather-list-dock-{Guid.NewGuid()}.json");
 	}
 
 	[TestCleanup]
 	public void Cleanup()
 	{
-		foreach (var path in new[] { _settingsPath, _favoritesPath })
+		foreach (var path in new[] { _settingsPath, _favoritesPath, _dockPinsPath })
 		{
 			if (File.Exists(path))
 			{
@@ -157,12 +159,14 @@ public class WeatherListPageTests
 
 	private WeatherListPage CreatePage(
 		FavoritesManager? favorites = null,
-		StubGeocodingService? geocoding = null)
+		StubGeocodingService? geocoding = null,
+		DockPinsManager? dockPins = null)
 	{
 		return new WeatherListPage(
 			new StubWeatherService(),
 			geocoding ?? new StubGeocodingService(),
 			new WeatherSettingsManager(_settingsPath),
-			favorites ?? new FavoritesManager(_favoritesPath));
+			favorites ?? new FavoritesManager(_favoritesPath),
+			dockPins ?? new DockPinsManager(_dockPinsPath));
 	}
 }

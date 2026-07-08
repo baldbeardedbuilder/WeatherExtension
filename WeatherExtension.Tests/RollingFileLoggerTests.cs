@@ -11,10 +11,12 @@ namespace Microsoft.CmdPal.Ext.Weather.UnitTests;
 /// <summary>
 /// Tests for <see cref="RollingFileLogger"/>.
 ///
-/// The singleton writes to <c>AppContext.BaseDirectory/Logs/</c>, which in
-/// the test runner resolves to the test output directory. Each test flushes
-/// the logger before and after to close the file handle, ensuring reads and
-/// cleanups are not blocked by an open <see cref="FileStream"/>.
+/// The singleton writes to a writable per-user location under
+/// <c>LocalApplicationData\Microsoft.CmdPal\WeatherLogs</c>. Tests read the
+/// active directory from <see cref="RollingFileLogger.LogDirectory"/> rather
+/// than assuming a path. Each test flushes the logger before and after to
+/// close the file handle, ensuring reads and cleanups are not blocked by an
+/// open <see cref="FileStream"/>.
 /// </summary>
 [TestClass]
 public class RollingFileLoggerTests
