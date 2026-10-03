@@ -172,15 +172,8 @@ public class HourlyForecastTests
     // ---------------------------------------------------------------
 
     [TestMethod]
-    public void WeatherBandCard_BuildWeatherData_Finds3FutureHoursFromSpanningData()
+    public void WeatherCardPresentation_SpanningMidnight_FindsThreeFutureHours()
     {
-        var cardType = typeof(WeatherBandCard);
-        var card = RuntimeHelpers.GetUninitializedObject(cardType);
-
-        var settingsField = cardType.GetField("_settings", PrivateInstance);
-        Assert.IsNotNull(settingsField, "WeatherBandCard must have _settings field");
-        settingsField!.SetValue(card, _settingsManager);
-
         var location = new GeocodingResult
         {
             Name = "Seattle",
@@ -188,26 +181,24 @@ public class HourlyForecastTests
             Country = "US",
             Latitude = 47.6,
             Longitude = -122.33,
+            Timezone = "UTC",
         };
 
-        var now = DateTime.Now;
-        var hourlyData = BuildHourlyForecastData(now.AddHours(1), 48);
+        var now = new DateTimeOffset(2026, 10, 2, 23, 0, 0, TimeSpan.Zero);
+        var hourlyData = BuildHourlyForecastData(now.UtcDateTime.AddHours(1), 48);
+        hourlyData.Timezone = "UTC";
+        var data = WeatherCardPresentation.Build(location, null, null, hourlyData,
+            _settingsManager!.TemperatureUnit, _settingsManager.WindSpeedUnit,
+            _settingsManager.Use24HourClock, now);
 
-        var buildMethod = cardType.GetMethod("BuildWeatherData", PrivateInstance);
-        Assert.IsNotNull(buildMethod,
-            "WeatherBandCard must have BuildWeatherData method");
-
-        var json = (string)buildMethod!.Invoke(card, [location, null, null, hourlyData])!;
-        Assert.IsNotNull(json);
-
-        // All three hourly slots should have real values, not "--" placeholders.
-        // With forecast_days=2 the band always finds ≥3 future hours.
-        Assert.IsFalse(json.Contains("\"hour1Time\": \"--\""),
-            "hour1Time should not be a placeholder when 2-day data is available");
-        Assert.IsFalse(json.Contains("\"hour2Time\": \"--\""),
-            "hour2Time should not be a placeholder when 2-day data is available");
-        Assert.IsFalse(json.Contains("\"hour3Time\": \"--\""),
-            "hour3Time should not be a placeholder when 2-day data is available");
+        Assert.AreEqual(3, data.Hours.Count);
+        for (var i = 0; i < 3; i++)
+        {
+            Assert.AreEqual(WeatherFormatter.Hour(now.UtcDateTime.AddHours(i + 1),
+                _settingsManager.Use24HourClock), data.Hours[i].Time);
+            Assert.AreEqual(WeatherFormatter.Temperature(20 + i, _settingsManager.TemperatureUnit),
+                data.Hours[i].Temperature);
+        }
     }
 
     // ---------------------------------------------------------------

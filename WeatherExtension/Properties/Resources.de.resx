@@ -136,4 +136,17 @@ Die ZIP-Datei wird auf Ihrem Desktop gespeichert.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>An Dock anheften</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Vom Dock lösen</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Angeheftet</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Tageslicht</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Sonnenaufgang</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Sonnenuntergang</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Ortszeit</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Vorhersage nicht verfügbar</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Tageslichtzeiten nicht verfügbar</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Vor Sonnenaufgang</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Nach Sonnenuntergang</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>Tagsüber</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} Std. {1} Min.</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Tageslichtverlauf. Sonnenaufgang {0}, Sonnenuntergang {1}. Dauer {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% Regen</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Wettergrafiken nicht verfügbar. Die Messwerte werden weiterhin unten angezeigt.</value></data>
 </root>

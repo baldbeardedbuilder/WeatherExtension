@@ -261,4 +261,17 @@ ZIP dosyası masaüstünüze kaydedilecektir.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Dock'a Sabitle</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Dock'tan Kaldır</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Sabit</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Gün ışığı</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Gün doğumu</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Gün batımı</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Yerel saat</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Tahmin mevcut değil</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Gün ışığı saatleri mevcut değil</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Gün doğumundan önce</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Gün batımından sonra</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>Gündüz</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} sa {1} dk</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Gün ışığının ilerleyişi. Gün doğumu {0}, gün batımı {1}. Süre {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>%{0} yağmur</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Hava durumu görselleri mevcut değil. Veriler aşağıda gösterilmeye devam ediyor.</value></data>
 </root>

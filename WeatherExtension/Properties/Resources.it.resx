@@ -136,4 +136,17 @@ Il file ZIP verrà salvato sul Desktop.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Aggiungi al Dock</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Rimuovi dal Dock</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Nel Dock</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Luce del giorno</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Alba</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Tramonto</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Ora locale</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Previsioni non disponibili</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Orari della luce del giorno non disponibili</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Prima dell'alba</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Dopo il tramonto</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>Di giorno</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} h {1} min</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Avanzamento della luce del giorno. Alba {0}, tramonto {1}. Durata {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% pioggia</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Immagini meteo non disponibili. I dati sono comunque mostrati sotto.</value></data>
 </root>

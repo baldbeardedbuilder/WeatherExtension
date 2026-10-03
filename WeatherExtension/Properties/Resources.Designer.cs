@@ -650,6 +650,19 @@ namespace Microsoft.CmdPal.Ext.Weather {
         public static string pin_to_dock_command_name { get { return ResourceManager.GetString("pin_to_dock_command_name", resourceCulture); } }
         public static string unpin_from_dock_command_name { get { return ResourceManager.GetString("unpin_from_dock_command_name", resourceCulture); } }
         public static string dock_pinned_tag { get { return ResourceManager.GetString("dock_pinned_tag", resourceCulture); } }
+        public static string card_daylight { get { return ResourceManager.GetString("card_daylight", resourceCulture); } }
+        public static string card_sunrise { get { return ResourceManager.GetString("card_sunrise", resourceCulture); } }
+        public static string card_sunset { get { return ResourceManager.GetString("card_sunset", resourceCulture); } }
+        public static string card_local_time { get { return ResourceManager.GetString("card_local_time", resourceCulture); } }
+        public static string card_forecast_unavailable { get { return ResourceManager.GetString("card_forecast_unavailable", resourceCulture); } }
+        public static string card_daylight_unavailable { get { return ResourceManager.GetString("card_daylight_unavailable", resourceCulture); } }
+        public static string card_before_sunrise { get { return ResourceManager.GetString("card_before_sunrise", resourceCulture); } }
+        public static string card_after_sunset { get { return ResourceManager.GetString("card_after_sunset", resourceCulture); } }
+        public static string card_daytime { get { return ResourceManager.GetString("card_daytime", resourceCulture); } }
+        public static string card_daylight_duration { get { return ResourceManager.GetString("card_daylight_duration", resourceCulture); } }
+        public static string card_daylight_alt { get { return ResourceManager.GetString("card_daylight_alt", resourceCulture); } }
+        public static string card_rain_chance { get { return ResourceManager.GetString("card_rain_chance", resourceCulture); } }
+        public static string card_artwork_unavailable { get { return ResourceManager.GetString("card_artwork_unavailable", resourceCulture); } }
 
     }
 }

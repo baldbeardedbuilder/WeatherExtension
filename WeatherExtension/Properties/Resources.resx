@@ -400,4 +400,17 @@ The zip file will be saved to your Desktop.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Pin to Dock</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Unpin from Dock</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Docked</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Daylight</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Sunrise</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Sunset</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Local time</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Forecast unavailable</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Daylight times unavailable</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Before sunrise</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>After sunset</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>Daytime</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} hr {1} min</value><comment>{0} is whole hours, {1} is remaining minutes.</comment></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Daylight progress. Sunrise {0}, sunset {1}. Duration {2}. {3}.</value><comment>{0}=sunrise, {1}=sunset, {2}=duration, {3}=daylight status. The arc shows elapsed daylight, not solar elevation.</comment></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% rain</value><comment>{0} is precipitation probability.</comment></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Weather artwork unavailable. Readings are still shown below.</value></data>
 </root>

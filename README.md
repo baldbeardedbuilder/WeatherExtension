@@ -22,6 +22,11 @@ forecasts right from your desktop.
 - **Dock Bands** — Pin a location to the Command Palette dock with the "Pin to
   Dock" command for an at-a-glance weather card. Dock pinning is independent
   from Favorites, so you can favorite a location, dock it, or both.
+- **Daylight Planner**: Open a docked location to see current conditions beside
+  sunrise, sunset, and the location's local time. The daylight arc shows elapsed
+  daylight, not the sun's elevation, and updates with your weather refresh interval.
+  Below it, check the next three hours and a three-day outlook with rain chances.
+  Missing daylight or forecast data is labeled as unavailable.
 - **Postal Code Search** — Search by postal/ZIP code or city name
 - **Configurable Units** — Fahrenheit/Celsius, mph/km/h, and adjustable update
   intervals

@@ -136,4 +136,17 @@ Het ZIP-bestand wordt op uw bureaublad opgeslagen.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Vastmaken aan Dock</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Losmaken van Dock</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Vastgemaakt</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Daglicht</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Zonsopkomst</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Zonsondergang</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Lokale tijd</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Verwachting niet beschikbaar</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Daglichttijden niet beschikbaar</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Voor zonsopkomst</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Na zonsondergang</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>Overdag</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} uur {1} min</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Daglichtverloop. Zonsopkomst {0}, zonsondergang {1}. Duur {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% regen</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Weerafbeeldingen niet beschikbaar. De metingen worden hieronder nog steeds weergegeven.</value></data>
 </root>

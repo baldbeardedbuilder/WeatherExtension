@@ -136,4 +136,17 @@ ZIP 文件将保存到您的桌面。</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>固定到 Dock</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>从 Dock 取消固定</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>已固定</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>日照时长</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>日出</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>日落</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>当地时间</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>预报不可用</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>日照时间不可用</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>日出前</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>日落后</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>白天</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0}小时{1}分钟</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>日照进度。日出 {0}，日落 {1}。时长 {2}。{3}。</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>降水概率 {0}%</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>天气图像不可用。下方仍显示天气数据。</value></data>
 </root>

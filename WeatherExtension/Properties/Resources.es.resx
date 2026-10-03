@@ -136,4 +136,17 @@ El archivo ZIP se guardará en tu escritorio.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Anclar al Dock</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Desanclar del Dock</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Anclado</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Luz del día</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Amanecer</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Atardecer</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Hora local</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Pronóstico no disponible</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Horarios de luz del día no disponibles</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Antes del amanecer</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Después del atardecer</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>De día</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} h {1} min</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Progreso de la luz del día. Amanecer {0}, atardecer {1}. Duración {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% lluvia</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Imágenes del tiempo no disponibles. Los datos siguen mostrándose abajo.</value></data>
 </root>

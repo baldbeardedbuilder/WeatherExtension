@@ -136,4 +136,17 @@ ZIP 파일이 바탕화면에 저장됩니다.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>독에 고정</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>독에서 고정 해제</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>고정됨</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>낮 시간</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>일출</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>일몰</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>현지 시간</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>예보를 사용할 수 없습니다</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>낮 시간 정보를 사용할 수 없습니다</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>일출 전</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>일몰 후</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>낮</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0}시간 {1}분</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>낮 시간 진행. 일출 {0}, 일몰 {1}. 길이 {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>강수 확률 {0}%</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>날씨 이미지를 사용할 수 없습니다. 수치는 아래에 계속 표시됩니다.</value></data>
 </root>

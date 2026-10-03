@@ -136,4 +136,17 @@ Plik ZIP zostanie zapisany na pulpicie.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Przypnij do Docka</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Odepnij od Docka</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Przypięte</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Światło dzienne</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Wschód słońca</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Zachód słońca</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Czas lokalny</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Prognoza niedostępna</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Godziny światła dziennego niedostępne</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Przed wschodem słońca</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Po zachodzie słońca</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>W dzień</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} godz. {1} min</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Przebieg światła dziennego. Wschód słońca {0}, zachód słońca {1}. Czas trwania {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% deszczu</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Grafiki pogodowe niedostępne. Dane są nadal wyświetlane poniżej.</value></data>
 </root>

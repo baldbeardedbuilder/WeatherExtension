@@ -136,4 +136,17 @@ O arquivo ZIP será salvo na sua área de trabalho.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Fixar no Dock</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Desafixar do Dock</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Fixado</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Luz do dia</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Nascer do sol</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Pôr do sol</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Hora local</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Previsão indisponível</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Horários da luz do dia indisponíveis</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Antes do nascer do sol</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Após o pôr do sol</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>Durante o dia</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} h {1} min</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Progresso da luz do dia. Nascer do sol {0}, pôr do sol {1}. Duração {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% chuva</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Imagens do tempo indisponíveis. Os dados continuam sendo exibidos abaixo.</value></data>
 </root>

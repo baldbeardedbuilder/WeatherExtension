@@ -136,4 +136,17 @@ ZIP ファイルはデスクトップに保存されます。</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>ドックにピン留め</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>ドックからピン留めを外す</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>ドック</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>日照時間</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>日の出</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>日の入り</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>現地時刻</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>予報を取得できません</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>日照時刻を取得できません</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>日の出前</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>日の入り後</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>昼間</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0}時間{1}分</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>日照時間の進行。日の出 {0}、日の入り {1}。長さ {2}。{3}。</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>降水確率 {0}%</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>天気の画像を取得できません。数値は引き続き下に表示されます。</value></data>
 </root>

@@ -136,4 +136,17 @@ Le fichier ZIP sera enregistré sur votre bureau.</value></data>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Épingler au Dock</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Détacher du Dock</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Épinglé</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Lumière du jour</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Lever du soleil</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Coucher du soleil</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Heure locale</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Prévisions indisponibles</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Horaires du jour indisponibles</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>Avant le lever du soleil</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>Après le coucher du soleil</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>En journée</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} h {1} min</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Progression du jour. Lever du soleil {0}, coucher du soleil {1}. Durée {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% pluie</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Illustrations météo indisponibles. Les données restent affichées ci-dessous.</value></data>
 </root>

@@ -136,4 +136,17 @@ ZIP-файл будет сохранён на рабочем столе.</value>
   <data name="pin_to_dock_command_name" xml:space="preserve"><value>Закрепить на панели</value></data>
   <data name="unpin_from_dock_command_name" xml:space="preserve"><value>Открепить от панели</value></data>
   <data name="dock_pinned_tag" xml:space="preserve"><value>Закреплено</value></data>
+  <data name="card_daylight" xml:space="preserve"><value>Световой день</value></data>
+  <data name="card_sunrise" xml:space="preserve"><value>Восход</value></data>
+  <data name="card_sunset" xml:space="preserve"><value>Закат</value></data>
+  <data name="card_local_time" xml:space="preserve"><value>Местное время</value></data>
+  <data name="card_forecast_unavailable" xml:space="preserve"><value>Прогноз недоступен</value></data>
+  <data name="card_daylight_unavailable" xml:space="preserve"><value>Время светового дня недоступно</value></data>
+  <data name="card_before_sunrise" xml:space="preserve"><value>До восхода</value></data>
+  <data name="card_after_sunset" xml:space="preserve"><value>После заката</value></data>
+  <data name="card_daytime" xml:space="preserve"><value>Дневное время</value></data>
+  <data name="card_daylight_duration" xml:space="preserve"><value>{0} ч {1} мин</value></data>
+  <data name="card_daylight_alt" xml:space="preserve"><value>Ход светового дня. Восход {0}, закат {1}. Продолжительность {2}. {3}.</value></data>
+  <data name="card_rain_chance" xml:space="preserve"><value>{0}% дождя</value></data>
+  <data name="card_artwork_unavailable" xml:space="preserve"><value>Изображения погоды недоступны. Данные по-прежнему показаны ниже.</value></data>
 </root>
