@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="ChooseView" xml:space="preserve"><value>Choose flyout view</value></data>
+  <data name="Scope" xml:space="preserve"><value>Applies to every pinned weather location. Each band keeps its own location and weather.</value></data>
+  <data name="Classic" xml:space="preserve"><value>Original weather card</value></data>
+  <data name="Glance" xml:space="preserve"><value>Glance</value></data>
+  <data name="GlanceDescription" xml:space="preserve"><value>Current conditions at a glance.</value></data>
+  <data name="NextHours" xml:space="preserve"><value>Next few hours</value></data>
+  <data name="NextHoursDescription" xml:space="preserve"><value>Current weather and the next six hours.</value></data>
+  <data name="DailyOutlook" xml:space="preserve"><value>Daily outlook</value></data>
+  <data name="DailyOutlookDescription" xml:space="preserve"><value>Five days of highs, lows, and rain chances.</value></data>
+  <data name="DaylightArc" xml:space="preserve"><value>Daylight arc</value></data>
+  <data name="DaylightArcDescription" xml:space="preserve"><value>Sunrise, sunset, and the daylight you have left.</value></data>
+  <data name="DayBrowser" xml:space="preserve"><value>Day browser</value></data>
+  <data name="DayBrowserDescription" xml:space="preserve"><value>Choose a day to explore its forecast.</value></data>
+  <data name="HourInspector" xml:space="preserve"><value>Hour inspector</value></data>
+  <data name="HourInspectorDescription" xml:space="preserve"><value>A closer look at each hour.</value></data>
+  <data name="UseView" xml:space="preserve"><value>Use this view</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="CurrentDefault" xml:space="preserve"><value>Current default: {0}</value><comment>{0}: layout name. Used outside gallery tiles.</comment></data>
+  <data name="Saved" xml:space="preserve"><value>{0} is now the default for all pinned weather locations.</value><comment>{0}: layout name.</comment></data>
+  <data name="SaveFailed" xml:space="preserve"><value>Couldn't save the flyout view. Your previous choice is unchanged. Try again.</value></data>
+  <data name="HostSizing" xml:space="preserve"><value>Preview uses sample weather. Actual appearance and window size depend on your Command Palette version.</value></data>
+  <data name="Sunrise" xml:space="preserve"><value>Sunrise</value></data>
+  <data name="Sunset" xml:space="preserve"><value>Sunset</value></data>
+  <data name="Daylight" xml:space="preserve"><value>Today's daylight</value></data>
+  <data name="Duration" xml:space="preserve"><value>{0}h {1}m</value><comment>{0}: whole hours, {1}: minutes.</comment></data>
+  <data name="UntilSunset" xml:space="preserve"><value>{0} until sunset</value><comment>{0}: formatted duration.</comment></data>
+  <data name="UntilSunrise" xml:space="preserve"><value>{0} until sunrise</value><comment>{0}: formatted duration.</comment></data>
+  <data name="AfterSunset" xml:space="preserve"><value>The sun has set.</value></data>
+  <data name="TotalDaylight" xml:space="preserve"><value>Total daylight: {0}</value><comment>{0}: formatted duration.</comment></data>
+  <data name="DaylightUnavailable" xml:space="preserve"><value>Sunrise and sunset times are unavailable for this date and location.</value></data>
+  <data name="ArcDescription" xml:space="preserve"><value>Time from sunrise to sunset. The arc represents elapsed daylight, not the sun's astronomical elevation.</value></data>
+  <data name="Updated" xml:space="preserve"><value>Updated {0}</value><comment>{0}: time in the location's time zone.</comment></data>
+  <data name="TimeZoneUnavailable" xml:space="preserve"><value>The location's time zone is unavailable. Time-based forecasts cannot be displayed.</value></data>
+  <data name="PreviewUnavailable" xml:space="preserve"><value>Couldn't load the preview. You can still choose this view.</value></data>
+</root>

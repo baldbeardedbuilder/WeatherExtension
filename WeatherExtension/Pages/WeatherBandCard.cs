@@ -20,6 +20,14 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 	private readonly FormContent _weatherForm = new();
 	private readonly CancellationTokenSource _cts = new();
 	private readonly GeocodingResult? _fixedLocation;
+	private WeatherFlyoutView _view;
+	private int _loadVersion;
+	private bool _disposed;
+
+	internal WeatherFlyoutSnapshot? Snapshot { get; private set; }
+	internal bool HasLoaded { get; private set; }
+
+	internal event EventHandler? SnapshotChanged;
 
 	public WeatherBandCard(
 		OpenMeteoService weatherService,
@@ -33,8 +41,13 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 		_favoritesManager = favoritesManager;
 		_fixedLocation = fixedLocation;
+		_view = settings.FlyoutView;
 
 		Id = "com.baldbeardedbuilder.cmdpal.weather.card";
+		if (fixedLocation is not null)
+		{
+			Id += FormattableString.Invariant($".{fixedLocation.Latitude:F4}_{fixedLocation.Longitude:F4}");
+		}
 		Name = Resources.plugin_name;
 		Title = Resources.plugin_name;
 		Icon = Icons.WeatherIcon;
@@ -51,10 +64,50 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 		_ = LoadWeatherDataAsync();
 	}
 
-	public override IContent[] GetContent() => [_weatherForm];
+	public override IContent[] GetContent()
+	{
+		RenderSnapshot();
+		return [_weatherForm];
+	}
+
+	internal void SelectView(WeatherFlyoutView view)
+	{
+		_view = view;
+		RenderSnapshot();
+		RaiseItemsChanged();
+	}
+
+	private void RenderSnapshot()
+	{
+		if (Snapshot is not { } snapshot)
+		{
+			return;
+		}
+
+		if (_view == WeatherFlyoutView.Classic)
+		{
+			_weatherForm.TemplateJson = GetCardTemplate();
+			_weatherForm.DataJson = BuildWeatherData(snapshot.Location, snapshot.Weather, snapshot.Forecast, snapshot.Hourly,
+				snapshot.TemperatureUnit, snapshot.WindUnit, snapshot.Use24HourClock);
+		}
+		else
+		{
+			_weatherForm.DataJson = "{}";
+			_weatherForm.TemplateJson = WeatherFlyoutCards.Build(_view, snapshot, DateTimeOffset.UtcNow);
+		}
+	}
 
 	internal async Task LoadWeatherDataAsync()
 	{
+		if (_disposed)
+		{
+			return;
+		}
+
+		var version = Interlocked.Increment(ref _loadVersion);
+		var temperatureUnit = _settings.TemperatureUnit;
+		var windUnit = _settings.WindSpeedUnit;
+		var use24HourClock = _settings.Use24HourClock;
 		try
 		{
 			GeocodingResult location;
@@ -86,25 +139,36 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 			var weather = await _weatherService.GetCurrentWeatherAsync(
 				location.Latitude,
 				location.Longitude,
-				_settings.TemperatureUnit,
-				_settings.WindSpeedUnit,
+				temperatureUnit,
+				windUnit,
 				_cts.Token);
 
 			var forecast = await _weatherService.GetForecastAsync(
 				location.Latitude,
 				location.Longitude,
-				_settings.TemperatureUnit,
+				temperatureUnit,
 				_cts.Token);
 
 			var hourly = await _weatherService.GetHourlyForecastAsync(
 				location.Latitude,
 				location.Longitude,
-				_settings.TemperatureUnit,
-				_settings.WindSpeedUnit,
+				temperatureUnit,
+				windUnit,
 				_cts.Token);
 
-			_weatherForm.DataJson = BuildWeatherData(location, weather, forecast, hourly);
+			if (_disposed || version != Volatile.Read(ref _loadVersion))
+			{
+				return;
+			}
+
+			Snapshot = new(location, weather, forecast, hourly, temperatureUnit, windUnit, use24HourClock, DateTimeOffset.UtcNow);
+			HasLoaded = true;
+			RenderSnapshot();
+			SnapshotChanged?.Invoke(this, EventArgs.Empty);
 			RaiseItemsChanged();
+		}
+		catch (OperationCanceledException) when (_cts.IsCancellationRequested)
+		{
 		}
 		catch (Exception ex)
 		{
@@ -112,20 +176,32 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 				MessageState.Error,
 				$"Content page weather load error: {ex.Message}");
 
+			if (_disposed || version != Volatile.Read(ref _loadVersion))
+			{
+				return;
+			}
+
+			Snapshot = null;
+			HasLoaded = true;
+			_weatherForm.TemplateJson = GetCardTemplate();
 			_weatherForm.DataJson = GetErrorData(
 				Resources.unavailable);
+			SnapshotChanged?.Invoke(this, EventArgs.Empty);
 			RaiseItemsChanged();
 		}
 	}
 
-	private string BuildWeatherData(
+	private static string BuildWeatherData(
 		GeocodingResult location,
 		WeatherData? weather,
 		ForecastData? forecast,
-		HourlyForecastData? hourly)
+		HourlyForecastData? hourly,
+		string temperatureUnit,
+		string windSpeedUnit,
+		bool use24HourClock)
 	{
-		var tempUnit = _settings.TemperatureUnit == "celsius" ? "\u00B0C" : "\u00B0F";
-		var windUnit = _settings.WindSpeedUnit == "mph" ? "mph" : "km/h";
+		var tempUnit = temperatureUnit == "celsius" ? "\u00B0C" : "\u00B0F";
+		var windUnit = windSpeedUnit == "mph" ? "mph" : "km/h";
 
 		var currentTemp = "--";
 		var currentCondition = Resources.card_condition_unknown;
@@ -185,7 +261,7 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 					continue;
 				}
 
-				var time = WeatherFormatter.Hour(hourTime, _settings.Use24HourClock);
+				var time = WeatherFormatter.Hour(hourTime, use24HourClock);
 				var weatherCode = hourly.Hourly.WeatherCode?[i] ?? 0;
 				var icon = GetEmojiForWeatherCode(weatherCode);
 				var temp = $"{hourly.Hourly.Temperature?[i]:F0}{tempUnit}";
@@ -632,6 +708,12 @@ internal sealed partial class WeatherBandCard : ContentPage, IDisposable
 
 	public void Dispose()
 	{
+		if (_disposed)
+		{
+			return;
+		}
+
+		_disposed = true;
 		_settings.Settings.SettingsChanged -= OnSettingsChanged;
 		if (_favoritesManager != null)
 		{

@@ -32,6 +32,7 @@
 
 	<ItemGroup>
 		<Content Include="Assets\**\*" />
+		<Content Update="Assets\Flyouts\*.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -60,6 +61,7 @@
 		<PackageReference Include="Microsoft.Windows.CsWinRT" />
 		<PackageReference Include="Shmuelie.WinRTServer" />
 		<PackageReference Include="System.Text.Json" />
+		<PackageReference Include="System.Drawing.Common" />
 
 		<!-- Needed to enable building an MSIX package -->
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">

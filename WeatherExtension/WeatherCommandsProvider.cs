@@ -178,6 +178,7 @@ public sealed partial class WeatherCommandsProvider : CommandProvider
 			WeatherFormatter.DockBandTitle(location.DisplayName));
 
 		dockItem.Icon = Icons.WeatherIcon;
+		dockItem.MoreCommands = pinnedBand.MoreCommands;
 		pinnedBand.DockItem = dockItem;
 
 		return new BandEntry(pinnedBand, dockItem);

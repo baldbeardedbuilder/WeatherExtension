@@ -26,6 +26,42 @@ forecasts right from your desktop.
 - **Configurable Units** — Fahrenheit/Celsius, mph/km/h, and adjustable update
   intervals
 
+## Choose your dock flyout
+
+Right-click a pinned weather band and choose **Choose flyout view**. Browse the
+six image tiles, open a preview, then select **Use this view**. Cancel or go back
+to keep your current choice.
+
+Your choice applies to every pinned weather location. Each band keeps its own
+weather, and you don't need to restart Command Palette or pin your locations
+again. Existing installations keep the original card until you choose a view.
+You can restore **Original weather card** in the extension's settings.
+
+| View | What you get |
+| --- | --- |
+| Glance | Current conditions, feels-like temperature, high/low, wind, and humidity |
+| Next few hours | Current conditions and the next six available forecast hours |
+| Daily outlook | Today and the next four available forecast days |
+| Daylight arc | Sunrise, sunset, and remaining daylight with a sun emoji |
+| Day browser | A five-day list with a Small details pane |
+| Hour inspector | Up to 24 hours with a Large details pane |
+
+The daylight arc tracks elapsed time between sunrise and sunset, not the sun's
+astronomical elevation. Times use the location's time zone. Missing solar data,
+including dates without a reported sunrise or sunset, is shown as unavailable.
+
+Gallery previews use sample weather and have light and dark variants. They are
+design previews, not screenshots of the host. Command Palette controls the
+actual styling and window size. These views use the existing experimental SDK;
+the dedicated dock flyout sizing proposed in
+[microsoft/PowerToys#51092](https://github.com/microsoft/PowerToys/pull/51092)
+depends on your PowerToys version. Older hosts render normal pages. There are
+no fixed pixel-size promises or private host APIs.
+
+New picker labels use English resource fallbacks until translations are added.
+Existing translated weather labels and your unit and clock preferences still
+apply.
+
 ## Screenshots
 
 ### Search & Current Conditions
