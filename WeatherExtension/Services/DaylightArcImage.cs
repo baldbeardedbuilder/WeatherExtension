@@ -29,7 +29,6 @@ internal static class DaylightArcImage
             graphics.DrawArc(elapsed, 150, 50, 600, 600, 180, (float)(180 * progress));
         }
 
-        // Outside daylight hours there is no sun above the horizon.
         if (now >= sunrise && now <= sunset)
         {
             using var sun = Image.FromFile(Path.Combine(AppContext.BaseDirectory, "Assets", "Flyouts", "sun.png"));

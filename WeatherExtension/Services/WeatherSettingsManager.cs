@@ -103,8 +103,8 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         _flyoutView.Value = view.ToString();
         try
         {
-            // The SDK's SaveSettings logs and swallows I/O errors. The picker must
-            // not announce success until its preference has reached disk.
+            // SaveSettings logs write failures without throwing. Write the choice
+            // ourselves so we don't tell you it saved when it didn't.
             var saved = JsonNode.Parse(File.Exists(FilePath) ? File.ReadAllText(FilePath) : "{}") as JsonObject
                 ?? throw new JsonException("Weather settings must be a JSON object.");
             saved[Namespaced(nameof(FlyoutView))] = view.ToString();

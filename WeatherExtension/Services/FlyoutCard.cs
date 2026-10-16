@@ -7,7 +7,8 @@ namespace Microsoft.CmdPal.Ext.Weather.Services;
 
 internal static class FlyoutCard
 {
-    // JsonNode selects JsonArray.Add's AOT-safe overload instead of Add<T>.
+    // Keep these as JsonNode. Add<T> needs runtime serialization
+    // that Native AOT can't provide.
     public static JsonNode Text(string text, string size = "default", bool subtle = false) => new JsonObject()
     {
         ["type"] = "TextBlock", ["text"] = text, ["wrap"] = true, ["size"] = size, ["isSubtle"] = subtle,
