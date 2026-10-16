@@ -175,11 +175,6 @@ public class HourlyForecastTests
     public void WeatherBandCard_BuildWeatherData_Finds3FutureHoursFromSpanningData()
     {
         var cardType = typeof(WeatherBandCard);
-        var card = RuntimeHelpers.GetUninitializedObject(cardType);
-
-        var settingsField = cardType.GetField("_settings", PrivateInstance);
-        Assert.IsNotNull(settingsField, "WeatherBandCard must have _settings field");
-        settingsField!.SetValue(card, _settingsManager);
 
         var location = new GeocodingResult
         {
@@ -193,11 +188,14 @@ public class HourlyForecastTests
         var now = DateTime.Now;
         var hourlyData = BuildHourlyForecastData(now.AddHours(1), 48);
 
-        var buildMethod = cardType.GetMethod("BuildWeatherData", PrivateInstance);
+        var buildMethod = cardType.GetMethod("BuildWeatherData", BindingFlags.NonPublic | BindingFlags.Static);
         Assert.IsNotNull(buildMethod,
             "WeatherBandCard must have BuildWeatherData method");
+        Assert.IsNotNull(_settingsManager);
 
-        var json = (string)buildMethod!.Invoke(card, [location, null, null, hourlyData])!;
+        var json = (string)buildMethod!.Invoke(null,
+            [location, null, null, hourlyData, _settingsManager.TemperatureUnit,
+                _settingsManager.WindSpeedUnit, _settingsManager.Use24HourClock])!;
         Assert.IsNotNull(json);
 
         // All three hourly slots should have real values, not "--" placeholders.

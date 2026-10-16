@@ -20,6 +20,8 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 	private readonly OpenMeteoService _weatherService;
 	private readonly WeatherSettingsManager _settings;
 	private readonly WeatherBandCard _contentPage;
+	private readonly WeatherFlyoutListPage _dayBrowserPage;
+	private readonly WeatherFlyoutListPage _hourInspectorPage;
 	private readonly Timer _updateTimer;
 	private CancellationTokenSource _cts = new();
 	private bool _isDisposed;
@@ -39,8 +41,13 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		_weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
 		_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 		_contentPage = contentPage ?? throw new ArgumentNullException(nameof(contentPage));
+		var key = FormattableString.Invariant($"{_location.Latitude:F4}_{_location.Longitude:F4}");
+		_dayBrowserPage = new WeatherFlyoutListPage(_contentPage, WeatherFlyoutView.DayBrowser, key);
+		_hourInspectorPage = new WeatherFlyoutListPage(_contentPage, WeatherFlyoutView.HourInspector, key);
 
 		Command = _contentPage;
+		MoreCommands = [new CommandContextItem(new WeatherFlyoutGalleryPage(settings))];
+		SelectFlyoutView();
 		Icon = Icons.WeatherIcon;
 		Title = Resources.dock_band_loading;
 		Subtitle = _location.DisplayName;
@@ -51,9 +58,30 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		_updateTimer.Start();
 
 		_settings.Settings.SettingsChanged += OnSettingsChanged;
+		_settings.FlyoutViewChanged += OnFlyoutViewChanged;
 		SystemEvents.PowerModeChanged += OnPowerModeChanged;
 
 		_ = UpdateWeatherAsync();
+	}
+
+	private void OnFlyoutViewChanged(object? sender, EventArgs args)
+	{
+		if (!_isDisposed)
+		{
+			SelectFlyoutView();
+		}
+	}
+
+	private void SelectFlyoutView()
+	{
+		var view = _settings.FlyoutView;
+		_contentPage.SelectView(view);
+		Command = view switch
+		{
+			WeatherFlyoutView.DayBrowser => _dayBrowserPage,
+			WeatherFlyoutView.HourInspector => _hourInspectorPage,
+			_ => _contentPage,
+		};
 	}
 
 	private async void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -276,6 +304,9 @@ internal sealed partial class PinnedWeatherBand : ListItem, IDisposable
 		// in-flight work to cancel, then dispose the cancellation source and
 		// the inner content page so its own subscriptions get released too.
 		_isDisposed = true;
+		_settings.FlyoutViewChanged -= OnFlyoutViewChanged;
+		_dayBrowserPage.Dispose();
+		_hourInspectorPage.Dispose();
 		SystemEvents.PowerModeChanged -= OnPowerModeChanged;
 		_settings.Settings.SettingsChanged -= OnSettingsChanged;
 		_updateTimer.Elapsed -= OnTimerElapsed;

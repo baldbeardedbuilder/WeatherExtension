@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using BaldBeardedBuilder.WeatherExtension;
 using Microsoft.CmdPal.Ext.Weather.Models;
 using Microsoft.CommandPalette.Extensions;
@@ -74,6 +76,76 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
 
     private static readonly HashSet<string> _validIntervals = ["60", "180", "360", "720"];
 
+    private readonly ChoiceSetSetting _flyoutView = new(
+        Namespaced(nameof(FlyoutView)),
+        FlyoutText.Get("ChooseView"),
+        FlyoutText.Get("Scope"),
+        Enum.GetValues<WeatherFlyoutView>()
+            .Select(view => new ChoiceSetSetting.Choice(WeatherFlyoutCatalog.Name(view), view.ToString()))
+            .ToList());
+
+    private WeatherFlyoutView _lastFlyoutView;
+
+    internal event EventHandler? FlyoutViewChanged;
+
+    internal WeatherFlyoutView FlyoutView =>
+        Enum.TryParse<WeatherFlyoutView>(_flyoutView.Value, out var view) && Enum.IsDefined(view)
+            ? view : WeatherFlyoutView.Classic;
+
+    internal void SetFlyoutView(WeatherFlyoutView view)
+    {
+        if (!Enum.IsDefined(view))
+        {
+            throw new ArgumentOutOfRangeException(nameof(view));
+        }
+
+        var previous = _flyoutView.Value;
+        _flyoutView.Value = view.ToString();
+        try
+        {
+            // The SDK's SaveSettings logs and swallows I/O errors. The picker must
+            // not announce success until its preference has reached disk.
+            var saved = JsonNode.Parse(File.Exists(FilePath) ? File.ReadAllText(FilePath) : "{}") as JsonObject
+                ?? throw new JsonException("Weather settings must be a JSON object.");
+            saved[Namespaced(nameof(FlyoutView))] = view.ToString();
+            var temporaryPath = $"{FilePath}.{Guid.NewGuid():N}.tmp";
+            try
+            {
+                File.WriteAllText(temporaryPath, saved.ToJsonString());
+                File.Move(temporaryPath, FilePath, overwrite: true);
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath))
+                {
+                    File.Delete(temporaryPath);
+                }
+            }
+        }
+        catch
+        {
+            _flyoutView.Value = previous;
+            throw;
+        }
+
+        NotifyFlyoutViewChanged();
+    }
+
+    private void NotifyFlyoutViewChanged()
+    {
+        if (_lastFlyoutView != FlyoutView)
+        {
+            _lastFlyoutView = FlyoutView;
+            FlyoutViewChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    private void OnSettingsSaved(object sender, Settings args)
+    {
+        SaveSettings();
+        NotifyFlyoutViewChanged();
+    }
+
     public string TemperatureUnit => _temperatureUnit.Value ?? "celsius";
 
     public string WindSpeedUnit => _windSpeedUnit.Value ?? "kmh";
@@ -100,7 +172,8 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         LoadSettings();
         MigrateUpdateInterval();
 
-        Settings.SettingsChanged += (_, _) => SaveSettings();
+        _lastFlyoutView = FlyoutView;
+        Settings.SettingsChanged += OnSettingsSaved;
     }
 
     internal WeatherSettingsManager(string filePath)
@@ -111,7 +184,8 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         LoadSettings();
         MigrateUpdateInterval();
 
-        Settings.SettingsChanged += (_, _) => SaveSettings();
+        _lastFlyoutView = FlyoutView;
+        Settings.SettingsChanged += OnSettingsSaved;
     }
 
     private void AddAll()
@@ -122,6 +196,7 @@ public sealed class WeatherSettingsManager : JsonSettingsManager
         Settings.Add(_updateInterval);
         Settings.Add(_dockBandSubtitle);
         Settings.Add(_hourFormat);
+        Settings.Add(_flyoutView);
     }
 
     private void MigrateUpdateInterval()
